@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useUser } from '@clerk/nextjs'
+import { useUser, useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
 import MessageBubble from '@/components/MessageBubble'
 import FlightDeals from '@/components/FlightDeals'
@@ -10,18 +10,23 @@ import ItineraryTimeline from '@/components/ItineraryTimeline'
 import WarningBanner from '@/components/WarningBanner'
 import LoadingSkeleton from '@/components/LoadingSkeleton'
 import { sendChatMessage, type ChatResponse } from '@/api/chat'
+import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 
 interface Message {
     id: string
     role: 'user' | 'ai'
     content: string
     response?: ChatResponse
+    renderedCurrency?: CurrencyCode
+    renderedRates?: Record<string, number> | null
 }
 
 export default function ChatPage() {
     const { user, isLoaded } = useUser()
+    const { getToken } = useAuth()
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { currency, rates } = useCurrency()
 
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
@@ -39,7 +44,7 @@ export default function ChatPage() {
 
     // Auto-submit query from landing search bar
     useEffect(() => {
-        const q = searchParams.get('q')
+        const q = searchParams?.get('q')
         if (q && messages.length === 0 && !initSent.current && user) {
             initSent.current = true
             handleSendMessage(q)
@@ -63,9 +68,23 @@ export default function ChatPage() {
         setLoading(true)
 
         try {
-            const res = await sendChatMessage({ userId: user.id, message: messageText, sessionId })
+            // Fetch fresh Clerk JWT to authenticate with the backend
+            const token = await getToken()
+            if (!token) throw new Error('Not authenticated — please sign in again.')
+
+            const res = await sendChatMessage(
+                { userId: user.id, message: messageText, sessionId },
+                token
+            )
             setSessionId(res.sessionId)
-            const aiMsg: Message = { id: crypto.randomUUID(), role: 'ai', content: res.message, response: res }
+            const aiMsg: Message = {
+                id: crypto.randomUUID(),
+                role: 'ai',
+                content: res.message,
+                response: res,
+                renderedCurrency: currency,
+                renderedRates: rates,
+            }
             setMessages(prev => [...prev, aiMsg])
         } catch (err) {
             setError((err as Error).message ?? 'Something went wrong. Please try again.')
@@ -112,12 +131,20 @@ export default function ChatPage() {
                             <MessageBubble role={msg.role} content={msg.content} userInitial={userInitial} />
                             {msg.role === 'ai' && msg.response?.ui_hints?.show_deals && (
                                 <div style={{ paddingLeft: '46px' }}>
-                                    <FlightDeals deals={msg.response.deals ?? []} />
+                                    <FlightDeals
+                                        deals={msg.response.deals ?? []}
+                                        renderedCurrency={msg.renderedCurrency}
+                                        renderedRates={msg.renderedRates}
+                                    />
                                 </div>
                             )}
                             {msg.role === 'ai' && msg.response?.ui_hints?.show_timeline && (
                                 <div style={{ paddingLeft: '46px' }}>
-                                    <ItineraryTimeline days={msg.response.itinerary ?? []} />
+                                    <ItineraryTimeline
+                                        days={msg.response.itinerary ?? []}
+                                        renderedCurrency={msg.renderedCurrency}
+                                        renderedRates={msg.renderedRates}
+                                    />
                                 </div>
                             )}
                         </div>

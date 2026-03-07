@@ -1,10 +1,13 @@
 import type { ItineraryDay } from '../api/chat'
+import { CurrencyCode } from '@/context/CurrencyContext'
 
 interface ItineraryTimelineProps {
     days: ItineraryDay[]
+    renderedCurrency?: CurrencyCode
+    renderedRates?: Record<string, number> | null
 }
 
-export default function ItineraryTimeline({ days }: ItineraryTimelineProps) {
+export default function ItineraryTimeline({ days, renderedCurrency, renderedRates }: ItineraryTimelineProps) {
     if (!days.length) return null
 
     return (

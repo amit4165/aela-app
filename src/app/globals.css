@@ -681,9 +681,25 @@ a {
 }
 
 .deal-airline {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.deal-hover-drawer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s var(--ease);
+}
+
+.deal-card:hover .deal-hover-drawer {
+  max-height: 60px;
+  opacity: 1;
+  padding-top: 8px;
 }
 
 /* ── Itinerary ─────────────────────────────────────────────── */

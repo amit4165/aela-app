@@ -1,11 +1,12 @@
 export interface Deal {
-    origin: string
-    destination: string
+    deal_type: 'flight' | 'hotel' | 'activity'
+    provider: string
     price: number
-    airline?: string
-    departureDate?: string
-    returnDate?: string
-    duration?: string
+    currency: string
+    risk_level: 'low' | 'medium' | 'high'
+    flags: string[]
+    rank: number
+    data?: any // We will access flight properties inside data
 }
 
 export interface ItineraryDay {
