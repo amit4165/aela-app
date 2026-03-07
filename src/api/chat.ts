@@ -39,12 +39,19 @@ export interface ChatRequest {
     sessionId?: string
 }
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+// NEW (Next.js)
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'
 
-export async function sendChatMessage(req: ChatRequest): Promise<ChatResponse> {
+export async function sendChatMessage(
+    req: ChatRequest,
+    token: string          // Clerk session JWT — required by backend requireAuth
+): Promise<ChatResponse> {
     const res = await fetch(`${API_URL}/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(req),
     })
 
