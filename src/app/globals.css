@@ -367,8 +367,8 @@ a {
     linear-gradient(to top, rgba(5, 13, 26, 0.95) 0%, rgba(5, 13, 26, 0.65) 40%, transparent 70%),
     /* top vignette */
     linear-gradient(to bottom, rgba(5, 13, 26, 0.55) 0%, transparent 30%),
-    /* soft center darkening */
-    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(5, 13, 26, 0.25) 0%, transparent 100%);
+    /* center darkening for text readability */
+    radial-gradient(ellipse 80% 70% at 50% 40%, rgba(5, 13, 26, 0.5) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -419,11 +419,11 @@ a {
 .hero {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   position: relative;
   z-index: 1;
-  padding: 120px 24px 80px;
+  padding: 140px 24px 80px;
 }
 
 .hero-content {
@@ -433,15 +433,6 @@ a {
   text-align: center;
   width: 100%;
   max-width: 780px;
-  padding: 56px 48px 48px;
-  border-radius: 28px;
-  background: rgba(5, 13, 26, 0.45);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 8px 48px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 /* Eyebrow chip — Sky Turquoise */
@@ -1925,11 +1916,6 @@ a {
 
   .hero {
     padding: 140px 20px 60px;
-  }
-
-  .hero-content {
-    padding: 36px 24px 32px;
-    border-radius: 20px;
   }
 
   .hero-title {

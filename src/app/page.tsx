@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TripQuiz, { type QuizAnswers } from '@/components/TripQuiz'
 import DestinationMap from '@/components/DestinationMap'
 import ItineraryEditor from '@/components/ItineraryEditor'
@@ -22,6 +22,7 @@ export default function LandingPage() {
     const [photoIndex, setPhotoIndex] = useState(0)
     const [heroOpacity, setHeroOpacity] = useState(1)
     const [heroY, setHeroY] = useState(0)
+    const photosRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const t = setInterval(() => {
@@ -37,6 +38,11 @@ export default function LandingPage() {
             const progress = Math.min(y / (vh * 0.55), 1)
             setHeroOpacity(1 - progress)
             setHeroY(y * 0.28)
+            // blur the photo layer on scroll
+            if (photosRef.current) {
+                const blur = progress * 14
+                photosRef.current.style.filter = `blur(${blur}px)`
+            }
         }
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
@@ -49,7 +55,7 @@ export default function LandingPage() {
             {/* Hero */}
             <section className="hero">
                 {/* Destination photo slideshow */}
-                <div className="hero-photos" aria-hidden>
+                <div className="hero-photos" aria-hidden ref={photosRef}>
                     {heroPhotos.map((photo, i) => (
                         <div
                             key={photo.label}
@@ -79,11 +85,6 @@ export default function LandingPage() {
                 </div>
 
                 <div className="hero-content" style={{ opacity: heroOpacity, transform: `translateY(-${heroY}px)`, willChange: 'opacity, transform' }}>
-                    <div className="hero-eyebrow">
-                        <span>✦</span>
-                        AI-Powered Travel Planning
-                    </div>
-
                     <h1 className="hero-title">
                         You have one life.
                         <br />
