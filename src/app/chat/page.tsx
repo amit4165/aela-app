@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { Suspense, useState, useEffect, useRef, type FormEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useUser, useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -22,6 +22,14 @@ interface Message {
 }
 
 export default function ChatPage() {
+    return (
+        <Suspense>
+            <ChatPageInner />
+        </Suspense>
+    )
+}
+
+function ChatPageInner() {
     const { user, isLoaded } = useUser()
     const { getToken } = useAuth()
     const router = useRouter()
