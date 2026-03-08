@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import GooglePlacesMap from './GooglePlacesMap'
 
 const stories = [
     {
@@ -37,53 +38,63 @@ export default function TripStories() {
 
     return (
         <section className="stories-section">
-            <div className="section-inner">
-                <div className="section-eyebrow">Trip Inspiration</div>
-                <h2 className="section-title">Trips others loved</h2>
-                <p className="section-subtitle">Real AI-crafted itineraries, tried and tested</p>
+            <div className="stories-split">
 
+                {/* ── Left: cards ── */}
                 <div
-                    className="stories-grid"
+                    className="stories-left"
                     onMouseEnter={() => setPaused(true)}
                     onMouseLeave={() => setPaused(false)}
                 >
-                    {stories.map((s, i) => (
-                        <div
-                            key={i}
-                            className={`story-card ${i === active ? 'story-card-active' : ''}`}
-                            onClick={() => setActive(i)}
-                        >
-                            <div className="story-match">
-                                <span className="story-match-num">{s.match}%</span>
-                                <span className="story-match-label"> match</span>
-                            </div>
-                            <div className="story-stars">⭐⭐⭐⭐⭐</div>
-                            <h3 className="story-title">{s.title}</h3>
-                            <p className="story-desc">{s.desc}</p>
-                            <div className="story-tags">
-                                {s.tags.map(t => <span key={t} className="story-tag">{t}</span>)}
-                            </div>
-                            <div className="story-footer">
-                                <span className="story-price">{s.price}</span>
-                                <div className="story-actions">
-                                    <button className="story-ghost">View plan</button>
-                                    <button className="story-primary">Try this style</button>
+                    <div className="section-eyebrow">Trip Inspiration</div>
+                    <h2 className="section-title">Trips others loved</h2>
+                    <p className="section-subtitle">Real AI-crafted itineraries, tried and tested</p>
+
+                    <div className="stories-grid">
+                        {stories.map((s, i) => (
+                            <div
+                                key={i}
+                                className={`story-card ${i === active ? 'story-card-active' : ''}`}
+                                onClick={() => setActive(i)}
+                            >
+                                <div className="story-match">
+                                    <span className="story-match-num">{s.match}%</span>
+                                    <span className="story-match-label"> match</span>
+                                </div>
+                                <div className="story-stars">⭐⭐⭐⭐⭐</div>
+                                <h3 className="story-title">{s.title}</h3>
+                                <p className="story-desc">{s.desc}</p>
+                                <div className="story-tags">
+                                    {s.tags.map(t => <span key={t} className="story-tag">{t}</span>)}
+                                </div>
+                                <div className="story-footer">
+                                    <span className="story-price">{s.price}</span>
+                                    <div className="story-actions">
+                                        <button className="story-ghost">View plan</button>
+                                        <button className="story-primary">Try this style</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
+                    <div className="stories-dots">
+                        {stories.map((_, i) => (
+                            <button
+                                key={i}
+                                className={`stories-dot ${i === active ? 'stories-dot-active' : ''}`}
+                                onClick={() => setActive(i)}
+                                aria-label={`Story ${i + 1}`}
+                            />
+                        ))}
+                    </div>
                 </div>
 
-                <div className="stories-dots">
-                    {stories.map((_, i) => (
-                        <button
-                            key={i}
-                            className={`stories-dot ${i === active ? 'stories-dot-active' : ''}`}
-                            onClick={() => setActive(i)}
-                            aria-label={`Story ${i + 1}`}
-                        />
-                    ))}
+                {/* ── Right: Google Map ── */}
+                <div className="stories-right">
+                    <GooglePlacesMap activeStory={active} />
                 </div>
+
             </div>
         </section>
     )

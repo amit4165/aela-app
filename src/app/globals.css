@@ -1735,14 +1735,132 @@ a {
 
 /* ── Trip Stories ──────────────────────────────────────────────── */
 .stories-section {
-  padding: 100px 0;
+  padding: 0;
   background: var(--bg-surface);
   border-top: 1px solid var(--border);
 }
 
+/* Split layout: reviews left, map right */
+.stories-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.stories-left {
+  padding: 80px 48px 80px 40px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.stories-right {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  border-left: 1px solid var(--border);
+}
+
+/* Google Map */
+.gmap-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.gmap-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.gmap-place-card {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 280px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.gmap-place-photo {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.gmap-place-body {
+  padding: 12px 14px 14px;
+}
+
+.gmap-place-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.gmap-place-rating {
+  font-size: 12px;
+  color: var(--yellow);
+  margin-bottom: 4px;
+}
+
+.gmap-place-addr {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.gmap-place-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gmap-hint {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13, 27, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.gmap-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
 .stories-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
   margin-bottom: 32px;
 }
@@ -1942,6 +2060,19 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .stories-split {
+    grid-template-columns: 1fr;
+  }
+  .stories-right {
+    position: relative;
+    height: 60vw;
+    min-height: 320px;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+  .stories-left {
+    padding: 48px 20px;
+  }
   .stories-grid {
     grid-template-columns: 1fr;
   }
