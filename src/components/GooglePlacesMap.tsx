@@ -36,18 +36,16 @@ export default function GooglePlacesMap({ activeStory }: { activeStory: number }
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         if (!apiKey || !mapRef.current) return
 
-        const loader = new Loader({ apiKey, version: 'weekly' })
+        const loader = new Loader({
+            apiKey,
+            version: 'weekly',
+            libraries: ['places'],
+        })
 
-        Promise.all([
-            loader.importLibrary('maps'),
-            loader.importLibrary('places'),
-            loader.importLibrary('marker'),
-        ]).then(([mapsLib]) => {
+        loader.load().then(() => {
             if (!mapRef.current) return
 
-            const { Map } = mapsLib as google.maps.MapsLibrary
-
-            const map = new Map(mapRef.current, {
+            const map = new google.maps.Map(mapRef.current, {
                 center: { lat: 20, lng: 10 },
                 zoom: 2,
                 styles: MAP_STYLES,
@@ -103,7 +101,6 @@ export default function GooglePlacesMap({ activeStory }: { activeStory: number }
         }).catch(() => setLoadError(true))
     }, [])
 
-    // Pan to active story marker
     useEffect(() => {
         if (!mapInstance.current) return
         const place = storyPlaces[activeStory]
