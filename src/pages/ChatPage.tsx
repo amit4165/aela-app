@@ -108,7 +108,7 @@ export default function ChatPage() {
                     <Link to="/" className="btn btn-ghost" style={{ fontSize: '13px' }}>
                         ← Home
                     </Link>
-                    <UserButton afterSignOutUrl="/" />
+                    <UserButton />
                 </div>
             </nav>
 

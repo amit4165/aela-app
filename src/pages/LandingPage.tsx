@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { useAuth, UserButton } from '@clerk/nextjs'
 import AelaLogo from '../components/AelaLogo'
 import SearchBar from '../components/SearchBar'
 
 export default function LandingPage() {
+    const { isSignedIn } = useAuth()
     return (
         <div className="landing">
             {/* ── Animated background ── */}
@@ -19,20 +20,23 @@ export default function LandingPage() {
                     <AelaLogo />
                 </Link>
                 <div className="nav-actions">
-                    <SignedOut>
-                        <Link to="/sign-in" className="btn btn-ghost">
-                            Sign In
-                        </Link>
-                        <Link to="/sign-up" className="btn btn-primary">
-                            Get Started
-                        </Link>
-                    </SignedOut>
-                    <SignedIn>
-                        <Link to="/chat" className="btn btn-ghost">
-                            Open Chat
-                        </Link>
-                        <UserButton afterSignOutUrl="/" />
-                    </SignedIn>
+                    {!isSignedIn ? (
+                        <>
+                            <Link to="/sign-in" className="btn btn-ghost">
+                                Sign In
+                            </Link>
+                            <Link to="/sign-up" className="btn btn-primary">
+                                Get Started
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/chat" className="btn btn-ghost">
+                                Open Chat
+                            </Link>
+                            <UserButton />
+                        </>
+                    )}
                 </div>
             </nav>
 
