@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const c = require\\(''@clerk/react''\\); console.log\\(Object.keys\\(c\\).filter\\(k => k.includes\\(''Sign''\\) || k.includes\\(''signed''\\) || k.includes\\(''Signed''\\)\\)\\)\")",
+      "Read(//c/Users/ADMIN/.claude/projects/c--Users-ADMIN-Desktop-Aela-Frontend/memory/**)",
+      "Bash(node -e \"const c = require\\(''@clerk/nextjs''\\); console.log\\(Object.keys\\(c\\).filter\\(k => k.includes\\(''Sign''\\) || k.includes\\(''Signed''\\) || k.includes\\(''User''\\)\\)\\)\")",
+      "Bash(npm ls @clerk/shared)",
+      "Bash(npm uninstall @clerk/react)",
+      "Bash(npm run build)"
+    ]
+  }
+}
