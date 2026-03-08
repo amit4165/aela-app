@@ -20,12 +20,26 @@ export default function LandingPage() {
     const [quizStep, setQuizStep] = useState(0)
     const [quizAnswers, setQuizAnswers] = useState<QuizAnswers | null>(null)
     const [photoIndex, setPhotoIndex] = useState(0)
+    const [heroOpacity, setHeroOpacity] = useState(1)
+    const [heroY, setHeroY] = useState(0)
 
     useEffect(() => {
         const t = setInterval(() => {
             setPhotoIndex(i => (i + 1) % heroPhotos.length)
         }, 5500)
         return () => clearInterval(t)
+    }, [])
+
+    useEffect(() => {
+        const onScroll = () => {
+            const y = window.scrollY
+            const vh = window.innerHeight
+            const progress = Math.min(y / (vh * 0.55), 1)
+            setHeroOpacity(1 - progress)
+            setHeroY(y * 0.28)
+        }
+        window.addEventListener('scroll', onScroll, { passive: true })
+        return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
     return (
@@ -64,7 +78,7 @@ export default function LandingPage() {
                     <div className="orb orb-3" />
                 </div>
 
-                <div className="hero-content">
+                <div className="hero-content" style={{ opacity: heroOpacity, transform: `translateY(-${heroY}px)`, willChange: 'opacity, transform' }}>
                     <div className="hero-eyebrow">
                         <span>✦</span>
                         AI-Powered Travel Planning
@@ -90,13 +104,6 @@ export default function LandingPage() {
                                 Find my perfect trip ✦
                             </button>
                             <p className="hero-cta-hint">Takes 20 seconds · No sign-up needed</p>
-
-                            <div className="hero-features">
-                                <div className="hero-feature"><span />Real-time flight deals</div>
-                                <div className="hero-feature"><span />AI-crafted itineraries</div>
-                                <div className="hero-feature"><span />Multi-city route planning</div>
-                                <div className="hero-feature"><span />No booking fees</div>
-                            </div>
                         </div>
                     ) : (
                         <TripQuiz
