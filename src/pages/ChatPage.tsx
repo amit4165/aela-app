@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useUser, UserButton } from '@clerk/react'
+import { useAuth, useUser, UserButton } from '@clerk/react'
 import AelaLogo from '../components/AelaLogo'
 import MessageBubble from '../components/MessageBubble'
 import FlightDeals from '../components/FlightDeals'
@@ -18,6 +18,7 @@ interface Message {
 
 export default function ChatPage() {
     const { user } = useUser()
+    const { getToken } = useAuth()
     const [searchParams] = useSearchParams()
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
@@ -58,11 +59,12 @@ export default function ChatPage() {
         setLoading(true)
 
         try {
+            const token = await getToken() ?? ''
             const res = await sendChatMessage({
                 userId: user.id,
                 message: messageText,
                 sessionId,
-            })
+            }, token)
 
             setSessionId(res.sessionId)
 

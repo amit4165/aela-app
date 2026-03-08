@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { SignedIn, SignedOut, UserButton } from '@clerk/react'
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import AelaLogo from '../components/AelaLogo'
 import SearchBar from '../components/SearchBar'
 
