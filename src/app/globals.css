@@ -339,14 +339,15 @@ a {
 
 .hero-photo {
   position: absolute;
-  inset: 0;
+  inset: -30px;
   background-size: cover;
   background-position: center;
   opacity: 0;
   transition: opacity 1.8s ease-in-out;
   transform: scale(1.06);
   animation: kenBurns 10s ease-in-out infinite alternate;
-  will-change: opacity, transform;
+  filter: blur(var(--hero-blur, 0px));
+  will-change: opacity, transform, filter;
 }
 
 .hero-photo-active {

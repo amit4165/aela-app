@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import TripQuiz, { type QuizAnswers } from '@/components/TripQuiz'
 import DestinationMap from '@/components/DestinationMap'
 import ItineraryEditor from '@/components/ItineraryEditor'
@@ -22,7 +22,6 @@ export default function LandingPage() {
     const [photoIndex, setPhotoIndex] = useState(0)
     const [heroOpacity, setHeroOpacity] = useState(1)
     const [heroY, setHeroY] = useState(0)
-    const photosRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const t = setInterval(() => {
@@ -38,11 +37,7 @@ export default function LandingPage() {
             const progress = Math.min(y / (vh * 0.55), 1)
             setHeroOpacity(1 - progress)
             setHeroY(y * 0.28)
-            // blur the photo layer on scroll
-            if (photosRef.current) {
-                const blur = progress * 14
-                photosRef.current.style.filter = `blur(${blur}px)`
-            }
+            document.documentElement.style.setProperty('--hero-blur', `${progress * 14}px`)
         }
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
@@ -55,7 +50,7 @@ export default function LandingPage() {
             {/* Hero */}
             <section className="hero">
                 {/* Destination photo slideshow */}
-                <div className="hero-photos" aria-hidden ref={photosRef}>
+                <div className="hero-photos" aria-hidden>
                     {heroPhotos.map((photo, i) => (
                         <div
                             key={photo.label}
