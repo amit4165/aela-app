@@ -266,14 +266,10 @@ a {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  /* Subtle diagonal gradient: turquoise top-left, coral bottom-right */
-  background:
-    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(34, 200, 217, 0.05) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 50% at 100% 100%, rgba(255, 107, 90, 0.06) 0%, transparent 70%),
-    var(--bg-base);
+  background: #f5f0e8;
 }
 
-/* Animated orbs — turquoise, coral, yellow-amber */
+/* Photo collage layer */
 .landing-bg {
   position: absolute;
   inset: 0;
@@ -281,97 +277,33 @@ a {
   overflow: hidden;
 }
 
-.orb {
+/* Individual destination photo cards */
+.dest-photo {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.16;
-  animation: drift 18s ease-in-out infinite alternate;
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22), 0 6px 20px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  animation: photoReveal 1s var(--ease) forwards;
 }
 
-/* Turquoise — top-right AI energy */
-.orb-1 {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, #22C8D9 0%, transparent 70%);
-  top: -200px;
-  right: -100px;
-  animation-duration: 22s;
+@keyframes photoReveal {
+  to { opacity: 1; }
 }
 
-/* Coral — bottom-left warmth */
-.orb-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, #FF6B5A 0%, transparent 70%);
-  bottom: -150px;
-  left: -100px;
-  animation-duration: 16s;
-  animation-delay: -8s;
-}
-
-/* Yellow-amber — mid accent */
-.orb-3 {
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, #FBBF24 0%, transparent 70%);
-  top: 40%;
-  left: 40%;
-  opacity: 0.08;
-  animation-duration: 20s;
-  animation-delay: -4s;
-}
-
-@keyframes drift {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate(40px, -30px) scale(1.05);
-  }
-
-  100% {
-    transform: translate(-30px, 50px) scale(0.97);
-  }
-}
-
-/* Grid overlay — faint turquoise tint */
-.landing-bg::after {
-  content: '';
+/* Center radial overlay — cream fade so hero text is readable */
+.landing-overlay {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(34, 200, 217, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 200, 217, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
-}
-
-/* ── Floating destination particles ─────────────────────────── */
-.dest-particle {
-  position: absolute;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(240, 237, 232, 0.75);
-  opacity: 0;
-  animation: floatUp 13s ease-in-out infinite;
+  background: radial-gradient(
+    ellipse 68% 70% at 50% 44%,
+    rgba(245, 240, 232, 0.96) 0%,
+    rgba(245, 240, 232, 0.82) 40%,
+    rgba(245, 240, 232, 0.45) 65%,
+    transparent 100%
+  );
   pointer-events: none;
-  user-select: none;
-}
-
-.dest-particle-coral {
-  color: rgba(240, 237, 232, 0.6);
-}
-
-@keyframes floatUp {
-  0%   { opacity: 0;    transform: translateY(0); }
-  12%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { opacity: 0;    transform: translateY(-140px); }
 }
 
 /* ── Destination marquee ─────────────────────────────────────── */
@@ -397,7 +329,7 @@ a {
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(240, 237, 232, 0.55);
+  color: #6b7280;
   padding: 0 20px;
   white-space: nowrap;
   transition: color var(--transition);
@@ -428,13 +360,13 @@ a {
   gap: 8px;
   padding: 6px 16px;
   border-radius: 100px;
-  background: var(--turquoise-dim);
-  border: 1px solid rgba(34, 200, 217, 0.25);
+  background: rgba(34, 200, 217, 0.12);
+  border: 1px solid rgba(34, 200, 217, 0.35);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--turquoise);
+  color: #0ea5c0;
   margin-bottom: 32px;
   animation: fadeInUp 0.8s var(--ease) both;
 }
@@ -444,10 +376,11 @@ a {
   font-weight: 400;
   max-width: 900px;
   margin-bottom: 24px;
+  color: #0d1b2a;
   animation: fadeInUp 0.8s var(--ease) 0.1s both;
 }
 
-/* Italic accent — Warm Coral for cinematic warmth */
+/* Italic accent — Warm Coral */
 .hero-title em {
   font-style: italic;
   color: var(--coral);
@@ -455,7 +388,7 @@ a {
 
 .hero-subtitle {
   font-size: 17px;
-  color: var(--text-secondary);
+  color: #4a5568;
   max-width: 480px;
   margin-bottom: 48px;
   font-weight: 300;
@@ -492,18 +425,19 @@ a {
   align-items: center;
   gap: 12px;
   padding: 8px 8px 8px 24px;
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 100px;
   transition: all var(--transition);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 .search-bar:focus-within {
-  border-color: rgba(34, 200, 217, 0.45);
-  box-shadow: 0 0 0 4px var(--turquoise-glow), 0 0 40px rgba(34, 200, 217, 0.08);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(34, 200, 217, 0.55);
+  box-shadow: 0 0 0 4px rgba(34, 200, 217, 0.12), 0 4px 24px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .search-bar input {
@@ -513,12 +447,12 @@ a {
   outline: none;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: var(--text-primary);
+  color: #0d1b2a;
   caret-color: var(--turquoise);
 }
 
 .search-bar input::placeholder {
-  color: var(--text-muted);
+  color: #9ca3af;
 }
 
 /* Search CTA — Warm Coral */
@@ -572,15 +506,17 @@ a {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  color: #4a5568;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: all var(--transition);
 }
 
 .hero-feature:hover {
-  color: var(--text-primary);
-  background: var(--glass-hover);
+  color: #0d1b2a;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 /* Dot bullet inside chip */

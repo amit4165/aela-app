@@ -1,18 +1,36 @@
 import SearchBar from '@/components/SearchBar'
 
-const floatingCities = [
-    { name: 'Paris',     left: '4%',  bottom: '12%', delay: '0s',   duration: '14s' },
-    { name: 'Tokyo',     left: '14%', bottom: '38%', delay: '3s',   duration: '11s', coral: true },
-    { name: 'Bali',      left: '8%',  bottom: '62%', delay: '6s',   duration: '13s' },
-    { name: 'Santorini', left: '24%', bottom: '18%', delay: '1.5s', duration: '16s', coral: true },
-    { name: 'Maldives',  left: '34%', bottom: '52%', delay: '9s',   duration: '12s' },
-    { name: 'Kyoto',     left: '54%', bottom: '22%', delay: '4s',   duration: '15s', coral: true },
-    { name: 'Dubai',     left: '64%', bottom: '48%', delay: '7.5s', duration: '10s' },
-    { name: 'New York',  left: '74%', bottom: '32%', delay: '2s',   duration: '13s', coral: true },
-    { name: 'Rome',      left: '82%', bottom: '66%', delay: '5s',   duration: '14s' },
-    { name: 'Barcelona', left: '88%', bottom: '14%', delay: '10s',  duration: '11s', coral: true },
-    { name: 'Lisbon',    left: '44%', bottom: '72%', delay: '8s',   duration: '16s' },
-    { name: 'Iceland',   left: '92%', bottom: '42%', delay: '0.5s', duration: '12s' },
+const destPhotos = [
+    {
+        url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&h=400&fit=crop&auto=format',
+        label: 'Santorini',
+        style: { width: 290, height: 210, top: '6%', left: '-3%', transform: 'rotate(-8deg)', animationDelay: '0.1s' },
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=500&h=660&fit=crop&auto=format',
+        label: 'Bali',
+        style: { width: 260, height: 340, top: '3%', right: '-4%', transform: 'rotate(7deg)', animationDelay: '0.3s' },
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=560&h=380&fit=crop&auto=format',
+        label: 'Paris',
+        style: { width: 260, height: 310, bottom: '4%', left: '-2%', transform: 'rotate(5deg)', animationDelay: '0.5s' },
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=660&h=440&fit=crop&auto=format',
+        label: 'Maldives',
+        style: { width: 330, height: 220, bottom: '5%', right: '-4%', transform: 'rotate(-6deg)', animationDelay: '0.4s' },
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=420&h=560&fit=crop&auto=format',
+        label: 'Tokyo',
+        style: { width: 200, height: 270, top: '30%', right: '1%', transform: 'rotate(3deg)', animationDelay: '0.6s' },
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=420&h=560&fit=crop&auto=format',
+        label: 'Dubai',
+        style: { width: 200, height: 265, top: '35%', left: '1%', transform: 'rotate(-4deg)', animationDelay: '0.25s' },
+    },
 ]
 
 const marqueeItems = [
@@ -25,25 +43,21 @@ const marqueeItems = [
 export default function LandingPage() {
     return (
         <div className="landing">
-            {/* Animated background */}
+            {/* Photo collage background */}
             <div className="landing-bg" aria-hidden>
-                <div className="orb orb-1" />
-                <div className="orb orb-2" />
-                <div className="orb orb-3" />
-                {floatingCities.map((city) => (
-                    <span
-                        key={city.name}
-                        className={`dest-particle${city.coral ? ' dest-particle-coral' : ''}`}
+                {destPhotos.map((photo) => (
+                    <div
+                        key={photo.label}
+                        className="dest-photo"
                         style={{
-                            left: city.left,
-                            bottom: city.bottom,
-                            animationDelay: city.delay,
-                            animationDuration: city.duration,
+                            ...photo.style,
+                            backgroundImage: `url('${photo.url}')`,
+                            animationDelay: photo.style.animationDelay,
                         }}
-                    >
-                        {city.name}
-                    </span>
+                    />
                 ))}
+                {/* Center white overlay for hero readability */}
+                <div className="landing-overlay" />
             </div>
 
             {/* Hero */}
