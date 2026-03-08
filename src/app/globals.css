@@ -348,6 +348,66 @@ a {
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
 }
 
+/* ── Floating destination particles ─────────────────────────── */
+.dest-particle {
+  position: absolute;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--turquoise);
+  opacity: 0;
+  animation: floatUp 13s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dest-particle-coral {
+  color: var(--coral);
+}
+
+@keyframes floatUp {
+  0%   { opacity: 0;    transform: translateY(0); }
+  12%  { opacity: 0.07; }
+  80%  { opacity: 0.07; }
+  100% { opacity: 0;    transform: translateY(-140px); }
+}
+
+/* ── Destination marquee ─────────────────────────────────────── */
+.destinations-marquee {
+  width: 100%;
+  max-width: 720px;
+  overflow: hidden;
+  margin-top: 52px;
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  animation: fadeInUp 0.9s var(--ease) 0.5s both;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 35s linear infinite;
+}
+
+.marquee-item {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 20px;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* Hero */
 .hero {
   flex: 1;
