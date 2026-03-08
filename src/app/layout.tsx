@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 import Link from 'next/link'
 import AelaLogo from '@/components/AelaLogo'
 import CurrencySelector from '@/components/CurrencySelector'
+import NavAuth from '@/components/NavAuth'
 import { CurrencyProvider } from '@/context/CurrencyContext'
 import './globals.css'
 
@@ -33,18 +34,7 @@ export default function RootLayout({
                             </Link>
                             <div className="nav-actions">
                                 <CurrencySelector />
-                                <Show when="signed-out">
-                                    <SignInButton mode="redirect">
-                                        <button className="btn btn-ghost">Sign In</button>
-                                    </SignInButton>
-                                    <SignUpButton mode="redirect">
-                                        <button className="btn btn-primary">Get Started</button>
-                                    </SignUpButton>
-                                </Show>
-                                <Show when="signed-in">
-                                    <Link href="/chat" className="btn btn-ghost">Open Chat</Link>
-                                    <UserButton />
-                                </Show>
+                                <NavAuth />
                             </div>
                         </nav>
 

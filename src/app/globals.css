@@ -1,6 +1,6 @@
 /* ============================================================
    AELA — Global Design System
-   Dark premium glassmorphism
+   AI × Vacation — Dark Cinematic Palette
    ============================================================ */
 
 /* ── Fonts ─────────────────────────────────────────────────── */
@@ -18,10 +18,27 @@
   --glass-border: rgba(255, 255, 255, 0.09);
   --glass-hover: rgba(255, 255, 255, 0.07);
 
-  /* Brand accent — warm gold */
-  --accent: #c9a96e;
-  --accent-dim: rgba(201, 169, 110, 0.15);
-  --accent-glow: rgba(201, 169, 110, 0.25);
+  /* ── Vacation × AI Accent Palette ── */
+
+  /* Sky Turquoise — AI elements, hover glows, outlines, borders */
+  --turquoise: #22C8D9;
+  --turquoise-dim: rgba(34, 200, 217, 0.12);
+  --turquoise-glow: rgba(34, 200, 217, 0.22);
+
+  /* Warm Coral — Primary CTA buttons */
+  --coral: #FF6B5A;
+  --coral-hover: #e85a4a;
+  --coral-dim: rgba(255, 107, 90, 0.12);
+  --coral-glow: rgba(255, 107, 90, 0.28);
+
+  /* Sunset Yellow — Badges, deal tags, bullet accents */
+  --yellow: #FBBF24;
+  --yellow-dim: rgba(251, 191, 36, 0.10);
+
+  /* Legacy alias kept for any remaining usages */
+  --accent: var(--turquoise);
+  --accent-dim: var(--turquoise-dim);
+  --accent-glow: var(--turquoise-glow);
 
   /* Text */
   --text-primary: #f0ede8;
@@ -66,7 +83,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Next.js uses body directly instead of #root */
 body {
   min-height: 100vh;
   display: flex;
@@ -139,6 +155,7 @@ a {
   white-space: nowrap;
 }
 
+/* Ghost — Sky Turquoise border on hover */
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
@@ -146,35 +163,54 @@ a {
 }
 
 .btn-ghost:hover {
-  color: var(--text-primary);
-  background: var(--glass-hover);
-  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--turquoise);
+  background: var(--turquoise-dim);
+  border-color: rgba(34, 200, 217, 0.35);
 }
 
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--turquoise);
+  outline-offset: 2px;
+}
+
+/* Primary — Warm Coral CTA */
 .btn-primary {
-  background: var(--accent);
-  color: #0d0d0d;
+  background: var(--coral);
+  color: #ffffff;
   font-weight: 600;
+  box-shadow: 0 4px 18px var(--coral-glow);
 }
 
 .btn-primary:hover {
-  background: #d4b47b;
+  background: var(--coral-hover);
   transform: translateY(-1px);
-  box-shadow: 0 8px 30px var(--accent-glow);
+  box-shadow: 0 8px 30px var(--coral-glow);
 }
 
 .btn-primary:active {
   transform: translateY(0);
 }
 
+.btn-primary:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* Outline — Sky Turquoise ghost style for secondary CTAs */
 .btn-outline {
   background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  color: var(--turquoise);
+  border: 1px solid var(--turquoise);
 }
 
 .btn-outline:hover {
-  background: var(--accent-dim);
+  background: var(--turquoise-dim);
+  box-shadow: 0 0 16px var(--turquoise-glow);
+}
+
+.btn-outline:focus-visible {
+  outline: 2px solid var(--turquoise);
+  outline-offset: 2px;
 }
 
 /* ── Nav ─────────────────────────────────────────────────────── */
@@ -188,7 +224,7 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 20px 48px;
-  background: rgba(8, 11, 18, 0.6);
+  background: rgba(8, 11, 18, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
@@ -230,9 +266,14 @@ a {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  /* Subtle diagonal gradient: turquoise top-left, coral bottom-right */
+  background:
+    radial-gradient(ellipse 60% 50% at 0% 0%, rgba(34, 200, 217, 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 100% 100%, rgba(255, 107, 90, 0.06) 0%, transparent 70%),
+    var(--bg-base);
 }
 
-/* Animated gradient orbs */
+/* Animated orbs — turquoise, coral, yellow-amber */
 .landing-bg {
   position: absolute;
   inset: 0;
@@ -244,35 +285,39 @@ a {
   position: absolute;
   border-radius: 50%;
   filter: blur(100px);
-  opacity: 0.18;
+  opacity: 0.16;
   animation: drift 18s ease-in-out infinite alternate;
 }
 
+/* Turquoise — top-right AI energy */
 .orb-1 {
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, #c9a96e 0%, transparent 70%);
+  background: radial-gradient(circle, #22C8D9 0%, transparent 70%);
   top: -200px;
   right: -100px;
   animation-duration: 22s;
 }
 
+/* Coral — bottom-left warmth */
 .orb-2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, #3b5bdb 0%, transparent 70%);
+  background: radial-gradient(circle, #FF6B5A 0%, transparent 70%);
   bottom: -150px;
   left: -100px;
   animation-duration: 16s;
   animation-delay: -8s;
 }
 
+/* Yellow-amber — mid accent */
 .orb-3 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, #7048e8 0%, transparent 70%);
+  background: radial-gradient(circle, #FBBF24 0%, transparent 70%);
   top: 40%;
   left: 40%;
+  opacity: 0.08;
   animation-duration: 20s;
   animation-delay: -4s;
 }
@@ -291,14 +336,14 @@ a {
   }
 }
 
-/* Grid overlay */
+/* Grid overlay — faint turquoise tint */
 .landing-bg::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(34, 200, 217, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 200, 217, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
 }
@@ -316,19 +361,20 @@ a {
   z-index: 1;
 }
 
+/* Eyebrow chip — Sky Turquoise */
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
   border-radius: 100px;
-  background: var(--accent-dim);
-  border: 1px solid rgba(201, 169, 110, 0.2);
+  background: var(--turquoise-dim);
+  border: 1px solid rgba(34, 200, 217, 0.25);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--turquoise);
   margin-bottom: 32px;
   animation: fadeInUp 0.8s var(--ease) both;
 }
@@ -341,9 +387,10 @@ a {
   animation: fadeInUp 0.8s var(--ease) 0.1s both;
 }
 
+/* Italic accent — Warm Coral for cinematic warmth */
 .hero-title em {
   font-style: italic;
-  color: var(--accent);
+  color: var(--coral);
 }
 
 .hero-subtitle {
@@ -360,6 +407,24 @@ a {
   width: 100%;
   max-width: 640px;
   animation: fadeInUp 0.9s var(--ease) 0.3s both;
+  position: relative;
+}
+
+/* Subtle turquoise glow ring behind the search bar — AI signal */
+.search-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, rgba(34, 200, 217, 0.15), rgba(255, 107, 90, 0.08));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--transition);
+  filter: blur(8px);
+}
+
+.search-wrapper:focus-within::before {
+  opacity: 1;
 }
 
 .search-bar {
@@ -376,8 +441,8 @@ a {
 }
 
 .search-bar:focus-within {
-  border-color: rgba(201, 169, 110, 0.4);
-  box-shadow: 0 0 0 4px var(--accent-glow);
+  border-color: rgba(34, 200, 217, 0.45);
+  box-shadow: 0 0 0 4px var(--turquoise-glow), 0 0 40px rgba(34, 200, 217, 0.08);
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -389,17 +454,18 @@ a {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   color: var(--text-primary);
-  caret-color: var(--accent);
+  caret-color: var(--turquoise);
 }
 
 .search-bar input::placeholder {
   color: var(--text-muted);
 }
 
+/* Search CTA — Warm Coral */
 .search-submit {
   padding: 12px 28px;
-  background: var(--accent);
-  color: #0d0d0d;
+  background: var(--coral);
+  color: #ffffff;
   border: none;
   border-radius: 100px;
   font-family: 'Inter', sans-serif;
@@ -408,22 +474,29 @@ a {
   cursor: pointer;
   transition: all var(--transition);
   white-space: nowrap;
+  box-shadow: 0 4px 18px var(--coral-glow);
 }
 
 .search-submit:hover {
-  background: #d4b47b;
-  box-shadow: 0 6px 24px var(--accent-glow);
+  background: var(--coral-hover);
+  box-shadow: 0 6px 26px var(--coral-glow);
+  transform: translateY(-1px);
 }
 
 .search-submit:active {
   transform: scale(0.98);
 }
 
-/* Hero features */
+.search-submit:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* Hero feature chips */
 .hero-features {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 12px;
   margin-top: 48px;
   flex-wrap: wrap;
   justify-content: center;
@@ -431,20 +504,44 @@ a {
 }
 
 .hero-feature {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-muted);
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  transition: all var(--transition);
 }
 
+.hero-feature:hover {
+  color: var(--text-primary);
+  background: var(--glass-hover);
+}
+
+/* Dot bullet inside chip */
 .hero-feature span {
   width: 6px;
   height: 6px;
-  background: var(--accent);
   border-radius: 50%;
-  opacity: 0.6;
   flex-shrink: 0;
+}
+
+/* Alternating dot colors: turquoise / yellow / turquoise / yellow */
+.hero-feature:nth-child(1) span,
+.hero-feature:nth-child(3) span {
+  background: var(--turquoise);
+  box-shadow: 0 0 6px var(--turquoise-glow);
+}
+
+.hero-feature:nth-child(2) span,
+.hero-feature:nth-child(4) span {
+  background: var(--yellow);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.35);
 }
 
 /* ── Chat Page ─────────────────────────────────────────────── */
@@ -518,8 +615,8 @@ a {
 }
 
 .chat-input-inner:focus-within {
-  border-color: rgba(201, 169, 110, 0.4);
-  box-shadow: 0 0 0 4px var(--accent-glow);
+  border-color: rgba(34, 200, 217, 0.45);
+  box-shadow: 0 0 0 4px var(--turquoise-glow), 0 0 30px rgba(34, 200, 217, 0.06);
 }
 
 .chat-input-inner input {
@@ -530,18 +627,19 @@ a {
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   color: var(--text-primary);
-  caret-color: var(--accent);
+  caret-color: var(--turquoise);
 }
 
 .chat-input-inner input::placeholder {
   color: var(--text-muted);
 }
 
+/* Send button — Warm Coral */
 .send-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--coral);
   border: none;
   cursor: pointer;
   display: flex;
@@ -549,22 +647,24 @@ a {
   justify-content: center;
   transition: all var(--transition);
   flex-shrink: 0;
+  box-shadow: 0 2px 12px var(--coral-glow);
 }
 
 .send-btn:hover {
-  background: #d4b47b;
-  box-shadow: 0 4px 16px var(--accent-glow);
+  background: var(--coral-hover);
+  box-shadow: 0 4px 20px var(--coral-glow);
   transform: scale(1.05);
 }
 
 .send-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .send-btn svg {
-  color: #0d0d0d;
+  color: #ffffff;
 }
 
 /* ── Message Bubbles ─────────────────────────────────────────── */
@@ -591,10 +691,11 @@ a {
   font-weight: 600;
 }
 
+/* AI avatar — Sky Turquoise */
 .message-ai .message-avatar {
-  background: var(--accent-dim);
-  border: 1px solid rgba(201, 169, 110, 0.2);
-  color: var(--accent);
+  background: var(--turquoise-dim);
+  border: 1px solid rgba(34, 200, 217, 0.25);
+  color: var(--turquoise);
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -621,9 +722,10 @@ a {
   border-bottom-left-radius: 4px;
 }
 
+/* User bubble — subtle coral tint */
 .message-user .message-bubble {
-  background: var(--accent-dim);
-  border: 1px solid rgba(201, 169, 110, 0.15);
+  background: var(--coral-dim);
+  border: 1px solid rgba(255, 107, 90, 0.18);
   color: var(--text-primary);
   border-bottom-right-radius: 4px;
 }
@@ -647,9 +749,9 @@ a {
 
 .deal-card:hover {
   background: var(--glass-hover);
-  border-color: rgba(201, 169, 110, 0.3);
+  border-color: rgba(34, 200, 217, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(34, 200, 217, 0.05);
 }
 
 .deal-route {
@@ -663,7 +765,7 @@ a {
 }
 
 .deal-route-arrow {
-  color: var(--accent);
+  color: var(--turquoise);
   font-size: 13px;
 }
 
@@ -673,10 +775,11 @@ a {
   margin-bottom: 12px;
 }
 
+/* Deal price — Warm Coral for urgency / excitement */
 .deal-price {
   font-size: 22px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--coral);
   font-family: 'Inter', sans-serif;
 }
 
@@ -687,6 +790,22 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Deal badge — Sunset Yellow */
+.deal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--yellow-dim);
+  color: var(--yellow);
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .deal-hover-drawer {
@@ -720,6 +839,7 @@ a {
   position: relative;
 }
 
+/* Timeline line — turquoise tint */
 .itinerary-day::before {
   content: '';
   position: absolute;
@@ -727,25 +847,26 @@ a {
   top: 40px;
   bottom: -16px;
   width: 1px;
-  background: var(--border);
+  background: linear-gradient(to bottom, rgba(34, 200, 217, 0.25), transparent);
 }
 
 .itinerary-day:last-child::before {
   display: none;
 }
 
+/* Day marker — Sky Turquoise */
 .day-marker {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--accent-dim);
-  border: 1px solid rgba(201, 169, 110, 0.25);
+  background: var(--turquoise-dim);
+  border: 1px solid rgba(34, 200, 217, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--turquoise);
   flex-shrink: 0;
 }
 
@@ -756,7 +877,7 @@ a {
 
 .day-label {
   font-size: 12px;
-  color: var(--accent);
+  color: var(--turquoise);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -777,12 +898,12 @@ a {
   line-height: 1.6;
 }
 
-/* ── Warning Banner ─────────────────────────────────────────── */
+/* ── Warning Banner — Sunset Yellow ─────────────────────────── */
 .warning-banner {
   display: flex;
   gap: 12px;
   padding: 14px 18px;
-  background: rgba(251, 191, 36, 0.05);
+  background: var(--yellow-dim);
   border: 1px solid rgba(251, 191, 36, 0.2);
   border-radius: var(--radius-sm);
   margin-bottom: 12px;
@@ -829,32 +950,19 @@ a {
   border-radius: 100px;
   background: linear-gradient(90deg,
       var(--glass-bg) 0%,
-      rgba(255, 255, 255, 0.06) 50%,
+      rgba(34, 200, 217, 0.06) 50%,
       var(--glass-bg) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-.skeleton-line:nth-child(1) {
-  width: 85%;
-}
-
-.skeleton-line:nth-child(2) {
-  width: 65%;
-}
-
-.skeleton-line:nth-child(3) {
-  width: 75%;
-}
+.skeleton-line:nth-child(1) { width: 85%; }
+.skeleton-line:nth-child(2) { width: 65%; }
+.skeleton-line:nth-child(3) { width: 75%; }
 
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ── Animations ─────────────────────────────────────────────── */
@@ -888,6 +996,10 @@ a {
     font-size: 40px;
   }
 
+  .hero-features {
+    gap: 8px;
+  }
+
   .chat-layout {
     padding: 16px 16px 100px;
   }
@@ -913,20 +1025,18 @@ a {
   overflow: hidden;
 }
 
-/* Subtle background for auth pages */
 .clerk-auth-wrapper::before {
   content: '';
   position: absolute;
   width: 600px;
   height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(201, 169, 110, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(34, 200, 217, 0.06) 0%, transparent 70%);
   top: -150px;
   right: -150px;
   pointer-events: none;
 }
 
-/* Override Clerk component colors to match dark theme */
 .cl-card {
   background: var(--bg-elevated) !important;
   border: 1px solid var(--glass-border) !important;
@@ -940,15 +1050,16 @@ a {
 }
 
 .cl-formButtonPrimary {
-  background: var(--accent) !important;
-  color: #0d0d0d !important;
+  background: var(--coral) !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
+  box-shadow: 0 4px 18px var(--coral-glow) !important;
 }
 
 .cl-formButtonPrimary:hover {
-  background: #d4b47b !important;
+  background: var(--coral-hover) !important;
 }
 
 .cl-footerActionLink {
-  color: var(--accent) !important;
+  color: var(--turquoise) !important;
 }
