@@ -34,7 +34,7 @@ export default function LandingPage() {
         const onScroll = () => {
             const y = window.scrollY
             const vh = window.innerHeight
-            const progress = Math.min(y / (vh * 0.55), 1)
+            const progress = Math.min(y / (vh * 0.3), 1)
             setHeroOpacity(1 - progress)
             setHeroY(y * 0.28)
             document.documentElement.style.setProperty('--hero-blur', `${progress * 14}px`)

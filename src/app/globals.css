@@ -468,6 +468,9 @@ a {
 .hero-title em {
   font-style: italic;
   color: var(--coral);
+  font-size: clamp(24px, 3.6vw, 52px);
+  white-space: nowrap;
+  display: block;
 }
 
 .hero-subtitle {
