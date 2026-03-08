@@ -29,7 +29,6 @@ type PlaceInfo = { name: string; photo: string | null; rating: number | null; ad
 export default function GooglePlacesMap({ activeStory }: { activeStory: number }) {
     const mapRef = useRef<HTMLDivElement>(null)
     const mapInstance = useRef<google.maps.Map | null>(null)
-    const markersRef = useRef<google.maps.Marker[]>([])
     const [placeInfo, setPlaceInfo] = useState<PlaceInfo | null>(null)
     const [loadError, setLoadError] = useState(false)
 
@@ -37,12 +36,18 @@ export default function GooglePlacesMap({ activeStory }: { activeStory: number }
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         if (!apiKey || !mapRef.current) return
 
-        const loader = new Loader({ apiKey, version: 'weekly', libraries: ['places'] })
+        const loader = new Loader({ apiKey, version: 'weekly' })
 
-        loader.load().then((google) => {
+        Promise.all([
+            loader.importLibrary('maps'),
+            loader.importLibrary('places'),
+            loader.importLibrary('marker'),
+        ]).then(([mapsLib]) => {
             if (!mapRef.current) return
 
-            const map = new google.maps.Map(mapRef.current, {
+            const { Map } = mapsLib as google.maps.MapsLibrary
+
+            const map = new Map(mapRef.current, {
                 center: { lat: 20, lng: 10 },
                 zoom: 2,
                 styles: MAP_STYLES,
@@ -54,7 +59,7 @@ export default function GooglePlacesMap({ activeStory }: { activeStory: number }
 
             const service = new google.maps.places.PlacesService(map)
 
-            storyPlaces.forEach((place, i) => {
+            storyPlaces.forEach((place) => {
                 const marker = new google.maps.Marker({
                     position: { lat: place.lat, lng: place.lng },
                     map,
@@ -75,7 +80,6 @@ export default function GooglePlacesMap({ activeStory }: { activeStory: number }
                     },
                     animation: google.maps.Animation.DROP,
                 })
-                markersRef.current.push(marker)
 
                 marker.addListener('click', () => {
                     map.panTo({ lat: place.lat, lng: place.lng })
