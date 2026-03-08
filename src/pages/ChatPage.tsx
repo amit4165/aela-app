@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent, type KeyboardEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useUser, UserButton } from '@clerk/clerk-react'
+import { useUser, UserButton } from '@clerk/react'
 import AelaLogo from '../components/AelaLogo'
 import MessageBubble from '../components/MessageBubble'
 import FlightDeals from '../components/FlightDeals'

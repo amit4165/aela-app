@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm uninstall @clerk/clerk-react)",
+      "Bash(npm install @clerk/react)"
+    ]
+  }
+}
