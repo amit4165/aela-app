@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import GooglePlacesMap from './GooglePlacesMap'
+import TravelQuote from './TravelQuote'
 
 const stories = [
     {
@@ -37,24 +38,23 @@ export default function TripStories() {
     }, [paused])
 
     return (
-        <section className="stories-section">
-            <div className="stories-split">
+        <div className="light-section">
 
-                {/* ── Left: cards ── */}
-                <div
-                    className="stories-left"
-                    onMouseEnter={() => setPaused(true)}
-                    onMouseLeave={() => setPaused(false)}
-                >
-                    <div className="section-eyebrow">Trip Inspiration</div>
-                    <h2 className="section-title">Trips others loved</h2>
-                    <p className="section-subtitle">Real AI-crafted itineraries, tried and tested</p>
+            {/* ── Reviews block ── */}
+            <section className="stories-section"
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+            >
+                <div className="section-inner">
+                    <div className="section-eyebrow light">Trip Inspiration</div>
+                    <h2 className="section-title light">Trips others loved</h2>
+                    <p className="section-subtitle light">Real AI-crafted itineraries, tried and tested</p>
 
                     <div className="stories-grid">
                         {stories.map((s, i) => (
                             <div
                                 key={i}
-                                className={`story-card ${i === active ? 'story-card-active' : ''}`}
+                                className={`story-card light-card ${i === active ? 'story-card-active' : ''}`}
                                 onClick={() => setActive(i)}
                             >
                                 <div className="story-match">
@@ -62,15 +62,15 @@ export default function TripStories() {
                                     <span className="story-match-label"> match</span>
                                 </div>
                                 <div className="story-stars">⭐⭐⭐⭐⭐</div>
-                                <h3 className="story-title">{s.title}</h3>
-                                <p className="story-desc">{s.desc}</p>
+                                <h3 className="story-title light">{s.title}</h3>
+                                <p className="story-desc light">{s.desc}</p>
                                 <div className="story-tags">
-                                    {s.tags.map(t => <span key={t} className="story-tag">{t}</span>)}
+                                    {s.tags.map(t => <span key={t} className="story-tag light-tag">{t}</span>)}
                                 </div>
                                 <div className="story-footer">
                                     <span className="story-price">{s.price}</span>
                                     <div className="story-actions">
-                                        <button className="story-ghost">View plan</button>
+                                        <button className="story-ghost light-ghost">View plan</button>
                                         <button className="story-primary">Try this style</button>
                                     </div>
                                 </div>
@@ -89,13 +89,23 @@ export default function TripStories() {
                         ))}
                     </div>
                 </div>
+            </section>
 
-                {/* ── Right: Google Map ── */}
-                <div className="stories-right">
+            {/* ── Quote divider ── */}
+            <TravelQuote />
+
+            {/* ── Map block ── */}
+            <section className="map-block-section">
+                <div className="section-inner">
+                    <div className="section-eyebrow light">Explore the world</div>
+                    <h2 className="section-title light">Where will you go?</h2>
+                    <p className="section-subtitle light">Click a pin to discover each destination</p>
+                </div>
+                <div className="gmap-full">
                     <GooglePlacesMap activeStory={active} />
                 </div>
+            </section>
 
-            </div>
-        </section>
+        </div>
     )
 }
