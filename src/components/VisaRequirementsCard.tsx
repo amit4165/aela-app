@@ -33,7 +33,7 @@ const visaData: Record<string, Record<string, VisaInfo>> = {
         'United Arab Emirates': { status: 'visa-on-arrival', duration: '14 days',  fee: 'Free',   note: 'Extendable to 30 days' },
         Nepal:               { status: 'visa-free',       duration: 'Unlimited',    note: 'No visa required for Indians' },
         Maldives:            { status: 'visa-on-arrival', duration: '30 days',      fee: 'Free',   note: 'Free 30-day tourist stamp' },
-        Sri Lanka:           { status: 'evisa',           processing: '1–2 days',   fee: '$35',    note: 'ETA required before travel' },
+        'Sri Lanka':         { status: 'evisa',           processing: '1–2 days',   fee: '$35',    note: 'ETA required before travel' },
         Indonesia:           { status: 'visa-on-arrival', duration: '30 days',      fee: '$35',    note: 'VoA available at major airports' },
         Philippines:         { status: 'visa-free',       duration: '30 days',      note: 'Extended to 30 days on arrival' },
         Vietnam:             { status: 'evisa',           processing: '3 business days', fee: '$25', note: 'E-visa online application' },
