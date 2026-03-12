@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import GooglePlacesMap from './GooglePlacesMap'
 import TravelQuote from './TravelQuote'
 
 const stories = [
@@ -93,18 +92,6 @@ export default function TripStories() {
 
             {/* ── Quote divider ── */}
             <TravelQuote />
-
-            {/* ── Map block ── */}
-            <section className="map-block-section">
-                <div className="section-inner">
-                    <div className="section-eyebrow light">Explore the world</div>
-                    <h2 className="section-title light">Where will you go?</h2>
-                    <p className="section-subtitle light">Click a pin to discover each destination</p>
-                </div>
-                <div className="gmap-full">
-                    <GooglePlacesMap activeStory={active} />
-                </div>
-            </section>
 
         </div>
     )

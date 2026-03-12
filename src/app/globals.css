@@ -2772,3 +2772,425 @@ a {
     padding: 5px 5px 5px 16px;
   }
 }
+
+/* ── CO2 Badge ───────────────────────────────────────────────── */
+.co2-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  margin-top: 8px;
+  letter-spacing: 0.01em;
+}
+
+.co2-label {
+  opacity: 0.75;
+  font-weight: 400;
+}
+
+/* ── Visa Requirements Card ──────────────────────────────────── */
+.visa-card {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid;
+  font-family: 'Inter', sans-serif;
+}
+
+.visa-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.visa-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.visa-status {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.visa-route {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.visa-details {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.visa-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.visa-detail span {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.visa-detail strong {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.visa-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+/* ── Group Trip Room ─────────────────────────────────────────── */
+.chat-action-btn-group {
+  background: var(--turquoise-dim) !important;
+  color: var(--turquoise) !important;
+  border-color: rgba(34, 200, 217, 0.25) !important;
+}
+
+.chat-action-btn-group:hover {
+  background: rgba(34, 200, 217, 0.18) !important;
+}
+
+.trip-room-page {
+  min-height: 100vh;
+  padding: 80px 24px 60px;
+  background: var(--bg-base);
+}
+
+.trip-room-container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.trip-room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.trip-room-back {
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: color var(--transition);
+}
+
+.trip-room-back:hover {
+  color: var(--turquoise);
+}
+
+.trip-room-id-badge {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+}
+
+.trip-room-setup {
+  text-align: center;
+  padding: 60px 0;
+}
+
+.trip-room-setup-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.trip-room-title {
+  font-size: clamp(28px, 5vw, 42px);
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.trip-room-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.trip-room-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.trip-room-input {
+  padding: 12px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.trip-room-input:focus {
+  border-color: var(--turquoise);
+}
+
+.trip-room-input::placeholder {
+  color: var(--text-muted);
+}
+
+.trip-room-create-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+}
+
+.trip-room-hero {
+  text-align: center;
+  padding: 32px 0 28px;
+}
+
+.trip-room-invite-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--turquoise-dim);
+  border: 1px solid rgba(34, 200, 217, 0.3);
+  color: var(--turquoise);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-top: 16px;
+}
+
+.trip-room-invite-btn:hover {
+  background: rgba(34, 200, 217, 0.18);
+}
+
+.trip-room-members {
+  margin-bottom: 8px;
+}
+
+.trip-room-section-label {
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.trip-room-avatars {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trip-room-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+.trip-room-avatar-invite {
+  border-style: dashed;
+  border-color: var(--turquoise);
+  color: var(--turquoise);
+  cursor: pointer;
+  background: var(--turquoise-dim);
+}
+
+.trip-room-avatar-invite:hover {
+  background: rgba(34, 200, 217, 0.18);
+}
+
+.trip-room-flights {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.trip-room-flight-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  position: relative;
+  transition: border-color var(--transition);
+}
+
+.trip-room-flight-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.trip-room-flight-top {
+  border-color: var(--turquoise) !important;
+  box-shadow: 0 0 20px var(--turquoise-glow);
+}
+
+.trip-room-top-badge {
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--turquoise);
+  color: var(--bg-base);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-family: 'Inter', sans-serif;
+}
+
+.trip-room-flight-route {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Playfair Display', Georgia, serif;
+  margin-bottom: 6px;
+}
+
+.trip-room-flight-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 14px;
+}
+
+.trip-room-flight-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.trip-room-flight-price {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+.trip-room-vote-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trip-room-vote-pips {
+  display: flex;
+  gap: 4px;
+}
+
+.trip-room-vote-pip {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--turquoise-dim);
+  border: 1px solid rgba(34, 200, 217, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--turquoise);
+  font-family: 'Inter', sans-serif;
+}
+
+.trip-room-vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.trip-room-vote-btn:hover {
+  border-color: var(--turquoise);
+  color: var(--turquoise);
+  background: var(--turquoise-dim);
+}
+
+.trip-room-voted {
+  background: var(--turquoise-dim) !important;
+  border-color: var(--turquoise) !important;
+  color: var(--turquoise) !important;
+}
+
+.trip-room-vote-count {
+  background: var(--turquoise);
+  color: var(--bg-base);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 100px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.trip-room-consensus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background: var(--turquoise-dim);
+  border: 1px solid rgba(34, 200, 217, 0.25);
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  flex-wrap: wrap;
+}
+
+.trip-room-consensus strong {
+  color: var(--turquoise);
+}
+}

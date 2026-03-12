@@ -7,6 +7,28 @@ interface FlightDealsProps {
     renderedRates?: Record<string, number> | null
 }
 
+function calcCO2(durationMins: number): number {
+    const speedKmh = durationMins < 180 ? 750 : durationMins < 480 ? 850 : 900
+    const factor = durationMins < 180 ? 0.115 : durationMins < 480 ? 0.095 : 0.080
+    return Math.round((durationMins / 60) * speedKmh * factor)
+}
+
+function CO2Badge({ durationMins }: { durationMins?: number }) {
+    if (!durationMins) return null
+    const kg = calcCO2(durationMins)
+    const isGreen = kg < 150
+    const isRed = kg > 400
+    const color = isGreen ? '#22c55e' : isRed ? '#f97316' : '#FBBF24'
+    const bg = isGreen ? 'rgba(34,197,94,0.1)' : isRed ? 'rgba(249,115,22,0.1)' : 'rgba(251,191,36,0.1)'
+    const label = isGreen ? 'Low emission' : isRed ? 'High emission' : 'Avg emission'
+    return (
+        <div className="co2-badge" style={{ background: bg, borderColor: color }}>
+            <span style={{ color }}>🌿 {kg} kg CO₂</span>
+            <span className="co2-label" style={{ color }}>{label}</span>
+        </div>
+    )
+}
+
 export default function FlightDeals({ deals, renderedCurrency, renderedRates }: FlightDealsProps) {
     const { convert, format } = useCurrency()
 
@@ -74,6 +96,8 @@ export default function FlightDeals({ deals, renderedCurrency, renderedRates }: 
                             <div className="deal-airline">
                                 <strong>{airlineCode}</strong> • {stopsText}
                             </div>
+
+                            <CO2Badge durationMins={durationMins} />
 
                             <div className="deal-hover-drawer">
                                 <button className="btn-primary" style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px' }}>

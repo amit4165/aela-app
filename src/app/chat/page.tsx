@@ -13,6 +13,7 @@ import SuggestionTabs from '@/components/SuggestionTabs'
 import FlightSearchForm from '@/components/FlightSearchForm'
 import { sendChatMessage, type ChatResponse } from '@/api/chat'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
+import VisaRequirementsCard from '@/components/VisaRequirementsCard'
 
 const QUERY_LIMIT = 12
 
@@ -47,6 +48,11 @@ function ChatPageInner() {
     const [error, setError] = useState<string | null>(null)
     const [queryCount, setQueryCount] = useState(0)
     const [showFlightForm, setShowFlightForm] = useState(false)
+
+    const openGroupRoom = () => {
+        const roomId = Math.random().toString(36).substring(2, 10).toUpperCase()
+        window.open(`/trip-room/${roomId}`, '_blank')
+    }
     const bottomRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const initSent = useRef(false)
@@ -179,6 +185,9 @@ function ChatPageInner() {
                                         renderedCurrency={msg.renderedCurrency}
                                         renderedRates={msg.renderedRates}
                                     />
+                                    <VisaRequirementsCard
+                                        destination={msg.response.deals?.[0]?.data?.destination ?? ''}
+                                    />
                                 </div>
                             )}
                             {msg.role === 'ai' && msg.response?.ui_hints?.show_timeline && (
@@ -248,6 +257,13 @@ function ChatPageInner() {
                         title="Plan Itinerary"
                     >
                         📅 Itinerary
+                    </button>
+                    <button
+                        className="chat-action-btn chat-action-btn-group"
+                        onClick={openGroupRoom}
+                        title="Plan with Friends"
+                    >
+                        👥 Group Trip
                     </button>
                 </div>
 
