@@ -81,7 +81,7 @@ export default function LandingPage() {
 
                 <div className="hero-content" style={{ opacity: heroOpacity, transform: `translateY(-${heroY}px)`, willChange: 'opacity, transform' }}>
                     <h1 className="hero-title">
-                        You have one life.
+                        Hey Amit, you have one life.
                         <br />
                         <em>Where will you go next?</em>
                     </h1>
