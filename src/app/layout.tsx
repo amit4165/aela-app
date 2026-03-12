@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
-import Link from 'next/link'
-import AelaLogo from '@/components/AelaLogo'
+import NavLogo from '@/components/NavLogo'
 import CurrencySelector from '@/components/CurrencySelector'
 import NavAuth from '@/components/NavAuth'
 import { CurrencyProvider } from '@/context/CurrencyContext'
@@ -29,9 +28,7 @@ export default function RootLayout({
                     <ClerkProvider>
                         {/* ── Global Nav ── */}
                         <nav className="nav">
-                            <Link href="/" className="nav-logo">
-                                <AelaLogo />
-                            </Link>
+                            <NavLogo />
                             <div className="nav-actions">
                                 <CurrencySelector />
                                 <NavAuth />
