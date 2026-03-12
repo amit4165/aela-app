@@ -3,14 +3,18 @@
 import { Suspense, useState, useEffect, useRef, type FormEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useUser, useAuth } from '@clerk/nextjs'
-import Link from 'next/link'
 import MessageBubble from '@/components/MessageBubble'
 import FlightDeals from '@/components/FlightDeals'
 import ItineraryTimeline from '@/components/ItineraryTimeline'
 import WarningBanner from '@/components/WarningBanner'
 import LoadingSkeleton from '@/components/LoadingSkeleton'
+import PassportModal from '@/components/PassportModal'
+import SuggestionTabs from '@/components/SuggestionTabs'
+import FlightSearchForm from '@/components/FlightSearchForm'
 import { sendChatMessage, type ChatResponse } from '@/api/chat'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
+
+const QUERY_LIMIT = 12
 
 interface Message {
     id: string
@@ -41,24 +45,30 @@ function ChatPageInner() {
     const [sessionId, setSessionId] = useState<string | undefined>()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [queryCount, setQueryCount] = useState(0)
+    const [showFlightForm, setShowFlightForm] = useState(false)
     const bottomRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const initSent = useRef(false)
 
-    // Redirect if not signed in after load
+    // Redirect if not signed in
     useEffect(() => {
         if (isLoaded && !user) router.push('/sign-in')
     }, [isLoaded, user, router])
 
-    // Auto-submit query from landing search bar
+    // Handle pending message from landing page (pre-auth flow)
     useEffect(() => {
-        const q = searchParams?.get('q')
-        if (q && messages.length === 0 && !initSent.current && user) {
+        if (!user || !isLoaded || initSent.current) return
+        const pending = sessionStorage.getItem('aela_pending_message')
+        const qParam = searchParams?.get('q')
+        const initialMsg = pending || qParam
+        if (initialMsg) {
+            sessionStorage.removeItem('aela_pending_message')
             initSent.current = true
-            handleSendMessage(q)
+            handleSendMessage(initialMsg)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, searchParams])
+    }, [user, isLoaded, searchParams])
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -67,6 +77,7 @@ function ChatPageInner() {
     const handleSendMessage = async (text?: string) => {
         const messageText = (text ?? input).trim()
         if (!messageText || loading || !user) return
+        if (queryCount >= QUERY_LIMIT) return
 
         setInput('')
         setError(null)
@@ -74,9 +85,9 @@ function ChatPageInner() {
         const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: messageText }
         setMessages(prev => [...prev, userMsg])
         setLoading(true)
+        setQueryCount(c => c + 1)
 
         try {
-            // Fetch fresh Clerk JWT to authenticate with the backend
             const token = await getToken()
             if (!token) throw new Error('Not authenticated — please sign in again.')
 
@@ -108,10 +119,34 @@ function ChatPageInner() {
         ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase()
         ?? 'U'
 
+    // Determine suggestion tab mode from latest AI message
+    const lastAiMsg = [...messages].reverse().find(m => m.role === 'ai')
+    const isOffTopic = lastAiMsg?.response?.ui_hints?.off_topic === true
+    const dynamicSuggestions = lastAiMsg?.response?.suggestions ?? []
+    const suggestionMode = isOffTopic
+        ? 'redirect'
+        : dynamicSuggestions.length > 0
+            ? 'custom'
+            : messages.length === 0 ? 'default' : undefined
+
+    const queriesLeft = QUERY_LIMIT - queryCount
+    const nearLimit = queriesLeft <= 3
+
     if (!isLoaded) return null
 
     return (
         <div className="chat-page">
+            {/* First-time login passport modal */}
+            <PassportModal onComplete={() => {}} />
+
+            {/* Flight search slide-up form */}
+            {showFlightForm && (
+                <FlightSearchForm
+                    onSearch={(q) => handleSendMessage(q)}
+                    onClose={() => setShowFlightForm(false)}
+                />
+            )}
+
             <div className="chat-layout">
                 <div className="chat-header">
                     <h2>Plan Your Journey</h2>
@@ -168,18 +203,70 @@ function ChatPageInner() {
                 </div>
             </div>
 
+            {/* Query limit banner */}
+            {nearLimit && queriesLeft > 0 && (
+                <div className="query-limit-bar">
+                    <span className="query-limit-icon">💬</span>
+                    <span>{queriesLeft} message{queriesLeft !== 1 ? 's' : ''} remaining on your free plan</span>
+                </div>
+            )}
+            {queriesLeft <= 0 && (
+                <div className="query-limit-bar query-limit-reached">
+                    <span className="query-limit-icon">🔒</span>
+                    <span>You&apos;ve reached your free message limit. Book a trip to continue chatting.</span>
+                </div>
+            )}
+
             <div className="chat-input-bar">
+                {/* Suggestion tabs */}
+                {suggestionMode && (
+                    <SuggestionTabs
+                        suggestions={dynamicSuggestions}
+                        mode={suggestionMode}
+                        onSelect={(text) => handleSendMessage(text)}
+                    />
+                )}
+
+                <div className="chat-input-actions">
+                    <button
+                        className="chat-action-btn"
+                        onClick={() => setShowFlightForm(true)}
+                        title="Search Flights"
+                    >
+                        ✈️ Flights
+                    </button>
+                    <button
+                        className="chat-action-btn"
+                        onClick={() => handleSendMessage('Help me find hotels')}
+                        title="Find Hotels"
+                    >
+                        🏨 Hotels
+                    </button>
+                    <button
+                        className="chat-action-btn"
+                        onClick={() => handleSendMessage('Help me plan an itinerary')}
+                        title="Plan Itinerary"
+                    >
+                        📅 Itinerary
+                    </button>
+                </div>
+
                 <form className="chat-input-inner" onSubmit={handleFormSubmit}>
                     <input
                         ref={inputRef}
                         type="text"
                         value={input}
                         onChange={e => setInput(e.target.value)}
-                        placeholder="Ask Aela anything about your trip..."
-                        disabled={loading}
+                        placeholder={queriesLeft <= 0 ? 'Message limit reached — book a trip to continue' : 'Ask Aela anything about your trip…'}
+                        disabled={loading || queriesLeft <= 0}
                         autoComplete="off"
                     />
-                    <button type="submit" className="send-btn" disabled={loading || !input.trim()} aria-label="Send">
+                    <button
+                        type="submit"
+                        className="send-btn"
+                        disabled={loading || !input.trim() || queriesLeft <= 0}
+                        aria-label="Send"
+                    >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
                         </svg>

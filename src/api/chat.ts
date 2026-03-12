@@ -25,11 +25,13 @@ export interface ChatResponse {
     deals?: Deal[]
     warnings?: string[]
     itinerary?: ItineraryDay[]
+    suggestions?: string[]
     ui_hints?: {
         show_map: boolean
         show_timeline: boolean
         show_deals: boolean
         show_warning: boolean
+        off_topic?: boolean
     }
     cost_usd?: number
 }

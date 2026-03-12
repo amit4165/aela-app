@@ -1,10 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
-import TripQuiz, { type QuizAnswers } from '@/components/TripQuiz'
-import DestinationMap from '@/components/DestinationMap'
-import ItineraryEditor from '@/components/ItineraryEditor'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 import TripStories from '@/components/TripStories'
-import ProgressBar from '@/components/ProgressBar'
 
 const heroPhotos = [
     { url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1800&h=1000&fit=crop&auto=format', label: 'Santorini' },
@@ -16,12 +14,18 @@ const heroPhotos = [
 ]
 
 export default function LandingPage() {
-    const [quizStarted, setQuizStarted] = useState(false)
-    const [quizStep, setQuizStep] = useState(0)
-    const [quizAnswers, setQuizAnswers] = useState<QuizAnswers | null>(null)
+    const { user, isLoaded } = useUser()
+    const router = useRouter()
     const [photoIndex, setPhotoIndex] = useState(0)
     const [heroOpacity, setHeroOpacity] = useState(1)
     const [heroY, setHeroY] = useState(0)
+    const [chatInput, setChatInput] = useState('')
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    // Redirect signed-in users to chat
+    useEffect(() => {
+        if (isLoaded && user) router.replace('/chat')
+    }, [isLoaded, user, router])
 
     useEffect(() => {
         const t = setInterval(() => {
@@ -43,13 +47,26 @@ export default function LandingPage() {
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
+    const goToAuth = (pendingMessage?: string) => {
+        if (pendingMessage) {
+            sessionStorage.setItem('aela_pending_message', pendingMessage)
+        }
+        router.push('/sign-in')
+    }
+
+    const handleChatSubmit = (e: FormEvent) => {
+        e.preventDefault()
+        const text = chatInput.trim()
+        if (!text) return
+        goToAuth(text)
+    }
+
+    if (!isLoaded || user) return null
+
     return (
         <div className="landing">
-            {quizStarted && <ProgressBar step={quizStep} />}
-
             {/* Hero */}
             <section className="hero">
-                {/* Destination photo slideshow */}
                 <div className="hero-photos" aria-hidden>
                     {heroPhotos.map((photo, i) => (
                         <div
@@ -58,11 +75,8 @@ export default function LandingPage() {
                             style={{ backgroundImage: `url('${photo.url}')` }}
                         />
                     ))}
-                    {/* Gradient overlay — dark cinematic feel preserved */}
                     <div className="hero-photo-overlay" />
-                    {/* Destination label */}
                     <div className="hero-photo-label">{heroPhotos[photoIndex].label}</div>
-                    {/* Dot indicators */}
                     <div className="hero-photo-dots">
                         {heroPhotos.map((_, i) => (
                             <button
@@ -73,7 +87,6 @@ export default function LandingPage() {
                             />
                         ))}
                     </div>
-                    {/* Orbs on top of photos */}
                     <div className="orb orb-1" />
                     <div className="orb orb-2" />
                     <div className="orb orb-3" />
@@ -81,7 +94,7 @@ export default function LandingPage() {
 
                 <div className="hero-content" style={{ opacity: heroOpacity, transform: `translateY(-${heroY}px)`, willChange: 'opacity, transform' }}>
                     <h1 className="hero-title">
-                        Hey Amit, you have one life.
+                        You have one life.
                         <br />
                         <em>Where will you go next?</em>
                     </h1>
@@ -91,31 +104,45 @@ export default function LandingPage() {
                         Just tell us where your heart is taking you.
                     </p>
 
-                    {!quizStarted ? (
-                        <div className="hero-cta-area">
-                            <button
-                                className="hero-start-btn"
-                                onClick={() => setQuizStarted(true)}
-                            >
-                                Find my perfect trip ✦
-                            </button>
-                            <p className="hero-cta-hint">Takes 20 seconds · No sign-up needed</p>
-                        </div>
-                    ) : (
-                        <TripQuiz
-                            onComplete={(a) => setQuizAnswers(a)}
-                            onProgress={(s) => setQuizStep(s)}
+                    {/* Central chatbox */}
+                    <form className="hero-chatbox" onSubmit={handleChatSubmit}>
+                        <input
+                            ref={inputRef}
+                            className="hero-chatbox-input"
+                            type="text"
+                            value={chatInput}
+                            onChange={e => setChatInput(e.target.value)}
+                            placeholder="Where do you want to go? Tell Aela…"
+                            autoComplete="off"
                         />
-                    )}
+                        <button
+                            type="submit"
+                            className="hero-chatbox-send"
+                            disabled={!chatInput.trim()}
+                            aria-label="Send"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </form>
+
+                    {/* CTA buttons */}
+                    <div className="hero-cta-row">
+                        <button className="hero-cta-btn hero-cta-primary" onClick={() => goToAuth()}>
+                            Get Started
+                        </button>
+                        <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
+                            Plan Your Trip
+                        </button>
+                        <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
+                            Start Exploring
+                        </button>
+                    </div>
+
+                    <p className="hero-cta-hint">Free to start · No credit card required</p>
                 </div>
             </section>
-
-            {quizAnswers && (
-                <>
-                    <DestinationMap answers={quizAnswers} />
-                    <ItineraryEditor />
-                </>
-            )}
 
             <TripStories />
         </div>
