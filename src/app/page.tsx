@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
+import Link from 'next/link'
 import TripStories from '@/components/TripStories'
 
 const heroPhotos = [
@@ -21,11 +22,6 @@ export default function LandingPage() {
     const [heroY, setHeroY] = useState(0)
     const [chatInput, setChatInput] = useState('')
     const inputRef = useRef<HTMLInputElement>(null)
-
-    // Redirect signed-in users to chat
-    useEffect(() => {
-        if (isLoaded && user) router.replace('/chat')
-    }, [isLoaded, user, router])
 
     useEffect(() => {
         const t = setInterval(() => {
@@ -61,7 +57,7 @@ export default function LandingPage() {
         goToAuth(text)
     }
 
-    if (!isLoaded || user) return null
+    if (!isLoaded) return null
 
     return (
         <div className="landing">
@@ -94,7 +90,7 @@ export default function LandingPage() {
 
                 <div className="hero-content" style={{ opacity: heroOpacity, transform: `translateY(-${heroY}px)`, willChange: 'opacity, transform' }}>
                     <h1 className="hero-title">
-                        You have one life.
+                        {user ? `Welcome back, ${user.firstName ?? 'traveller'}.` : 'You have one life.'}
                         <br />
                         <em>Where will you go next?</em>
                     </h1>
@@ -104,43 +100,57 @@ export default function LandingPage() {
                         Just tell us where your heart is taking you.
                     </p>
 
-                    {/* Central chatbox */}
-                    <form className="hero-chatbox" onSubmit={handleChatSubmit}>
-                        <input
-                            ref={inputRef}
-                            className="hero-chatbox-input"
-                            type="text"
-                            value={chatInput}
-                            onChange={e => setChatInput(e.target.value)}
-                            placeholder="Where do you want to go? Tell Aela…"
-                            autoComplete="off"
-                        />
-                        <button
-                            type="submit"
-                            className="hero-chatbox-send"
-                            disabled={!chatInput.trim()}
-                            aria-label="Send"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </form>
+                    {user ? (
+                        /* Signed-in hero CTA */
+                        <div className="hero-cta-row">
+                            <Link href="/chat" className="hero-cta-btn hero-cta-primary">
+                                Continue Planning
+                            </Link>
+                            <Link href="/chat" className="hero-cta-btn hero-cta-outline">
+                                New Trip
+                            </Link>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Central chatbox */}
+                            <form className="hero-chatbox" onSubmit={handleChatSubmit}>
+                                <input
+                                    ref={inputRef}
+                                    className="hero-chatbox-input"
+                                    type="text"
+                                    value={chatInput}
+                                    onChange={e => setChatInput(e.target.value)}
+                                    placeholder="Where do you want to go? Tell Aela…"
+                                    autoComplete="off"
+                                />
+                                <button
+                                    type="submit"
+                                    className="hero-chatbox-send"
+                                    disabled={!chatInput.trim()}
+                                    aria-label="Send"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </form>
 
-                    {/* CTA buttons */}
-                    <div className="hero-cta-row">
-                        <button className="hero-cta-btn hero-cta-primary" onClick={() => goToAuth()}>
-                            Get Started
-                        </button>
-                        <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
-                            Plan Your Trip
-                        </button>
-                        <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
-                            Start Exploring
-                        </button>
-                    </div>
+                            {/* CTA buttons */}
+                            <div className="hero-cta-row">
+                                <button className="hero-cta-btn hero-cta-primary" onClick={() => goToAuth()}>
+                                    Get Started
+                                </button>
+                                <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
+                                    Plan Your Trip
+                                </button>
+                                <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
+                                    Start Exploring
+                                </button>
+                            </div>
 
-                    <p className="hero-cta-hint">Free to start · No credit card required</p>
+                            <p className="hero-cta-hint">Free to start · No credit card required</p>
+                        </>
+                    )}
                 </div>
             </section>
 
