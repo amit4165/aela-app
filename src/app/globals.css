@@ -436,11 +436,11 @@ a {
 
 .hero-subtitle {
   font-size: 17px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.78);
   max-width: 480px;
   margin-bottom: 48px;
   font-weight: 300;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.75), 0 2px 32px rgba(0, 0, 0, 0.55);
   animation: fadeInUp 0.8s var(--ease) 0.2s both;
 }
 

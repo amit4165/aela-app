@@ -105,9 +105,6 @@ export default function LandingPage() {
 
                             {/* CTA buttons */}
                             <div className="hero-cta-row">
-                                <button className="hero-cta-btn hero-cta-primary" onClick={() => goToAuth()}>
-                                    Get Started
-                                </button>
                                 <button className="hero-cta-btn hero-cta-outline" onClick={() => goToAuth()}>
                                     Plan Your Trip
                                 </button>
