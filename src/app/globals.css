@@ -2150,158 +2150,227 @@ a {
   .progress-hint { display: none; }
 }
 
-/* ── Clerk Auth Pages ─────────────────────────────────────────── */
-.clerk-auth-wrapper {
+/* ── Clerk Auth Pages — Split Screen ─────────────────────────── */
+.auth-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   min-height: 100vh;
+}
+
+/* Left panel — mountain/forest image */
+.auth-split-image {
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1400&h=2000&fit=crop&auto=format&q=85');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px;
+}
+
+.auth-split-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(0, 30, 18, 0.45) 0%,
+    rgba(0, 60, 35, 0.65) 100%
+  );
+}
+
+.auth-split-brand {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-split-logo {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+.auth-split-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.80);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* Right panel — form */
+.auth-split-form {
+  background: #f7f9f7;
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(0, 106, 77, 0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(0, 200, 150, 0.08) 0%, transparent 60%),
-    var(--bg-base);
-  padding: 24px;
-  position: relative;
-  overflow: hidden;
+  padding: 48px 32px;
 }
 
-/* Premium card */
+/* Clerk card — light clean style */
+.cl-rootBox {
+  width: 100%;
+  max-width: 420px;
+}
+
 .cl-card {
-  background: linear-gradient(160deg, #0f2418 0%, #0a1a10 100%) !important;
-  border: 1px solid rgba(0, 180, 130, 0.18) !important;
-  border-top: 1px solid rgba(0, 200, 150, 0.30) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 106, 77, 0.12) !important;
   box-shadow:
-    0 32px 80px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(0, 106, 77, 0.12),
-    inset 0 1px 0 rgba(0, 200, 150, 0.10) !important;
-  border-radius: 20px !important;
+    0 4px 24px rgba(0, 60, 40, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 16px !important;
 }
 
 /* Header */
 .cl-headerTitle {
-  color: #e8f0eb !important;
+  color: #0a2318 !important;
   font-family: 'Playfair Display', serif !important;
-  font-weight: 400 !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
   letter-spacing: -0.01em !important;
 }
 
 .cl-headerSubtitle {
-  color: #7a9e8a !important;
+  color: #4a6e5a !important;
   font-size: 14px !important;
 }
 
 /* Labels */
 .cl-formFieldLabel {
-  color: #b0cfc0 !important;
+  color: #1a3a28 !important;
   font-size: 13px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.02em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
 }
 
 /* Inputs */
 .cl-formFieldInput {
-  background: rgba(0, 0, 0, 0.28) !important;
-  border: 1px solid rgba(0, 180, 130, 0.20) !important;
+  background: #f0f5f2 !important;
+  border: 1.5px solid rgba(0, 106, 77, 0.18) !important;
   border-radius: 10px !important;
-  color: #e8f0eb !important;
+  color: #0a2318 !important;
   font-size: 15px !important;
   transition: border-color 0.2s, box-shadow 0.2s !important;
 }
 
 .cl-formFieldInput:focus {
-  border-color: rgba(0, 200, 150, 0.50) !important;
-  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.12) !important;
+  border-color: #006A4D !important;
+  box-shadow: 0 0 0 3px rgba(0, 106, 77, 0.12) !important;
   outline: none !important;
+  background: #ffffff !important;
 }
 
 .cl-formFieldInput::placeholder {
-  color: #3d5a48 !important;
+  color: #8aaa96 !important;
 }
 
-/* Primary button — Lloyds green */
+/* Primary button */
 .cl-formButtonPrimary {
-  background: linear-gradient(135deg, #006A4D 0%, #005540 100%) !important;
+  background: #006A4D !important;
   color: #ffffff !important;
   font-weight: 600 !important;
   font-size: 15px !important;
   border-radius: 10px !important;
   border: none !important;
-  box-shadow: 0 4px 20px rgba(0, 106, 77, 0.40) !important;
+  box-shadow: 0 4px 16px rgba(0, 106, 77, 0.30) !important;
   letter-spacing: 0.01em !important;
   transition: all 0.2s !important;
 }
 
 .cl-formButtonPrimary:hover {
-  background: linear-gradient(135deg, #007a59 0%, #006A4D 100%) !important;
-  box-shadow: 0 6px 28px rgba(0, 106, 77, 0.55) !important;
+  background: #005540 !important;
+  box-shadow: 0 6px 24px rgba(0, 106, 77, 0.45) !important;
   transform: translateY(-1px) !important;
 }
 
 /* Social button (Google) */
 .cl-socialButtonsBlockButton {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(0, 180, 130, 0.20) !important;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(0, 106, 77, 0.18) !important;
   border-radius: 10px !important;
-  color: #e8f0eb !important;
+  color: #0a2318 !important;
   transition: all 0.2s !important;
 }
 
 .cl-socialButtonsBlockButton:hover {
-  background: rgba(255, 255, 255, 0.10) !important;
-  border-color: rgba(0, 200, 150, 0.35) !important;
+  background: #f0f5f2 !important;
+  border-color: #006A4D !important;
 }
 
 .cl-socialButtonsBlockButtonText {
-  color: #e8f0eb !important;
+  color: #0a2318 !important;
   font-weight: 500 !important;
 }
 
 /* Divider */
 .cl-dividerLine {
-  background: rgba(0, 180, 130, 0.15) !important;
+  background: rgba(0, 106, 77, 0.12) !important;
 }
 
 .cl-dividerText {
-  color: #3d5a48 !important;
+  color: #8aaa96 !important;
   font-size: 12px !important;
+  background: #ffffff !important;
 }
 
 /* Footer */
 .cl-footer {
-  background: rgba(0, 0, 0, 0.18) !important;
-  border-top: 1px solid rgba(0, 180, 130, 0.10) !important;
-  border-radius: 0 0 20px 20px !important;
+  background: #f7f9f7 !important;
+  border-top: 1px solid rgba(0, 106, 77, 0.08) !important;
+  border-radius: 0 0 16px 16px !important;
 }
 
 .cl-footerActionText {
-  color: #7a9e8a !important;
+  color: #4a6e5a !important;
 }
 
 .cl-footerActionLink {
-  color: #00C896 !important;
+  color: #006A4D !important;
   font-weight: 600 !important;
   transition: color 0.2s !important;
 }
 
 .cl-footerActionLink:hover {
-  color: #4ade80 !important;
+  color: #004d38 !important;
 }
 
-/* Internal links (forgot password etc) */
+/* Internal links */
 .cl-formFieldAction {
-  color: #00C896 !important;
+  color: #006A4D !important;
 }
 
 /* "Secured by Clerk" */
 .cl-powered-by-clerk-container,
 .cl-internal-b3fm6y {
-  opacity: 0.45 !important;
+  opacity: 0.5 !important;
 }
 
 /* Error messages */
 .cl-formFieldErrorText,
 .cl-formResendCodeLink {
-  color: #f87171 !important;
+  color: #c0392b !important;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 768px) {
+  .auth-split {
+    grid-template-columns: 1fr;
+  }
+  .auth-split-image {
+    height: 220px;
+    padding: 28px;
+    align-items: flex-end;
+  }
+  .auth-split-logo {
+    font-size: 32px;
+  }
 }
 
 /* ── Hero Chatbox ─────────────────────────────────────────── */
