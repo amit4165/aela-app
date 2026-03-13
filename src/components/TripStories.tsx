@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import TravelQuote from './TravelQuote'
+import GroupSection from './GroupSection'
 
 const stories = [
     { title: '4 days in Rome — Foodie',        price: '€420',  match: 94, tags: ['Culture', 'Food', 'History'],       desc: 'Pasta, gelato, and ancient ruins. A perfect long weekend escape.' },
@@ -117,6 +118,7 @@ export default function TripStories() {
             </section>
 
             <TravelQuote />
+            <GroupSection />
         </div>
     )
 }
