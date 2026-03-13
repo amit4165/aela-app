@@ -2156,49 +2156,152 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-base);
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(0, 106, 77, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(0, 200, 150, 0.08) 0%, transparent 60%),
+    var(--bg-base);
   padding: 24px;
   position: relative;
   overflow: hidden;
 }
 
-.clerk-auth-wrapper::before {
-  content: '';
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 200, 150, 0.06) 0%, transparent 70%);
-  top: -150px;
-  right: -150px;
-  pointer-events: none;
-}
-
+/* Premium card */
 .cl-card {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5) !important;
-  border-radius: var(--radius-lg) !important;
+  background: linear-gradient(160deg, #0f2418 0%, #0a1a10 100%) !important;
+  border: 1px solid rgba(0, 180, 130, 0.18) !important;
+  border-top: 1px solid rgba(0, 200, 150, 0.30) !important;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 106, 77, 0.12),
+    inset 0 1px 0 rgba(0, 200, 150, 0.10) !important;
+  border-radius: 20px !important;
 }
 
-.cl-headerTitle,
+/* Header */
+.cl-headerTitle {
+  color: #e8f0eb !important;
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em !important;
+}
+
 .cl-headerSubtitle {
-  color: var(--text-primary) !important;
+  color: #7a9e8a !important;
+  font-size: 14px !important;
 }
 
+/* Labels */
+.cl-formFieldLabel {
+  color: #b0cfc0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Inputs */
+.cl-formFieldInput {
+  background: rgba(0, 0, 0, 0.28) !important;
+  border: 1px solid rgba(0, 180, 130, 0.20) !important;
+  border-radius: 10px !important;
+  color: #e8f0eb !important;
+  font-size: 15px !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.cl-formFieldInput:focus {
+  border-color: rgba(0, 200, 150, 0.50) !important;
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.12) !important;
+  outline: none !important;
+}
+
+.cl-formFieldInput::placeholder {
+  color: #3d5a48 !important;
+}
+
+/* Primary button — Lloyds green */
 .cl-formButtonPrimary {
-  background: var(--coral) !important;
+  background: linear-gradient(135deg, #006A4D 0%, #005540 100%) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
-  box-shadow: 0 4px 18px var(--coral-glow) !important;
+  font-size: 15px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0, 106, 77, 0.40) !important;
+  letter-spacing: 0.01em !important;
+  transition: all 0.2s !important;
 }
 
 .cl-formButtonPrimary:hover {
-  background: var(--coral-hover) !important;
+  background: linear-gradient(135deg, #007a59 0%, #006A4D 100%) !important;
+  box-shadow: 0 6px 28px rgba(0, 106, 77, 0.55) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Social button (Google) */
+.cl-socialButtonsBlockButton {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(0, 180, 130, 0.20) !important;
+  border-radius: 10px !important;
+  color: #e8f0eb !important;
+  transition: all 0.2s !important;
+}
+
+.cl-socialButtonsBlockButton:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(0, 200, 150, 0.35) !important;
+}
+
+.cl-socialButtonsBlockButtonText {
+  color: #e8f0eb !important;
+  font-weight: 500 !important;
+}
+
+/* Divider */
+.cl-dividerLine {
+  background: rgba(0, 180, 130, 0.15) !important;
+}
+
+.cl-dividerText {
+  color: #3d5a48 !important;
+  font-size: 12px !important;
+}
+
+/* Footer */
+.cl-footer {
+  background: rgba(0, 0, 0, 0.18) !important;
+  border-top: 1px solid rgba(0, 180, 130, 0.10) !important;
+  border-radius: 0 0 20px 20px !important;
+}
+
+.cl-footerActionText {
+  color: #7a9e8a !important;
 }
 
 .cl-footerActionLink {
-  color: var(--turquoise) !important;
+  color: #00C896 !important;
+  font-weight: 600 !important;
+  transition: color 0.2s !important;
+}
+
+.cl-footerActionLink:hover {
+  color: #4ade80 !important;
+}
+
+/* Internal links (forgot password etc) */
+.cl-formFieldAction {
+  color: #00C896 !important;
+}
+
+/* "Secured by Clerk" */
+.cl-powered-by-clerk-container,
+.cl-internal-b3fm6y {
+  opacity: 0.45 !important;
+}
+
+/* Error messages */
+.cl-formFieldErrorText,
+.cl-formResendCodeLink {
+  color: #f87171 !important;
 }
 
 /* ── Hero Chatbox ─────────────────────────────────────────── */
