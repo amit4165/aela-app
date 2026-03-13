@@ -83,9 +83,6 @@ export default function LandingPage() {
                             />
                         ))}
                     </div>
-                    <div className="orb orb-1" />
-                    <div className="orb orb-2" />
-                    <div className="orb orb-3" />
                 </div>
 
                 <div className="hero-content" style={{ opacity: heroOpacity, transform: `translateY(-${heroY}px)`, willChange: 'opacity, transform' }}>
@@ -148,7 +145,6 @@ export default function LandingPage() {
                                 </button>
                             </div>
 
-                            <p className="hero-cta-hint">Free to start · No credit card required</p>
                         </>
                     )}
                 </div>
