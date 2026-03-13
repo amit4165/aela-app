@@ -1710,10 +1710,64 @@ a {
 
 /* ── Trip Stories ──────────────────────────────────────────────── */
 .stories-section {
-  padding: 100px 0 80px;
+  padding: 56px 0 48px;
   background: transparent;
   border-top: none;
 }
+
+/* Carousel wrapper */
+.stories-carousel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  margin-top: 28px;
+}
+
+.stories-track {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Slide-in from right */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.story-card {
+  animation: slideInRight 0.38s ease both;
+}
+
+/* Arrow buttons */
+.stories-arrow {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 106, 77, 0.22);
+  background: #ffffff;
+  color: #006A4D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.stories-arrow:hover {
+  background: #006A4D;
+  color: #ffffff;
+  border-color: #006A4D;
+  transform: scale(1.08);
+}
+
+.stories-arrow-left { order: -1; }
+.stories-arrow-right { order: 1; }
 
 /* Google Map */
 .gmap-wrapper {
@@ -1825,13 +1879,20 @@ a {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: 22px 22px 18px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: border-color 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  opacity: 0.55;
+  justify-content: space-between;
+  gap: 12px;
+  opacity: 1;
+}
+
+.story-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* Light-mode card override */
@@ -1839,7 +1900,7 @@ a {
   background: #ffffff;
   border-color: rgba(0, 0, 0, 0.07);
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  opacity: 0.7;
+  opacity: 1;
 }
 
 .story-card:hover,
@@ -1966,6 +2027,7 @@ a {
   display: flex;
   justify-content: center;
   gap: 8px;
+  margin-top: 20px;
 }
 
 .stories-dot {
@@ -1980,8 +2042,8 @@ a {
 }
 
 .stories-dot-active {
-  background: var(--coral);
-  border-color: var(--coral);
+  background: #006A4D;
+  border-color: #006A4D;
   transform: scale(1.3);
 }
 
