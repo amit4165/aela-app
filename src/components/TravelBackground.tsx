@@ -1,79 +1,56 @@
-// Pre-baked placement tables — deterministic, no runtime randomness
+// 28 unique travel icons — each appears ~6× across the canvas, never in the same row twice.
+// Layout: 17-col × 11-row hex-jittered grid → 187 placements total.
+
 const ICONS = [
   's-eiffel','s-bigben','s-balloon','s-compass',
   's-plane','s-mountain','s-camera','s-pin',
   's-globe','s-taj','s-colosseum','s-sydney',
   's-pisa','s-boat','s-palm','s-spark',
+  's-train','s-ship','s-liberty','s-suitcase',
+  's-anchor','s-wave','s-windmill','s-cactus',
+  's-lighthouse','s-lantern','s-bridge','s-snowflake',
 ]
-// Native viewBox width / height for each symbol (same order as ICONS)
-const NW = [30,22,28,30,42,48,38,18,30,56,52,50,20,38,22,14]
-const NH = [50,52,44,30,22,28,24,26,34,42,30,28,44,36,42,14]
+// Native viewBox dimensions (width, height) matching each symbol above
+const NW = [30,22,28,30,42,48,38,18,30,56,52,50,20,38,22,14,44,54,22,28,22,38,32,22,18,18,50,24]
+const NH = [50,52,44,30,22,28,24,26,34,42,30,28,44,36,42,14,26,28,44,28,34,18,40,40,44,32,24,24]
 
-// Jitter applied to each column (17 values)
-const JX = [-10,8,-14,5,-7,12,-18,3,-6,15,-11,4,-16,9,-3,-13,6]
-// Jitter applied to each row (11 values)
-const JY = [8,-10,5,-14,12,-6,-15,7,-9,14,-4]
-// Scale multiplier cycling over 6 options  → 0.9 … 1.4 × native size
-const SC = [1.1,1.4,0.9,1.25,1.0,1.35]
-// Base rotation per icon type (16 values, degrees)
-const RO = [-22,14,-38,6,-16,30,-8,20,-42,12,-35,18,-10,28,-24,8]
-// Extra column-level rotation tweak (17 values)
-const RCOL = [0,5,-8,3,-5,8,0,-3,6,-6,4,-10,2,-4,9,-2,5]
-// Extra row-level rotation tweak (11 values)
-const RROW = [5,-8,3,5,-8,3,5,-8,3,5,-8]
-
-// Grid: 17 cols × 11 rows = 187 icons
-// Odd rows are offset by half a cell (hex-packing) so no icons align vertically
-const COLS = 17
-const ROWS = 11
-const CW = 68   // column width
-const RH = 85   // row height
+const JX   = [-10,8,-14,5,-7,12,-18,3,-6,15,-11,4,-16,9,-3,-13,6]   // per-col jitter (17)
+const JY   = [8,-10,5,-14,12,-6,-15,7,-9,14,-4]                      // per-row jitter (11)
+const SC   = [1.1,1.4,0.9,1.25,1.0,1.35]                             // scale cycling (6)
+const RO   = [-22,14,-38,6,-16,30,-8,20,-42,12,-35,18,-10,28,-24,8,-18,25,-32,10,-20,35,-6,15,-28,8,-40,20]
+const RCOL = [0,5,-8,3,-5,8,0,-3,6,-6,4,-10,2,-4,9,-2,5]            // extra col rotation (17)
+const RROW = [5,-8,3,5,-8,3,5,-8,3,5,-8]                             // extra row rotation (11)
 
 export default function TravelBackground() {
-  const items: Array<{
-    icon: string; x: number; y: number
-    w: number; h: number; cx: number; cy: number; rot: number
-  }> = []
+  const items: { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number }[] = []
 
-  for (let r = 0; r < ROWS; r++) {
-    const hexShift = r % 2 === 1 ? 34 : 0
-    for (let c = 0; c < COLS; c++) {
-      const i    = r * COLS + c
-      const ii   = i % 16
-      const icon = ICONS[ii]
-      const bx   = 8 + c * CW + hexShift + JX[c]
-      const by   = 12 + r * RH + JY[r]
-      const s    = SC[i % 6]
-      const w    = NW[ii] * s
-      const h    = NH[ii] * s
-      const rot  = RO[ii] + RCOL[c] + RROW[r]
-      items.push({ icon, x: bx, y: by, w, h, cx: bx + w / 2, cy: by + h / 2, rot })
+  for (let r = 0; r < 11; r++) {
+    const hex = r % 2 === 1 ? 34 : 0
+    for (let c = 0; c < 17; c++) {
+      const i  = r * 17 + c
+      const ii = i % 28
+      const x  = 8 + c * 68 + hex + JX[c]
+      const y  = 12 + r * 85 + JY[r]
+      const s  = SC[i % 6]
+      const w  = NW[ii] * s
+      const h  = NH[ii] * s
+      items.push({ icon: ICONS[ii], x, y, w, h, cx: x+w/2, cy: y+h/2, rot: RO[ii]+RCOL[c]+RROW[r] })
     }
   }
 
   return (
-    <div
-      style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}
-      aria-hidden="true"
-    >
-      <svg
-        width="100%" height="100%"
-        viewBox="0 0 1200 900"
-        preserveAspectRatio="xMidYMid slice"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ color: '#00C896', opacity: 0.13 }}
-      >
+    <div style={{ position:'absolute', inset:0, zIndex:0, pointerEvents:'none', overflow:'hidden' }} aria-hidden="true">
+      <svg width="100%" height="100%" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice"
+           xmlns="http://www.w3.org/2000/svg" style={{ color:'#00C896', opacity:0.13 }}>
         <defs>
 
           {/* ── Eiffel Tower 30×50 ── */}
           <symbol id="s-eiffel" viewBox="0 0 30 50" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <line x1="15" y1="1" x2="15" y2="5"/>
             <path d="M13 5L17 5L18 11L12 11Z"/>
-            <line x1="11" y1="11" x2="19" y2="11"/>
-            <line x1="13" y1="8" x2="17" y2="8"/>
+            <line x1="11" y1="11" x2="19" y2="11"/><line x1="13" y1="8" x2="17" y2="8"/>
             <path d="M10 11L20 11L22 22L8 22Z"/>
-            <line x1="7" y1="22" x2="23" y2="22"/>
-            <line x1="12" y1="17" x2="18" y2="17"/>
+            <line x1="7" y1="22" x2="23" y2="22"/><line x1="12" y1="17" x2="18" y2="17"/>
             <path d="M8 22L3 38M22 22L27 38"/>
             <path d="M11 22L9 38M19 22L21 38"/>
             <path d="M9 38C9 32 12 30 15 29C18 30 21 32 21 38"/>
@@ -83,16 +60,13 @@ export default function TravelBackground() {
           {/* ── Big Ben 22×52 ── */}
           <symbol id="s-bigben" viewBox="0 0 22 52" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11 1L9 7L13 7Z"/>
-            <rect x="7" y="7" width="8" height="4"/>
-            <rect x="5" y="11" width="12" height="12"/>
+            <rect x="7" y="7" width="8" height="4"/><rect x="5" y="11" width="12" height="12"/>
             <circle cx="11" cy="17" r="4.5"/>
             <line x1="11" y1="12.5" x2="11" y2="17" strokeWidth="1"/>
             <line x1="11" y1="17" x2="14" y2="15" strokeWidth="1"/>
             <rect x="4" y="23" width="14" height="28"/>
-            <line x1="4" y1="33" x2="18" y2="33"/>
-            <line x1="4" y1="42" x2="18" y2="42"/>
-            <line x1="1" y1="33" x2="4" y2="33"/>
-            <line x1="21" y1="33" x2="18" y2="33"/>
+            <line x1="4" y1="33" x2="18" y2="33"/><line x1="4" y1="42" x2="18" y2="42"/>
+            <line x1="1" y1="33" x2="4" y2="33"/><line x1="21" y1="33" x2="18" y2="33"/>
             <line x1="4" y1="51" x2="18" y2="51"/>
           </symbol>
 
@@ -101,35 +75,28 @@ export default function TravelBackground() {
             <path d="M14 3C7 3 2 9 2 16C2 24 7 30 14 31C21 30 26 24 26 16C26 9 21 3 14 3Z"/>
             <path d="M14 3C11 10 11 18 12 24C13 28 14 31 14 31"/>
             <path d="M14 3C17 10 17 18 16 24C15 28 14 31 14 31"/>
-            <path d="M14 3C7 7 3 12 2 18"/>
-            <path d="M14 3C21 7 25 12 26 18"/>
+            <path d="M14 3C7 7 3 12 2 18"/><path d="M14 3C21 7 25 12 26 18"/>
             <path d="M2 17Q14 13 26 17"/>
-            <line x1="9" y1="31" x2="7" y2="37"/>
-            <line x1="19" y1="31" x2="21" y2="37"/>
+            <line x1="9" y1="31" x2="7" y2="37"/><line x1="19" y1="31" x2="21" y2="37"/>
             <rect x="6" y="37" width="16" height="7" rx="1.5"/>
             <line x1="6" y1="41" x2="22" y2="41"/>
           </symbol>
 
           {/* ── Compass 30×30 ── */}
           <symbol id="s-compass" viewBox="0 0 30 30" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="15" cy="15" r="13"/>
-            <circle cx="15" cy="15" r="7"/>
+            <circle cx="15" cy="15" r="13"/><circle cx="15" cy="15" r="7"/>
             <path d="M15 4L16.3 15L15 10.5L13.7 15Z" fill="currentColor" opacity="0.5"/>
             <path d="M15 26L13.7 15L15 19.5L16.3 15Z"/>
-            <line x1="15" y1="2" x2="15" y2="5"/>
-            <line x1="15" y1="25" x2="15" y2="28"/>
-            <line x1="2" y1="15" x2="5" y2="15"/>
-            <line x1="25" y1="15" x2="28" y2="15"/>
+            <line x1="15" y1="2" x2="15" y2="5"/><line x1="15" y1="25" x2="15" y2="28"/>
+            <line x1="2" y1="15" x2="5" y2="15"/><line x1="25" y1="15" x2="28" y2="15"/>
             <circle cx="15" cy="15" r="2" fill="currentColor" opacity="0.5"/>
           </symbol>
 
           {/* ── Airplane 42×22 ── */}
           <symbol id="s-plane" viewBox="0 0 42 22" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 11C4 11 20 8 33 9.5C37 10 40 10.5 41 11C40 11.5 37 12 33 12.5C20 14 4 11 4 11Z"/>
-            <path d="M15 11L8 3L27 9.5Z"/>
-            <path d="M15 11L8 19L27 12.5Z"/>
-            <path d="M6 11L4 7L10 10"/>
-            <path d="M6 11L4 15L10 12"/>
+            <path d="M15 11L8 3L27 9.5Z"/><path d="M15 11L8 19L27 12.5Z"/>
+            <path d="M6 11L4 7L10 10"/><path d="M6 11L4 15L10 12"/>
           </symbol>
 
           {/* ── Mountain 48×28 ── */}
@@ -145,8 +112,7 @@ export default function TravelBackground() {
           <symbol id="s-camera" viewBox="0 0 38 24" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="6" width="34" height="17" rx="3"/>
             <path d="M13 6L11 1L27 1L25 6"/>
-            <circle cx="19" cy="14.5" r="6.5"/>
-            <circle cx="19" cy="14.5" r="3.5"/>
+            <circle cx="19" cy="14.5" r="6.5"/><circle cx="19" cy="14.5" r="3.5"/>
             <circle cx="29" cy="9" r="2.5"/>
             <rect x="4" y="9" width="5" height="4" rx="1" strokeWidth="0.6"/>
           </symbol>
@@ -159,8 +125,7 @@ export default function TravelBackground() {
 
           {/* ── Globe 30×34 ── */}
           <symbol id="s-globe" viewBox="0 0 30 34" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="15" cy="14" r="13"/>
-            <ellipse cx="15" cy="14" rx="6" ry="13"/>
+            <circle cx="15" cy="14" r="13"/><ellipse cx="15" cy="14" rx="6" ry="13"/>
             <path d="M2 9Q15 5 28 9" strokeWidth="0.6"/>
             <line x1="2" y1="14" x2="28" y2="14" strokeWidth="0.7"/>
             <path d="M2 19Q15 23 28 19" strokeWidth="0.6"/>
@@ -177,14 +142,11 @@ export default function TravelBackground() {
             <path d="M21 41V34Q21 28 28 28Q35 28 35 34V41"/>
             <line x1="8" y1="2" x2="8" y2="41"/>
             <path d="M8 2C6 2 5 4 5 6C5 8 6 9 8 10C10 9 11 8 11 6C11 4 10 2 8 2Z"/>
-            <line x1="5" y1="16" x2="11" y2="16"/>
-            <line x1="5" y1="28" x2="11" y2="28"/>
+            <line x1="5" y1="16" x2="11" y2="16"/><line x1="5" y1="28" x2="11" y2="28"/>
             <line x1="48" y1="2" x2="48" y2="41"/>
             <path d="M48 2C46 2 45 4 45 6C45 8 46 9 48 10C50 9 51 8 51 6C51 4 50 2 48 2Z"/>
-            <line x1="45" y1="16" x2="51" y2="16"/>
-            <line x1="45" y1="28" x2="51" y2="28"/>
-            <rect x="11" y="30" width="7" height="11"/>
-            <rect x="38" y="30" width="7" height="11"/>
+            <line x1="45" y1="16" x2="51" y2="16"/><line x1="45" y1="28" x2="51" y2="28"/>
+            <rect x="11" y="30" width="7" height="11"/><rect x="38" y="30" width="7" height="11"/>
             <line x1="2" y1="41" x2="54" y2="41"/>
           </symbol>
 
@@ -192,8 +154,7 @@ export default function TravelBackground() {
           <symbol id="s-colosseum" viewBox="0 0 52 30" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 28L4 18Q4 6 26 6Q48 6 48 18L48 28"/>
             <line x1="2" y1="28" x2="50" y2="28"/>
-            <line x1="4" y1="22" x2="48" y2="22"/>
-            <line x1="6" y1="15" x2="46" y2="15"/>
+            <line x1="4" y1="22" x2="48" y2="22"/><line x1="6" y1="15" x2="46" y2="15"/>
             <line x1="12" y1="28" x2="12" y2="22" strokeWidth="0.6"/>
             <line x1="20" y1="28" x2="20" y2="22" strokeWidth="0.6"/>
             <line x1="28" y1="28" x2="28" y2="22" strokeWidth="0.6"/>
@@ -208,7 +169,6 @@ export default function TravelBackground() {
           {/* ── Sydney Opera House 50×28 ── */}
           <symbol id="s-sydney" viewBox="0 0 50 28" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <line x1="2" y1="26" x2="48" y2="26"/>
-            <rect x="2" y="26" width="46" height="2" strokeWidth="0.6"/>
             <path d="M20 26C16 20 12 13 18 5C23 13 25 20 25 26"/>
             <path d="M25 26C27 20 31 13 36 5C41 13 43 21 39 26"/>
             <path d="M39 26C40 22 41 18 42 14C44 18 44 22 43 26"/>
@@ -218,13 +178,10 @@ export default function TravelBackground() {
           {/* ── Leaning Tower of Pisa 20×44 ── */}
           <symbol id="s-pisa" viewBox="0 0 20 44" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
             <ellipse cx="10" cy="41" rx="8" ry="2.5"/>
-            <path d="M3 41L5 7"/>
-            <path d="M17 41L15 7"/>
+            <path d="M3 41L5 7"/><path d="M17 41L15 7"/>
             <ellipse cx="10" cy="7" rx="6" ry="2"/>
-            <line x1="4" y1="14" x2="16" y2="14"/>
-            <line x1="4" y1="21" x2="16" y2="21"/>
-            <line x1="4" y1="28" x2="16" y2="28"/>
-            <line x1="4" y1="35" x2="16" y2="35"/>
+            <line x1="4" y1="14" x2="16" y2="14"/><line x1="4" y1="21" x2="16" y2="21"/>
+            <line x1="4" y1="28" x2="16" y2="28"/><line x1="4" y1="35" x2="16" y2="35"/>
             <path d="M6 7L5 2L15 2L14 7"/>
             <line x1="5" y1="4" x2="15" y2="4"/>
           </symbol>
@@ -245,13 +202,153 @@ export default function TravelBackground() {
             <path d="M12 3C12 0 14 0 14 0C13 3 13 7 12 9"/>
             <path d="M12 3C16 1 20 3 21 0C18 2 14 5 12 9"/>
             <path d="M12 3C7 2 3 4 1 2C5 4 10 6 12 9"/>
-            <circle cx="10" cy="7" r="1.5"/>
-            <circle cx="13" cy="8" r="1.5"/>
+            <circle cx="10" cy="7" r="1.5"/><circle cx="13" cy="8" r="1.5"/>
           </symbol>
 
           {/* ── Sparkle 14×14 ── */}
           <symbol id="s-spark" viewBox="0 0 14 14">
             <path d="M7 0L8.3 5.7L14 7L8.3 8.3L7 14L5.7 8.3L0 7L5.7 5.7Z" fill="currentColor" opacity="0.65"/>
+          </symbol>
+
+          {/* ── Steam Train 44×26 ── */}
+          <symbol id="s-train" viewBox="0 0 44 26" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="7" width="30" height="12" rx="2"/>
+            <rect x="28" y="3" width="12" height="16" rx="1"/>
+            <rect x="7" y="1" width="5" height="7"/>
+            <line x1="5" y1="2" x2="14" y2="2"/>
+            <ellipse cx="18" cy="7" rx="4" ry="2.5"/>
+            <circle cx="10" cy="21" r="3"/><circle cx="20" cy="21" r="3"/>
+            <circle cx="30" cy="21" r="3"/><circle cx="38" cy="21" r="2.5"/>
+            <line x1="10" y1="21" x2="30" y2="21" strokeWidth="1.2"/>
+            <rect x="30" y="5" width="7" height="7" rx="0.5"/>
+            <path d="M2 19L0 23L3 23"/>
+          </symbol>
+
+          {/* ── Cruise Ship 54×28 ── */}
+          <symbol id="s-ship" viewBox="0 0 54 28" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 20Q2 26 8 26L46 26Q52 26 52 20L50 18L4 18Z"/>
+            <rect x="6" y="11" width="42" height="7"/>
+            <rect x="12" y="5" width="30" height="6"/>
+            <rect x="18" y="1" width="18" height="4"/>
+            <rect x="24" y="0" width="6" height="3" rx="0.5"/>
+            <circle cx="12" cy="22.5" r="1"/><circle cx="20" cy="22.5" r="1"/>
+            <circle cx="28" cy="22.5" r="1"/><circle cx="36" cy="22.5" r="1"/>
+            <circle cx="44" cy="22.5" r="1"/>
+            <line x1="6" y1="18" x2="6" y2="11"/><line x1="48" y1="18" x2="48" y2="11"/>
+          </symbol>
+
+          {/* ── Statue of Liberty 22×44 ── */}
+          <symbol id="s-liberty" viewBox="0 0 22 44" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="16" y1="6" x2="20" y2="1"/>
+            <circle cx="20" cy="1" r="1.5"/>
+            <path d="M8 10L6 7M11 9L11 6M14 10L16 7"/>
+            <circle cx="11" cy="13" r="4"/>
+            <path d="M9 17L7 33L15 33L13 17Z"/>
+            <line x1="10" y1="21" x2="8" y2="32"/>
+            <line x1="12" y1="19" x2="14" y2="30"/>
+            <path d="M13 21L17 19L18 23L14 24Z"/>
+            <rect x="5" y="33" width="12" height="4"/>
+            <rect x="3" y="37" width="16" height="6"/>
+          </symbol>
+
+          {/* ── Rolling Suitcase 28×28 ── */}
+          <symbol id="s-suitcase" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 8Q10 3 14 3Q18 3 18 8"/>
+            <rect x="2" y="8" width="24" height="16" rx="3"/>
+            <line x1="2" y1="14" x2="26" y2="14"/>
+            <rect x="11" y="11" width="6" height="6" rx="1"/>
+            <circle cx="8" cy="26" r="2"/><circle cx="20" cy="26" r="2"/>
+          </symbol>
+
+          {/* ── Anchor 22×34 ── */}
+          <symbol id="s-anchor" viewBox="0 0 22 34" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="4" r="3"/>
+            <line x1="11" y1="7" x2="11" y2="27"/>
+            <line x1="3" y1="11" x2="19" y2="11"/>
+            <path d="M11 27C8 31 2 31 2 26"/>
+            <path d="M11 27C14 31 20 31 20 26"/>
+            <circle cx="2" cy="25" r="2"/><circle cx="20" cy="25" r="2"/>
+          </symbol>
+
+          {/* ── Ocean Wave 38×18 ── */}
+          <symbol id="s-wave" viewBox="0 0 38 18" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 10C4 4 8 4 11 10C14 16 18 16 21 10C24 4 28 4 31 10C33 14 35 13 37 10"/>
+            <path d="M1 15C4 11 7 11 10 15C13 18 16 18 19 15" strokeWidth="0.6"/>
+          </symbol>
+
+          {/* ── Windmill 32×40 ── */}
+          <symbol id="s-windmill" viewBox="0 0 32 40" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 39L10 18L22 18L19 39Z"/>
+            <line x1="8" y1="39" x2="24" y2="39"/>
+            <circle cx="16" cy="18" r="2.5"/>
+            <path d="M16 16L14 5L16 15L18 5Z"/>
+            <path d="M18 19L28 14L18 18L28 22Z"/>
+            <path d="M16 20L18 31L16 21L14 31Z"/>
+            <path d="M14 19L4 22L14 20L4 14Z"/>
+          </symbol>
+
+          {/* ── Cactus 22×40 ── */}
+          <symbol id="s-cactus" viewBox="0 0 22 40" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="11" y1="38" x2="11" y2="16"/>
+            <path d="M8 16C8 10 14 10 14 16"/>
+            <path d="M11 24L5 24L5 17"/>
+            <path d="M3 17C3 13 7 13 7 17"/>
+            <path d="M11 30L17 30L17 23"/>
+            <path d="M15 23C15 19 19 19 19 23"/>
+            <path d="M7 38Q11 36 15 38"/>
+          </symbol>
+
+          {/* ── Lighthouse 18×44 ── */}
+          <symbol id="s-lighthouse" viewBox="0 0 18 44" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="9" y1="5" x2="9" y2="1"/>
+            <line x1="7" y1="6" x2="3" y2="3"/><line x1="11" y1="6" x2="15" y2="3"/>
+            <rect x="5" y="8" width="8" height="6" rx="1"/>
+            <line x1="3" y1="14" x2="15" y2="14"/>
+            <path d="M5 14L3 36L15 36L13 14Z"/>
+            <line x1="3.5" y1="22" x2="14.5" y2="22"/>
+            <line x1="3.2" y1="29" x2="14.8" y2="29"/>
+            <rect x="1" y="36" width="16" height="5"/>
+            <line x1="0" y1="41" x2="18" y2="41"/>
+          </symbol>
+
+          {/* ── Paper Lantern 18×32 ── */}
+          <symbol id="s-lantern" viewBox="0 0 18 32" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="7" y1="2" x2="11" y2="2"/>
+            <line x1="9" y1="2" x2="9" y2="5"/>
+            <path d="M9 5C4 5 2 10 2 16C2 22 4 27 9 27C14 27 16 22 16 16C16 10 14 5 9 5Z"/>
+            <path d="M9 5C7 10 7 22 9 27"/>
+            <path d="M9 5C11 10 11 22 9 27"/>
+            <line x1="2.5" y1="13" x2="15.5" y2="13"/>
+            <line x1="2.5" y1="19" x2="15.5" y2="19"/>
+            <line x1="9" y1="27" x2="9" y2="31"/>
+            <line x1="7" y1="29" x2="11" y2="29"/>
+          </symbol>
+
+          {/* ── Suspension Bridge 50×24 ── */}
+          <symbol id="s-bridge" viewBox="0 0 50 24" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="0" y1="18" x2="50" y2="18"/>
+            <line x1="11" y1="3" x2="11" y2="22"/>
+            <line x1="8" y1="10" x2="14" y2="10"/>
+            <line x1="39" y1="3" x2="39" y2="22"/>
+            <line x1="36" y1="10" x2="42" y2="10"/>
+            <path d="M11 4Q25 20 39 4"/>
+            <path d="M0 18Q11 14 11 4"/>
+            <path d="M50 18Q39 14 39 4"/>
+            <line x1="18" y1="13" x2="18" y2="18"/>
+            <line x1="25" y1="10" x2="25" y2="18"/>
+            <line x1="32" y1="13" x2="32" y2="18"/>
+          </symbol>
+
+          {/* ── Snowflake 24×24 ── */}
+          <symbol id="s-snowflake" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <line x1="1" y1="12" x2="23" y2="12"/>
+            <line x1="3.5" y1="3.5" x2="20.5" y2="20.5"/>
+            <line x1="20.5" y1="3.5" x2="3.5" y2="20.5"/>
+            <line x1="9" y1="6" x2="12" y2="9"/><line x1="15" y1="6" x2="12" y2="9"/>
+            <line x1="9" y1="18" x2="12" y2="15"/><line x1="15" y1="18" x2="12" y2="15"/>
+            <line x1="6" y1="9" x2="9" y2="12"/><line x1="6" y1="15" x2="9" y2="12"/>
+            <line x1="18" y1="9" x2="15" y2="12"/><line x1="18" y1="15" x2="15" y2="12"/>
           </symbol>
 
         </defs>
