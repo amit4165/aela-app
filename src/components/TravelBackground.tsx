@@ -1,7 +1,16 @@
 // ═══════════════════════════════════════════════════════════════
 //  TravelBackground — 40 travel icons + 12 tiny fillers
-//  Dual hex-jittered grid → ~710 elements, wall-to-wall coverage
+//  Seeded random scatter — organic, overlapping, non-grid
 // ═══════════════════════════════════════════════════════════════
+
+// xorshift32 seeded PRNG — deterministic, no grid artifacts
+function seededRand(seed: number) {
+  let s = (seed >>> 0) || 1
+  return () => {
+    s ^= s << 13; s ^= s >>> 17; s ^= s << 5
+    return (s >>> 0) / 4294967296
+  }
+}
 
 const M_ICONS = [
   's-eiffel','s-bigben','s-taj','s-colosseum','s-sydney',
@@ -20,49 +29,40 @@ const F_ICONS = ['s-star5','s-ring','s-diamond','s-heart','s-moon','s-sun','s-le
 const F_NW   = [12,12,10,12,12,14,10,10,10,14,12,12]
 const F_NH   = [12,12,14,11,12,14,14,14,12, 6,12,12]
 
-// ── Main layer grid: 21 cols × 16 rows = 336 placements ──
-const M_COLS=21, M_ROWS=16, M_CW=56, M_RH=60, M_SX=2,  M_SY=-8
-const M_JX  = [-8,10,-12,4,-7,13,-15,3,-6,11,-10,6,-14,8,-4,-11,7,-8,14,-5,-16]
-const M_JY  = [6,-8,5,-12,10,-5,-14,7,-9,12,-3,-10,4,-7,8,-4]
-const M_SC  = [1.2,1.6,1.0,1.4,1.1,1.5]
-const M_RO  = [-22,14,-38,6,-16,30,-8,20,-42,12,-35,18,-10,28,-24,8,-18,25,-32,10,-20,35,-6,15,-28,8,-40,20,-15,32,-45,5,-25,18,-12,38,-30,8,-22,16]
-const M_RCOL= [0,5,-8,3,-5,8,0,-3,6,-6,4,-10,2,-4,9,-2,5,7,-7,3,-9]
-const M_RROW= [5,-8,3,5,-8,3,5,-8,3,5,-8,3,5,-8,3,5]
-
-// ── Filler layer grid: 22 cols × 17 rows = 374 placements ──
-const F_COLS=22, F_ROWS=17, F_CW=54, F_RH=58, F_SX=28, F_SY=-28
-const F_JX  = [-7,9,-11,5,-8,12,-16,3,-5,10,-9,7,-13,6,-3,-12,8,-6,13,-4,-14,4]
-const F_JY  = [-6,8,-4,11,-9,5,13,-7,8,-11,3,10,-5,6,-8,11,-4]
-const F_SC  = [2.0,2.6,1.6,2.3,1.8,2.8]
-const F_RO  = [0,45,-45,30,-30,60,-60,15,-15,75,-75,90]
-const F_RCOL= [-3,4,-6,2,-8,6,-4,8,-2,5,-7,3,-9,7,-3,6,-5,4,-8,2,-4,8]
-const F_RROW= [-5,8,-3,-5,8,-3,-5,8,-3,-5,8,-3,-5,8,-3,8,-3]
-
 type Item = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number }
 
-function makeLayer(
-  icons:string[], nw:number[], nh:number[],
-  cols:number, rows:number, cw:number, rh:number, sx:number, sy:number,
-  jx:number[], jy:number[], sc:number[], ro:number[], rcol:number[], rrow:number[]
-): Item[] {
-  const out: Item[] = []
-  for (let r=0; r<rows; r++) {
-    const hex = r%2===1 ? Math.round(cw/2) : 0
-    for (let c=0; c<cols; c++) {
-      const i  = r*cols+c
-      const ii = i % icons.length
-      const x  = sx + c*cw + hex + jx[c]
-      const y  = sy + r*rh + jy[r]
-      const s  = sc[i % sc.length]
-      const w  = nw[ii]*s, h = nh[ii]*s
-      out.push({ icon:icons[ii], x, y, w, h, cx:x+w/2, cy:y+h/2, rot:ro[ii]+rcol[c]+rrow[r] })
-    }
+function scatterIcons(): Item[] {
+  const rand = seededRand(0xA3F7)
+  const items: Item[] = []
+
+  // Main travel icons — 180 placements, fully random
+  for (let i = 0; i < 180; i++) {
+    const ii  = i % M_ICONS.length
+    const sc  = 0.7 + rand() * 1.7          // scale 0.7× – 2.4×
+    const w   = M_NW[ii] * sc
+    const h   = M_NH[ii] * sc
+    const x   = -40 + rand() * 1280         // allow slight bleed at edges
+    const y   = -40 + rand() * 980
+    const rot = -55 + rand() * 110
+    items.push({ icon: M_ICONS[ii], x, y, w, h, cx: x + w/2, cy: y + h/2, rot })
   }
-  return out
+
+  // Tiny filler icons — 130 placements
+  for (let i = 0; i < 130; i++) {
+    const ii  = i % F_ICONS.length
+    const sc  = 1.4 + rand() * 2.8          // scale 1.4× – 4.2×
+    const w   = F_NW[ii] * sc
+    const h   = F_NH[ii] * sc
+    const x   = -10 + rand() * 1220
+    const y   = -10 + rand() * 920
+    const rot = rand() * 360
+    items.push({ icon: F_ICONS[ii], x, y, w, h, cx: x + w/2, cy: y + h/2, rot })
+  }
+
+  return items
 }
 
-const mainItems = makeLayer(M_ICONS,M_NW,M_NH,M_COLS,M_ROWS,M_CW,M_RH,M_SX,M_SY,M_JX,M_JY,M_SC,M_RO,M_RCOL,M_RROW)
-const fillItems = makeLayer(F_ICONS,F_NW,F_NH,F_COLS,F_ROWS,F_CW,F_RH,F_SX,F_SY,F_JX,F_JY,F_SC,F_RO,F_RCOL,F_RROW)
+const allItems = scatterIcons()
 
 export default function TravelBackground() {
   return (
@@ -588,16 +588,8 @@ export default function TravelBackground() {
 
         </defs>
 
-        {/* filler layer — tiny decorative icons fill every gap */}
-        {fillItems.map(({ icon, x, y, w, h, cx, cy, rot }, i) => (
-          <g key={`f${i}`} transform={`rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})`}>
-            <use href={`#${icon}`} x={x.toFixed(1)} y={y.toFixed(1)} width={w.toFixed(1)} height={h.toFixed(1)} />
-          </g>
-        ))}
-
-        {/* main layer — travel landmarks and transport icons */}
-        {mainItems.map(({ icon, x, y, w, h, cx, cy, rot }, i) => (
-          <g key={`m${i}`} transform={`rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})`}>
+        {allItems.map(({ icon, x, y, w, h, cx, cy, rot }, i) => (
+          <g key={i} transform={`rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})`}>
             <use href={`#${icon}`} x={x.toFixed(1)} y={y.toFixed(1)} width={w.toFixed(1)} height={h.toFixed(1)} />
           </g>
         ))}
