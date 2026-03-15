@@ -1,3 +1,6 @@
+'use client'
+import { useMemo } from 'react'
+
 // ═══════════════════════════════════════════════════════════════
 //  TravelBackground — 40 travel icons + 12 tiny fillers
 //  Seeded random scatter — no overlaps, collision-checked
@@ -100,9 +103,8 @@ function scatterIcons(): Item[] {
   return items
 }
 
-const allItems: Item[] = scatterIcons()
-
 export default function TravelBackground() {
+  const allItems = useMemo(() => scatterIcons(), [])
   return (
     <div style={{position:'absolute',inset:0,zIndex:0,pointerEvents:'none',overflow:'hidden'}} aria-hidden="true">
       <svg width="100%" height="100%" viewBox="0 0 1200 900"
