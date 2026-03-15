@@ -11,6 +11,7 @@ import LoadingSkeleton from '@/components/LoadingSkeleton'
 import PassportModal from '@/components/PassportModal'
 import SuggestionTabs from '@/components/SuggestionTabs'
 import FlightSearchForm from '@/components/FlightSearchForm'
+import HotelSearchForm from '@/components/HotelSearchForm'
 import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
@@ -50,6 +51,7 @@ function ChatPageInner() {
     const [error, setError] = useState<string | null>(null)
     const [queryCount, setQueryCount] = useState(0)
     const [showFlightForm, setShowFlightForm] = useState(false)
+    const [showHotelForm, setShowHotelForm] = useState(false)
     const [showOnboarding, setShowOnboarding] = useState(false)
     const [profileLoading, setProfileLoading] = useState(true)
 
@@ -133,6 +135,33 @@ function ChatPageInner() {
         }
         setMessages(prev => [...prev, userMsg, aiMsg])
         setShowFlightForm(false)
+    }
+
+    function handleHotelResults(deals: Deal[], query: string) {
+        const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: `Search hotels: ${query}` }
+        const aiMsg: Message = {
+            id: crypto.randomUUID(),
+            role: 'ai',
+            content: deals.length > 0
+                ? `Found ${deals.length} hotel${deals.length !== 1 ? 's' : ''} for your stay.`
+                : 'No hotels found for those dates. Try different dates or a nearby city.',
+            response: {
+                message: '',
+                sessionId: sessionId ?? '',
+                step: 'completed',
+                deals,
+                ui_hints: {
+                    show_deals: deals.length > 0,
+                    show_map: false,
+                    show_timeline: false,
+                    show_warning: false,
+                },
+            },
+            renderedCurrency: currency,
+            renderedRates: rates,
+        }
+        setMessages(prev => [...prev, userMsg, aiMsg])
+        setShowHotelForm(false)
     }
 
     const handleSendMessage = async (text?: string) => {
@@ -224,6 +253,14 @@ function ChatPageInner() {
                 <FlightSearchForm
                     onResults={handleFlightResults}
                     onClose={() => setShowFlightForm(false)}
+                />
+            )}
+
+            {/* Hotel search slide-up form */}
+            {showHotelForm && (
+                <HotelSearchForm
+                    onResults={handleHotelResults}
+                    onClose={() => setShowHotelForm(false)}
                 />
             )}
 
@@ -334,7 +371,7 @@ function ChatPageInner() {
                     </button>
                     <button
                         className="chat-action-btn"
-                        onClick={() => handleSendMessage('Help me find hotels')}
+                        onClick={() => setShowHotelForm(true)}
                         title="Find Hotels"
                     >
                         🏨 Hotels
