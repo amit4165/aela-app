@@ -24,6 +24,7 @@ export default function CurrencySelector() {
                 appearance: 'none', // Remove native arrow
             }}
         >
+            <option value="GBP" style={{ background: '#0d0d0d' }}>🇬🇧 GBP</option>
             <option value="USD" style={{ background: '#0d0d0d' }}>🇺🇸 USD</option>
             <option value="EUR" style={{ background: '#0d0d0d' }}>🇪🇺 EUR</option>
             <option value="INR" style={{ background: '#0d0d0d' }}>🇮🇳 INR</option>

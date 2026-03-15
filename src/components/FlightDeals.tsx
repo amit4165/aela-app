@@ -1,4 +1,4 @@
-import type { Deal } from '../api/chat'
+import type { Deal } from '@/types/api'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 
 interface FlightDealsProps {
@@ -29,83 +29,176 @@ function CO2Badge({ durationMins }: { durationMins?: number }) {
     )
 }
 
+function FlightDealCard({ deal, renderedCurrency, renderedRates, convert, format }: {
+    deal: Deal
+    renderedCurrency?: CurrencyCode
+    renderedRates?: Record<string, number> | null
+    convert: (amount: number, currency?: CurrencyCode, rates?: Record<string, number> | null) => number
+    format: (amount: number, currency?: CurrencyCode) => string
+}) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flightData = (deal.data as any) || {}
+
+    const origin = flightData.origin ?? 'Unknown'
+    const destination = flightData.destination ?? 'Unknown'
+    const airlineCode = flightData.airline ?? ''
+    const durationMins = flightData.duration_minutes
+
+    const formatTime = (dateTimeString?: string) => {
+        if (!dateTimeString) return ''
+        const date = new Date(dateTimeString)
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+
+    const depTime = formatTime(flightData.departure_time)
+    const arrTime = formatTime(flightData.arrival_time)
+
+    const formatDuration = (mins?: number) => {
+        if (!mins) return ''
+        const h = Math.floor(mins / 60)
+        const m = mins % 60
+        return `${h}h ${m}m`
+    }
+
+    const stops = flightData.stops ?? 0
+    const stopsText = stops === 0 ? 'Direct' : `${stops} Stop${stops > 1 ? 's' : ''}`
+
+    return (
+        <div className="deal-card">
+            <div className="deal-route">
+                <span>{origin}</span>
+                <span className="deal-route-arrow" style={{ fontSize: '16px' }}>✈️</span>
+                <span>{destination}</span>
+            </div>
+            <div className="deal-meta">
+                {depTime && arrTime && (
+                    <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
+                        <strong>{depTime}</strong> - <strong>{arrTime}</strong>
+                    </span>
+                )}
+                {durationMins && (
+                    <>
+                        <span> · </span>
+                        <span>{formatDuration(durationMins)}</span>
+                    </>
+                )}
+            </div>
+            <div className="deal-price">
+                {format(convert(deal.price, renderedCurrency, renderedRates), renderedCurrency)}
+            </div>
+            <div className="deal-airline">
+                <strong>{airlineCode}</strong> • {stopsText}
+            </div>
+            <CO2Badge durationMins={durationMins} />
+            <div className="deal-hover-drawer">
+                <button className="btn-primary" style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px' }}>
+                    Select Flight
+                </button>
+            </div>
+        </div>
+    )
+}
+
+function HotelDealCard({ deal, renderedCurrency, renderedRates, convert, format }: {
+    deal: Deal
+    renderedCurrency?: CurrencyCode
+    renderedRates?: Record<string, number> | null
+    convert: (amount: number, currency?: CurrencyCode, rates?: Record<string, number> | null) => number
+    format: (amount: number, currency?: CurrencyCode) => string
+}) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = (deal.data as any) || {}
+    const stars = Math.min(Math.max(Math.round(d.stars ?? 0), 0), 5)
+    const amenities: string[] = d.amenities ?? []
+
+    return (
+        <div className="deal-card">
+            <div className="deal-route">
+                <span>🏨 {d.name ?? deal.provider}</span>
+            </div>
+            <div className="deal-meta">
+                <span>{'⭐'.repeat(stars)}</span>
+                {d.rating && (
+                    <span> · {d.rating}/10{d.review_count ? ` (${d.review_count} reviews)` : ''}</span>
+                )}
+            </div>
+            <div className="deal-price">
+                {format(convert(deal.price, renderedCurrency, renderedRates), renderedCurrency)}
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>/night</span>
+            </div>
+            {amenities.length > 0 && (
+                <div className="deal-airline">
+                    {amenities.slice(0, 3).join(' · ')}
+                </div>
+            )}
+            <div className="deal-hover-drawer">
+                <button className="btn-primary" style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px' }}>
+                    View Hotel
+                </button>
+            </div>
+        </div>
+    )
+}
+
+function ActivityDealCard({ deal, renderedCurrency, renderedRates, convert, format }: {
+    deal: Deal
+    renderedCurrency?: CurrencyCode
+    renderedRates?: Record<string, number> | null
+    convert: (amount: number, currency?: CurrencyCode, rates?: Record<string, number> | null) => number
+    format: (amount: number, currency?: CurrencyCode) => string
+}) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = (deal.data as any) || {}
+    const durationH = d.duration_mins ? Math.round(d.duration_mins / 60) : null
+
+    return (
+        <div className="deal-card">
+            <div className="deal-route">
+                <span>🎟️ {d.name ?? deal.provider}</span>
+            </div>
+            {d.description && (
+                <div className="deal-meta" style={{ fontSize: '13px' }}>
+                    {d.description}
+                </div>
+            )}
+            <div className="deal-meta">
+                {durationH && <span>{durationH}h</span>}
+                {d.rating && <span>{durationH ? ' · ' : ''}{d.rating}★</span>}
+            </div>
+            <div className="deal-price">
+                {deal.price === 0 ? 'Free' : format(convert(deal.price, renderedCurrency, renderedRates), renderedCurrency)}
+            </div>
+            <div className="deal-hover-drawer">
+                <button className="btn-primary" style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px' }}>
+                    Book Activity
+                </button>
+            </div>
+        </div>
+    )
+}
+
 export default function FlightDeals({ deals, renderedCurrency, renderedRates }: FlightDealsProps) {
     const { convert, format } = useCurrency()
 
     if (!deals.length) return null
 
+    const sharedProps = { renderedCurrency, renderedRates, convert, format }
+
     return (
         <div style={{ marginTop: '8px' }}>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px', fontFamily: 'Inter, sans-serif' }}>
-                {deals.length} flight{deals.length > 1 ? 's' : ''} found
+                {deals.length} result{deals.length > 1 ? 's' : ''} found
             </p>
             <div className="deals-grid">
                 {deals.map((deal, i) => {
-                    const flightData = deal.data || {};
-
-                    const origin = flightData.origin ?? 'Unknown';
-                    const destination = flightData.destination ?? 'Unknown';
-                    const airlineCode = flightData.airline ?? '';
-                    const durationMins = flightData.duration_minutes;
-
-                    // Format times (e.g. 2026-04-10T06:15:00 -> 06:15)
-                    const formatTime = (dateTimeString?: string) => {
-                        if (!dateTimeString) return '';
-                        const date = new Date(dateTimeString);
-                        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    };
-
-                    const depTime = formatTime(flightData.departure_time);
-                    const arrTime = formatTime(flightData.arrival_time);
-
-                    // Format duration (e.g. 135 mins -> 2h 15m)
-                    const formatDuration = (mins?: number) => {
-                        if (!mins) return '';
-                        const h = Math.floor(mins / 60);
-                        const m = mins % 60;
-                        return `${h}h ${m}m`;
-                    };
-
-                    const stops = flightData.stops ?? 0;
-                    const stopsText = stops === 0 ? 'Direct' : `${stops} Stop${stops > 1 ? 's' : ''}`;
-
-                    return (
-                        <div key={i} className="deal-card">
-                            <div className="deal-route">
-                                <span>{origin}</span>
-                                <span className="deal-route-arrow" style={{ fontSize: '16px' }}>✈️</span>
-                                <span>{destination}</span>
-                            </div>
-                            <div className="deal-meta">
-                                {depTime && arrTime && (
-                                    <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
-                                        <strong>{depTime}</strong> - <strong>{arrTime}</strong>
-                                    </span>
-                                )}
-                                {durationMins && (
-                                    <>
-                                        <span> · </span>
-                                        <span>{formatDuration(durationMins)}</span>
-                                    </>
-                                )}
-                            </div>
-                            <div className="deal-price">
-                                {format(convert(deal.price, renderedCurrency, renderedRates), renderedCurrency)}
-                            </div>
-
-                            <div className="deal-airline">
-                                <strong>{airlineCode}</strong> • {stopsText}
-                            </div>
-
-                            <CO2Badge durationMins={durationMins} />
-
-                            <div className="deal-hover-drawer">
-                                <button className="btn-primary" style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '6px' }}>
-                                    Select Flight
-                                </button>
-                            </div>
-                        </div>
-                    );
+                    if (deal.deal_type === 'hotel') {
+                        return <HotelDealCard key={i} deal={deal} {...sharedProps} />
+                    }
+                    if (deal.deal_type === 'activity') {
+                        return <ActivityDealCard key={i} deal={deal} {...sharedProps} />
+                    }
+                    // flight or package
+                    return <FlightDealCard key={i} deal={deal} {...sharedProps} />
                 })}
             </div>
         </div>

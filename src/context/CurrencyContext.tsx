@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type CurrencyCode = 'USD' | 'EUR' | 'INR';
+export type CurrencyCode = 'GBP' | 'USD' | 'EUR' | 'INR';
 
 interface ExchangeRates {
     [key: string]: number;
@@ -19,7 +19,7 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
-    const [currency, setCurrency] = useState<CurrencyCode>('USD');
+    const [currency, setCurrency] = useState<CurrencyCode>('GBP');
     const [rates, setRates] = useState<ExchangeRates | null>(null);
 
     useEffect(() => {

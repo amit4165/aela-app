@@ -1,5 +1,7 @@
 'use client'
 
+import type { SuggestedAction } from '@/types/api'
+
 const DEFAULT_TABS = [
     { label: '🏖️ Beach getaway', text: 'I want a beach getaway' },
     { label: '🏙️ City exploration', text: 'Plan a city exploration trip for me' },
@@ -15,12 +17,12 @@ const REDIRECT_TABS = [
 ]
 
 interface SuggestionTabsProps {
-    suggestions?: string[]
+    actions?: SuggestedAction[]
     mode?: 'default' | 'redirect' | 'custom'
     onSelect: (text: string) => void
 }
 
-export default function SuggestionTabs({ suggestions, mode = 'default', onSelect }: SuggestionTabsProps) {
+export default function SuggestionTabs({ actions, mode = 'default', onSelect }: SuggestionTabsProps) {
     if (mode === 'redirect') {
         return (
             <div className="suggestion-tabs">
@@ -33,12 +35,12 @@ export default function SuggestionTabs({ suggestions, mode = 'default', onSelect
         )
     }
 
-    if (mode === 'custom' && suggestions && suggestions.length > 0) {
+    if (mode === 'custom' && actions && actions.length > 0) {
         return (
             <div className="suggestion-tabs">
-                {suggestions.map(s => (
-                    <button key={s} className="suggestion-tab" onClick={() => onSelect(s)}>
-                        {s}
+                {actions.map(action => (
+                    <button key={action.message} className="suggestion-tab" onClick={() => onSelect(action.message)}>
+                        {action.label}
                     </button>
                 ))}
             </div>

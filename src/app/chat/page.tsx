@@ -11,9 +11,10 @@ import LoadingSkeleton from '@/components/LoadingSkeleton'
 import PassportModal from '@/components/PassportModal'
 import SuggestionTabs from '@/components/SuggestionTabs'
 import FlightSearchForm from '@/components/FlightSearchForm'
-import { sendChatMessage, type ChatResponse } from '@/api/chat'
+import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
+import type { ChatResponse } from '@/types/api'
 
 const QUERY_LIMIT = 12
 
@@ -45,9 +46,12 @@ function ChatPageInner() {
     const [input, setInput] = useState('')
     const [sessionId, setSessionId] = useState<string | undefined>()
     const [loading, setLoading] = useState(false)
+    const [progressText, setProgressText] = useState('')
     const [error, setError] = useState<string | null>(null)
     const [queryCount, setQueryCount] = useState(0)
     const [showFlightForm, setShowFlightForm] = useState(false)
+    const [showOnboarding, setShowOnboarding] = useState(false)
+    const [profileLoading, setProfileLoading] = useState(true)
 
     const openGroupRoom = () => {
         const roomId = Math.random().toString(36).substring(2, 10).toUpperCase()
@@ -62,9 +66,29 @@ function ChatPageInner() {
         if (isLoaded && !user) router.push('/sign-in')
     }, [isLoaded, user, router])
 
-    // Handle pending message from landing page (pre-auth flow)
+    // Fetch user profile and check onboarding status
     useEffect(() => {
-        if (!user || !isLoaded || initSent.current) return
+        if (!user || !isLoaded) return
+        async function loadProfile() {
+            try {
+                const token = await getToken()
+                const data = await getUserProfile(token)
+                if (data.needs_onboarding) {
+                    setShowOnboarding(true)
+                }
+            } catch {
+                // If profile fetch fails (new user), show onboarding
+                setShowOnboarding(true)
+            } finally {
+                setProfileLoading(false)
+            }
+        }
+        loadProfile()
+    }, [user, isLoaded, getToken])
+
+    // Handle pending message from landing page — fires only after onboarding is complete
+    useEffect(() => {
+        if (!user || !isLoaded || profileLoading || showOnboarding || initSent.current) return
         const pending = sessionStorage.getItem('aela_pending_message')
         const qParam = searchParams?.get('q')
         const initialMsg = pending || qParam
@@ -74,11 +98,15 @@ function ChatPageInner() {
             handleSendMessage(initialMsg)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user, isLoaded, searchParams])
+    }, [user, isLoaded, profileLoading, showOnboarding, searchParams])
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages, loading])
+
+    function handleOnboardingComplete() {
+        setShowOnboarding(false)
+    }
 
     const handleSendMessage = async (text?: string) => {
         const messageText = (text ?? input).trim()
@@ -91,30 +119,47 @@ function ChatPageInner() {
         const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: messageText }
         setMessages(prev => [...prev, userMsg])
         setLoading(true)
+        setProgressText('Thinking…')
         setQueryCount(c => c + 1)
 
         try {
             const token = await getToken()
-            if (!token) throw new Error('Not authenticated — please sign in again.')
 
-            const res = await sendChatMessage(
-                { userId: user.id, message: messageText, sessionId },
-                token
+            await chatStream(
+                token,
+                { message: messageText, userId: user.id, sessionId },
+                (event: SSEEvent) => {
+                    if (event.type === 'progress') {
+                        setProgressText(event.message || event.step || 'Thinking…')
+                    } else if (event.type === 'complete') {
+                        const response = event.data as ChatResponse
+                        if (response.sessionId && !sessionId) {
+                            setSessionId(response.sessionId)
+                        }
+                        const aiMsg: Message = {
+                            id: crypto.randomUUID(),
+                            role: 'ai',
+                            content: response.message,
+                            response,
+                            renderedCurrency: currency,
+                            renderedRates: rates,
+                        }
+                        setMessages(prev => [...prev, aiMsg])
+                        setLoading(false)
+                        setProgressText('')
+                        setTimeout(() => inputRef.current?.focus(), 100)
+                    } else if (event.type === 'error') {
+                        setError(event.message ?? 'Something went wrong. Please try again.')
+                        setLoading(false)
+                        setProgressText('')
+                        setTimeout(() => inputRef.current?.focus(), 100)
+                    }
+                },
             )
-            setSessionId(res.sessionId)
-            const aiMsg: Message = {
-                id: crypto.randomUUID(),
-                role: 'ai',
-                content: res.message,
-                response: res,
-                renderedCurrency: currency,
-                renderedRates: rates,
-            }
-            setMessages(prev => [...prev, aiMsg])
         } catch (err) {
-            setError((err as Error).message ?? 'Something went wrong. Please try again.')
-        } finally {
+            setError((err as Error).message ?? 'Failed to connect to Aela. Please check your connection and try again.')
             setLoading(false)
+            setProgressText('')
             setTimeout(() => inputRef.current?.focus(), 100)
         }
     }
@@ -128,22 +173,24 @@ function ChatPageInner() {
     // Determine suggestion tab mode from latest AI message
     const lastAiMsg = [...messages].reverse().find(m => m.role === 'ai')
     const isOffTopic = lastAiMsg?.response?.ui_hints?.off_topic === true
-    const dynamicSuggestions = lastAiMsg?.response?.suggestions ?? []
+    const dynamicActions = lastAiMsg?.response?.suggested_actions ?? []
     const suggestionMode = isOffTopic
         ? 'redirect'
-        : dynamicSuggestions.length > 0
+        : dynamicActions.length > 0
             ? 'custom'
             : messages.length === 0 ? 'default' : undefined
 
     const queriesLeft = QUERY_LIMIT - queryCount
     const nearLimit = queriesLeft <= 3
 
-    if (!isLoaded) return null
+    if (!isLoaded || profileLoading) return null
 
     return (
         <div className="chat-page">
-            {/* First-time login passport modal */}
-            <PassportModal onComplete={() => {}} />
+            {/* Onboarding passport modal — shown until needs_onboarding is resolved */}
+            {showOnboarding && (
+                <PassportModal onComplete={handleOnboardingComplete} />
+            )}
 
             {/* Flight search slide-up form */}
             {showFlightForm && (
@@ -178,6 +225,11 @@ function ChatPageInner() {
                                 <WarningBanner warnings={msg.response.warnings ?? []} />
                             )}
                             <MessageBubble role={msg.role} content={msg.content} userInitial={userInitial} />
+                            {msg.role === 'ai' && msg.response?.flights_skipped && (
+                                <div style={{ paddingLeft: '46px', marginTop: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                                    ✈️ Flight prices not included — search separately for best deals
+                                </div>
+                            )}
                             {msg.role === 'ai' && msg.response?.ui_hints?.show_deals && (
                                 <div style={{ paddingLeft: '46px' }}>
                                     <FlightDeals
@@ -186,7 +238,7 @@ function ChatPageInner() {
                                         renderedRates={msg.renderedRates}
                                     />
                                     <VisaRequirementsCard
-                                        destination={msg.response.deals?.[0]?.data?.destination ?? ''}
+                                        destination={(msg.response.deals?.[0]?.data?.destination as string) ?? ''}
                                     />
                                 </div>
                             )}
@@ -201,7 +253,16 @@ function ChatPageInner() {
                             )}
                         </div>
                     ))}
-                    {loading && <LoadingSkeleton />}
+                    {loading && (
+                        <div>
+                            <LoadingSkeleton />
+                            {progressText && (
+                                <div style={{ paddingLeft: '46px', marginTop: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                                    {progressText}
+                                </div>
+                            )}
+                        </div>
+                    )}
                     {error && (
                         <div className="warning-banner">
                             <span className="warning-icon">⚡</span>
@@ -230,7 +291,7 @@ function ChatPageInner() {
                 {/* Suggestion tabs */}
                 {suggestionMode && (
                     <SuggestionTabs
-                        suggestions={dynamicSuggestions}
+                        actions={dynamicActions}
                         mode={suggestionMode}
                         onSelect={(text) => handleSendMessage(text)}
                     />

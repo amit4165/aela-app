@@ -1,57 +1,43 @@
 'use client'
-import { useState, useEffect } from 'react'
-
-const PASSPORT_KEY = 'aela_passport_set'
-const PASSPORT_COUNTRY_KEY = 'aela_passport_country'
-
-const COUNTRIES = [
-    'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria',
-    'Bangladesh', 'Belgium', 'Brazil', 'Canada', 'Chile', 'China', 'Colombia',
-    'Croatia', 'Czech Republic', 'Denmark', 'Egypt', 'Ethiopia', 'Finland',
-    'France', 'Germany', 'Ghana', 'Greece', 'Hungary', 'India', 'Indonesia',
-    'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan', 'Jordan', 'Kenya',
-    'South Korea', 'Malaysia', 'Mexico', 'Morocco', 'Netherlands', 'New Zealand',
-    'Nigeria', 'Norway', 'Pakistan', 'Peru', 'Philippines', 'Poland', 'Portugal',
-    'Romania', 'Russia', 'Saudi Arabia', 'Serbia', 'Singapore', 'South Africa',
-    'Spain', 'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand', 'Turkey',
-    'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
-    'Venezuela', 'Vietnam', 'Zimbabwe',
-]
+import { useState } from 'react'
+import { useAuth } from '@clerk/nextjs'
+import { completeOnboarding } from '@/lib/api'
+import { detectLocale } from '@/lib/locale'
+import { COUNTRIES } from '@/lib/countries'
 
 interface PassportModalProps {
-    onComplete: (country: string) => void
+    onComplete: () => void
 }
 
 export default function PassportModal({ onComplete }: PassportModalProps) {
-    const [visible, setVisible] = useState(false)
+    const { getToken } = useAuth()
     const [country, setCountry] = useState('')
-    const [animating, setAnimating] = useState(false)
+    const [saving, setSaving] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        if (!localStorage.getItem(PASSPORT_KEY)) {
-            const t = setTimeout(() => { setVisible(true); setAnimating(true) }, 900)
-            return () => clearTimeout(t)
-        }
-    }, [])
-
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!country) return
-        localStorage.setItem(PASSPORT_KEY, '1')
-        localStorage.setItem(PASSPORT_COUNTRY_KEY, country)
-        setAnimating(false)
-        setTimeout(() => { setVisible(false); onComplete(country) }, 300)
+        setSaving(true)
+        setError(null)
+        try {
+            const token = await getToken()
+            const { timezone, currency } = detectLocale()
+            await completeOnboarding(token, {
+                passport_country: country,
+                detected_timezone: timezone,
+                detected_currency: currency,
+            })
+            onComplete()
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+        } finally {
+            setSaving(false)
+        }
     }
-
-    const handleSkip = () => {
-        setAnimating(false)
-        setTimeout(() => setVisible(false), 300)
-    }
-
-    if (!visible) return null
 
     return (
         <div className="passport-overlay">
-            <div className={`passport-modal ${animating ? 'passport-modal-open' : 'passport-modal-close'}`}>
+            <div className="passport-modal passport-modal-open">
                 <div className="passport-handle" />
                 <div className="passport-header">
                     <div className="passport-icon">🛂</div>
@@ -72,21 +58,24 @@ export default function PassportModal({ onComplete }: PassportModalProps) {
                     >
                         <option value="">Select your passport country…</option>
                         {COUNTRIES.map(c => (
-                            <option key={c} value={c}>{c}</option>
+                            <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
                         ))}
                     </select>
                 </div>
+
+                {error && (
+                    <p style={{ color: 'var(--coral, #e55)', fontSize: '13px', margin: '8px 0 0' }}>
+                        {error}
+                    </p>
+                )}
 
                 <div className="passport-actions">
                     <button
                         className="btn btn-primary passport-save-btn"
                         onClick={handleSave}
-                        disabled={!country}
+                        disabled={!country || saving}
                     >
-                        Save &amp; Continue
-                    </button>
-                    <button className="passport-skip-btn" onClick={handleSkip}>
-                        Skip for now
+                        {saving ? 'Saving…' : 'Save & Continue'}
                     </button>
                 </div>
 
