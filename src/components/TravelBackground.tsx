@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
 //  TravelBackground — 40 travel icons + 12 tiny fillers
-//  Seeded random scatter — organic, overlapping, non-grid
+//  Seeded random scatter — no overlaps, collision-checked
 // ═══════════════════════════════════════════════════════════════
 
-// xorshift32 seeded PRNG — deterministic, no grid artifacts
+// xorshift32 seeded PRNG — deterministic across renders
 function seededRand(seed: number) {
   let s = (seed >>> 0) || 1
   return () => {
@@ -29,34 +29,56 @@ const F_ICONS = ['s-star5','s-ring','s-diamond','s-heart','s-moon','s-sun','s-le
 const F_NW   = [12,12,10,12,12,14,10,10,10,14,12,12]
 const F_NH   = [12,12,14,11,12,14,14,14,12, 6,12,12]
 
-type Item = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number }
+type Item  = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number }
+type Circle = { cx:number; cy:number; r:number }
 
 function scatterIcons(): Item[] {
-  const rand = seededRand(0xA3F7)
-  const items: Item[] = []
+  const rand    = seededRand(0xA3F7)
+  const items:   Item[]   = []
+  const placed:  Circle[] = []   // collision registry
 
-  // Main travel icons — 180 placements, fully random
-  for (let i = 0; i < 180; i++) {
-    const ii  = i % M_ICONS.length
-    const sc  = 0.7 + rand() * 1.7          // scale 0.7× – 2.4×
-    const w   = M_NW[ii] * sc
-    const h   = M_NH[ii] * sc
-    const x   = -40 + rand() * 1280         // allow slight bleed at edges
-    const y   = -40 + rand() * 980
-    const rot = -55 + rand() * 110
-    items.push({ icon: M_ICONS[ii], x, y, w, h, cx: x + w/2, cy: y + h/2, rot })
+  function overlaps(cx: number, cy: number, r: number): boolean {
+    for (const p of placed) {
+      const dx = cx - p.cx, dy = cy - p.cy
+      if (dx * dx + dy * dy < (r + p.r) * (r + p.r)) return true
+    }
+    return false
   }
 
-  // Tiny filler icons — 130 placements
-  for (let i = 0; i < 130; i++) {
-    const ii  = i % F_ICONS.length
-    const sc  = 1.4 + rand() * 2.8          // scale 1.4× – 4.2×
-    const w   = F_NW[ii] * sc
-    const h   = F_NH[ii] * sc
-    const x   = -10 + rand() * 1220
-    const y   = -10 + rand() * 920
-    const rot = rand() * 360
-    items.push({ icon: F_ICONS[ii], x, y, w, h, cx: x + w/2, cy: y + h/2, rot })
+  // Place one icon; try up to `maxTries` random positions before giving up
+  function place(
+    icon: string, nw: number, nh: number,
+    scMin: number, scMax: number,
+    rotMin: number, rotMax: number,
+    gap: number, maxTries: number
+  ) {
+    const sc = scMin + rand() * (scMax - scMin)
+    const w  = nw * sc, h = nh * sc
+    const r  = Math.max(w, h) / 2 + gap
+    for (let t = 0; t < maxTries; t++) {
+      const x  = rand() * 1200
+      const y  = rand() * 900
+      const cx = x + w / 2, cy = y + h / 2
+      if (!overlaps(cx, cy, r)) {
+        const rot = rotMin + rand() * (rotMax - rotMin)
+        placed.push({ cx, cy, r })
+        items.push({ icon, x, y, w, h, cx, cy, rot })
+        return
+      }
+    }
+    // icon skipped — canvas too full to fit it without overlap
+  }
+
+  // Main travel icons — cycle through all 40 icons × 3 passes
+  for (let i = 0; i < 120; i++) {
+    const ii = i % M_ICONS.length
+    place(M_ICONS[ii], M_NW[ii], M_NH[ii], 0.9, 1.8, -50, 100, 6, 200)
+  }
+
+  // Filler icons — placed after main icons, fill remaining gaps
+  for (let i = 0; i < 90; i++) {
+    const ii = i % F_ICONS.length
+    place(F_ICONS[ii], F_NW[ii], F_NH[ii], 1.5, 3.2, 0, 360, 4, 200)
   }
 
   return items
