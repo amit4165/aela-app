@@ -13,6 +13,7 @@ import SuggestionTabs from '@/components/SuggestionTabs'
 import FlightSearchForm from '@/components/FlightSearchForm'
 import HotelSearchForm from '@/components/HotelSearchForm'
 import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
+import TravelBackground from '@/components/TravelBackground'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
 import type { ChatResponse, Deal } from '@/types/api'
@@ -243,6 +244,8 @@ function ChatPageInner() {
 
     return (
         <div className="chat-page">
+            <TravelBackground />
+
             {/* Onboarding passport modal — shown until needs_onboarding is resolved */}
             {showOnboarding && (
                 <PassportModal onComplete={handleOnboardingComplete} />
