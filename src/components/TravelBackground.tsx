@@ -16,346 +16,453 @@ export default function TravelBackground() {
         viewBox="0 0 1400 900"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ color: '#00C896', opacity: 0.18 }}
+        style={{ color: '#00C896', opacity: 0.16 }}
       >
         <defs>
-          {/* Eiffel Tower */}
-          <symbol id="tb-eiffel" viewBox="0 0 50 80" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M25 2L22 14L28 14Z"/>
-            <path d="M19 14L31 14L33 32L17 32Z"/>
-            <path d="M14 32L36 32L40 55L10 55Z"/>
-            <path d="M8 72C8 62 18 58 25 56C32 58 42 62 42 72"/>
-            <line x1="5" y1="72" x2="45" y2="72"/>
-            <line x1="18" y1="38" x2="32" y2="38"/>
-            <line x1="13" y1="60" x2="37" y2="60"/>
+
+          {/* ── EIFFEL TOWER ── */}
+          <symbol id="ic-eiffel" viewBox="0 0 52 84" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Antenna */}
+            <line x1="26" y1="2" x2="26" y2="12"/>
+            {/* Spire cap */}
+            <path d="M23 12 L29 12 L30 22 L22 22 Z"/>
+            {/* First platform */}
+            <line x1="20" y1="22" x2="32" y2="22"/>
+            {/* Detail bar */}
+            <line x1="23" y1="17" x2="29" y2="17"/>
+            {/* Upper section */}
+            <path d="M18 22 L34 22 L37 40 L15 40 Z"/>
+            {/* Second platform */}
+            <line x1="13" y1="40" x2="39" y2="40"/>
+            {/* Bar inside upper section */}
+            <line x1="20" y1="33" x2="32" y2="33"/>
+            {/* Lower section – legs splay out */}
+            <path d="M15 40 L8 70 M37 40 L44 70"/>
+            <path d="M20 40 L17 70 M32 40 L35 70"/>
+            {/* The iconic arch connecting inner legs */}
+            <path d="M17 70 C17 58 22 54 26 52 C30 54 35 58 35 70"/>
+            {/* Base */}
+            <line x1="4" y1="70" x2="48" y2="70"/>
+            {/* Base corners */}
+            <line x1="4" y1="70" x2="6" y2="74"/>
+            <line x1="48" y1="70" x2="46" y2="74"/>
+            <line x1="6" y1="74" x2="46" y2="74"/>
           </symbol>
 
-          {/* Big Ben */}
-          <symbol id="tb-bigben" viewBox="0 0 40 82" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M16 8L12 0L28 0L24 8Z"/>
-            <rect x="10" y="8" width="20" height="20"/>
-            <circle cx="20" cy="18" r="7"/>
-            <line x1="20" y1="11" x2="20" y2="18"/>
-            <line x1="20" y1="18" x2="26" y2="15"/>
-            <rect x="8" y="28" width="24" height="48"/>
-            <line x1="8" y1="54" x2="32" y2="54"/>
-            <line x1="2" y1="54" x2="8" y2="54"/>
-            <line x1="32" y1="54" x2="38" y2="54"/>
-            <line x1="2" y1="74" x2="8" y2="74"/>
-            <line x1="32" y1="74" x2="38" y2="74"/>
-            <rect x="4" y="76" width="32" height="4"/>
+          {/* ── BIG BEN ── */}
+          <symbol id="ic-bigben" viewBox="0 0 46 92" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Gothic spire */}
+            <path d="M23 2 L20 14 L26 14 Z"/>
+            {/* Pinnacle base */}
+            <rect x="18" y="14" width="10" height="5"/>
+            {/* Belfry */}
+            <rect x="14" y="19" width="18" height="5"/>
+            {/* Clock tower section */}
+            <rect x="12" y="24" width="22" height="20"/>
+            {/* Clock face */}
+            <circle cx="23" cy="34" r="8"/>
+            {/* Clock hands */}
+            <line x1="23" y1="27" x2="23" y2="34" strokeWidth="1.2"/>
+            <line x1="23" y1="34" x2="28" y2="30" strokeWidth="1.2"/>
+            {/* Cornice */}
+            <line x1="10" y1="44" x2="36" y2="44"/>
+            {/* Main tower shaft */}
+            <rect x="10" y="44" width="26" height="42"/>
+            {/* Horizontal string courses */}
+            <line x1="10" y1="60" x2="36" y2="60"/>
+            <line x1="10" y1="74" x2="36" y2="74"/>
+            {/* Buttresses */}
+            <path d="M4 56 L10 56 L10 86"/>
+            <path d="M42 56 L36 56 L36 86"/>
+            {/* Base plinth */}
+            <line x1="4" y1="86" x2="42" y2="86"/>
           </symbol>
 
-          {/* Hot air balloon */}
-          <symbol id="tb-balloon" viewBox="0 0 50 70" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M25 5C12 5 5 14 5 24C5 36 15 48 25 50C35 48 45 36 45 24C45 14 38 5 25 5Z"/>
-            <line x1="25" y1="5" x2="25" y2="50"/>
-            <path d="M5 24Q25 15 45 24"/>
-            <path d="M5 38Q25 29 45 38"/>
-            <path d="M15 49L12 59L38 59L35 49"/>
-            <rect x="14" y="59" width="22" height="9" rx="2"/>
+          {/* ── HOT AIR BALLOON ── */}
+          <symbol id="ic-balloon" viewBox="0 0 58 78" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Envelope */}
+            <path d="M29 5 C16 5 6 15 6 27 C6 40 15 50 29 53 C43 50 52 40 52 27 C52 15 42 5 29 5 Z"/>
+            {/* Vertical panel seams */}
+            <path d="M29 5 C26 14 25 24 26 37 C27 44 28 49 29 53"/>
+            <path d="M29 5 C32 14 33 24 32 37 C31 44 30 49 29 53"/>
+            <path d="M29 5 C20 10 14 18 12 28 C10 38 14 46 20 51"/>
+            <path d="M29 5 C38 10 44 18 46 28 C48 38 44 46 38 51"/>
+            {/* Equator band */}
+            <path d="M7 29 Q29 22 51 29"/>
+            {/* Suspension ropes */}
+            <line x1="18" y1="52" x2="15" y2="64"/>
+            <line x1="40" y1="52" x2="43" y2="64"/>
+            <line x1="23" y1="53" x2="21" y2="64"/>
+            <line x1="35" y1="53" x2="37" y2="64"/>
+            {/* Basket */}
+            <rect x="14" y="64" width="30" height="11" rx="2"/>
+            <line x1="14" y1="70" x2="44" y2="70"/>
           </symbol>
 
-          {/* Compass */}
-          <symbol id="tb-compass" viewBox="0 0 50 50" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="25" cy="25" r="22"/>
-            <polygon points="25,8 28,25 25,32 22,25" fill="currentColor" opacity="0.4"/>
-            <polygon points="25,42 22,25 25,18 28,25"/>
-            <line x1="25" y1="3" x2="25" y2="8"/>
-            <line x1="25" y1="42" x2="25" y2="47"/>
-            <line x1="3" y1="25" x2="8" y2="25"/>
-            <line x1="42" y1="25" x2="47" y2="25"/>
-            <circle cx="25" cy="25" r="3"/>
+          {/* ── COMPASS ROSE ── */}
+          <symbol id="ic-compass" viewBox="0 0 58 58" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Outer bezel ring */}
+            <circle cx="29" cy="29" r="27"/>
+            {/* Cardinal tick marks */}
+            <line x1="29" y1="2" x2="29" y2="8"/>
+            <line x1="29" y1="50" x2="29" y2="56"/>
+            <line x1="2" y1="29" x2="8" y2="29"/>
+            <line x1="50" y1="29" x2="56" y2="29"/>
+            {/* Ordinal ticks */}
+            <line x1="10" y1="10" x2="14" y2="14" strokeWidth="0.7"/>
+            <line x1="48" y1="10" x2="44" y2="14" strokeWidth="0.7"/>
+            <line x1="10" y1="48" x2="14" y2="44" strokeWidth="0.7"/>
+            <line x1="48" y1="48" x2="44" y2="44" strokeWidth="0.7"/>
+            {/* Inner ring */}
+            <circle cx="29" cy="29" r="14"/>
+            {/* N-arrow (filled) */}
+            <path d="M29 15 L31.5 29 L29 24 L26.5 29 Z" fill="currentColor" opacity="0.45"/>
+            {/* S-arrow */}
+            <path d="M29 43 L26.5 29 L29 34 L31.5 29 Z"/>
+            {/* E-arrow */}
+            <path d="M43 29 L29 26.5 L34 29 L29 31.5 Z"/>
+            {/* W-arrow (filled) */}
+            <path d="M15 29 L29 31.5 L24 29 L29 26.5 Z" fill="currentColor" opacity="0.25"/>
+            {/* Centre jewel */}
+            <circle cx="29" cy="29" r="3" fill="currentColor" opacity="0.5"/>
           </symbol>
 
-          {/* Mountain */}
-          <symbol id="tb-mountain" viewBox="0 0 80 55" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 53L32 5L60 53Z"/>
-            <path d="M42 53L60 22L78 53"/>
-            <path d="M24 22L32 5L40 22Z"/>
+          {/* ── AIRPLANE (top-down silhouette) ── */}
+          <symbol id="ic-plane" viewBox="0 0 72 44" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Fuselage */}
+            <path d="M8 22 C8 22 32 18 58 20 C64 20 69 21 70 22 C69 23 64 24 58 24 C32 26 8 22 8 22 Z"/>
+            {/* Main wing – swept back */}
+            <path d="M26 22 L14 8 L46 19 Z"/>
+            <path d="M26 22 L14 36 L46 25 Z"/>
+            {/* Vertical tail */}
+            <path d="M10 22 L7 13 L16 20"/>
+            {/* Horizontal stabiliser */}
+            <path d="M10 22 L5 17 L15 21"/>
+            <path d="M10 22 L5 27 L15 23"/>
+            {/* Engine pods */}
+            <path d="M34 19 C32 18 30 18 30 20 C30 22 32 22 34 21" strokeWidth="0.8"/>
+            <path d="M34 25 C32 24 30 24 30 26 C30 28 32 28 34 27" strokeWidth="0.8"/>
           </symbol>
 
-          {/* Palm tree */}
-          <symbol id="tb-palm" viewBox="0 0 50 70" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M25 68C24 55 23 46 24 32"/>
-            <path d="M24 32C18 28 10 22 8 14C16 18 21 26 24 32"/>
-            <path d="M24 32C20 22 20 13 24 8C26 18 26 26 24 32"/>
-            <path d="M24 32C30 22 38 16 44 12C38 20 30 27 24 32"/>
-            <path d="M24 32C16 28 8 28 4 24C12 24 20 28 24 32"/>
+          {/* ── MOUNTAIN RANGE ── */}
+          <symbol id="ic-mountain" viewBox="0 0 92 62" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Left/main peak */}
+            <path d="M6 60 L36 6 L66 60 Z"/>
+            {/* Snow cap */}
+            <path d="M26 26 L36 6 L46 26 C40 22 32 22 26 26 Z"/>
+            {/* Right secondary peak */}
+            <path d="M50 60 L66 24 L84 60"/>
+            {/* Snow cap 2 */}
+            <path d="M58 38 L66 24 L74 38 C70 36 62 36 58 38 Z"/>
+            {/* Ground */}
+            <line x1="2" y1="60" x2="90" y2="60"/>
           </symbol>
 
-          {/* Airplane */}
-          <symbol id="tb-plane" viewBox="0 0 60 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 20L55 8L48 20L55 32Z"/>
-            <path d="M18 20L12 32L22 30L26 20"/>
-            <path d="M38 13L35 8L42 6"/>
+          {/* ── PALM TREE ── */}
+          <symbol id="ic-palm" viewBox="0 0 64 82" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Trunk – gentle S-curve */}
+            <path d="M32 80 C31 67 30 54 31 40 C32 30 33 22 31 14"/>
+            {/* Fronds – radiating from crown */}
+            <path d="M31 14 C26 10 16 14 8 10 C15 12 23 16 29 20"/>
+            <path d="M31 14 C29 6 31 0 29 0 C29 4 30 12 32 18"/>
+            <path d="M31 14 C37 8 46 10 52 6 C45 10 37 15 31 20"/>
+            <path d="M31 14 C22 10 14 12 8 8 C15 12 25 16 31 20"/>
+            <path d="M31 14 C40 12 48 16 54 12 C46 14 38 18 31 20"/>
+            {/* Coconuts */}
+            <circle cx="28" cy="18" r="2.5"/>
+            <circle cx="34" cy="19" r="2.5"/>
+            {/* Ground mound */}
+            <path d="M20 80 Q32 76 44 80"/>
           </symbol>
 
-          {/* Suitcase */}
-          <symbol id="tb-suitcase" viewBox="0 0 50 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="4" y="14" width="42" height="30" rx="4"/>
-            <path d="M18 14V8C18 6 20 4 25 4C30 4 32 6 32 8V14"/>
-            <line x1="25" y1="14" x2="25" y2="44"/>
-            <line x1="4" y1="26" x2="46" y2="26"/>
-            <line x1="12" y1="44" x2="12" y2="48"/>
-            <line x1="38" y1="44" x2="38" y2="48"/>
+          {/* ── VINTAGE SUITCASE ── */}
+          <symbol id="ic-suitcase" viewBox="0 0 62 54" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Handle */}
+            <path d="M23 14 V8 C23 6 25 4 31 4 C37 4 39 6 39 8 V14"/>
+            {/* Body */}
+            <rect x="4" y="14" width="54" height="36" rx="5"/>
+            {/* Mid seam */}
+            <line x1="4" y1="32" x2="58" y2="32"/>
+            {/* Strap / divider */}
+            <line x1="31" y1="14" x2="31" y2="50"/>
+            {/* Corner hardware */}
+            <path d="M4 22 L4 14 L13 14" strokeWidth="1.4"/>
+            <path d="M58 22 L58 14 L49 14" strokeWidth="1.4"/>
+            <path d="M4 42 L4 50 L13 50" strokeWidth="1.4"/>
+            <path d="M58 42 L58 50 L49 50" strokeWidth="1.4"/>
+            {/* Label sticker */}
+            <rect x="12" y="20" width="10" height="7" rx="1" strokeWidth="0.7"/>
+            {/* Wheels */}
+            <circle cx="14" cy="52" r="2.5"/>
+            <circle cx="48" cy="52" r="2.5"/>
           </symbol>
 
-          {/* Map pin */}
-          <symbol id="tb-pin" viewBox="0 0 30 46" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 2C8 2 2 8 2 15C2 24 15 44 15 44C15 44 28 24 28 15C28 8 22 2 15 2Z"/>
-            <circle cx="15" cy="15" r="5"/>
+          {/* ── MAP PIN ── */}
+          <symbol id="ic-pin" viewBox="0 0 34 50" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17 2 C10 2 3 8 3 16 C3 26 17 48 17 48 C17 48 31 26 31 16 C31 8 24 2 17 2 Z"/>
+            <circle cx="17" cy="16" r="5.5"/>
           </symbol>
 
-          {/* Camera */}
-          <symbol id="tb-camera" viewBox="0 0 55 42" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="10" width="51" height="30" rx="4"/>
-            <path d="M19 10L15 2L40 2L36 10"/>
-            <circle cx="27" cy="25" r="10"/>
-            <circle cx="27" cy="25" r="5"/>
-            <circle cx="45" cy="16" r="3"/>
+          {/* ── GLOBE ── */}
+          <symbol id="ic-globe" viewBox="0 0 58 62" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Sphere */}
+            <circle cx="29" cy="28" r="26"/>
+            {/* Central meridian */}
+            <ellipse cx="29" cy="28" rx="11" ry="26"/>
+            {/* Outer meridian arcs (faint) */}
+            <ellipse cx="29" cy="28" rx="22" ry="26" strokeWidth="0.6"/>
+            {/* Latitude lines */}
+            <path d="M4 17 Q29 11 54 17" strokeWidth="0.8"/>
+            <line x1="3" y1="28" x2="55" y2="28"/>
+            <path d="M4 39 Q29 45 54 39" strokeWidth="0.8"/>
+            {/* Stand */}
+            <line x1="29" y1="54" x2="29" y2="59"/>
+            <line x1="21" y1="59" x2="37" y2="59"/>
           </symbol>
 
-          {/* Globe */}
-          <symbol id="tb-globe" viewBox="0 0 50 50" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="25" cy="25" r="22"/>
-            <ellipse cx="25" cy="25" rx="10" ry="22"/>
-            <line x1="3" y1="25" x2="47" y2="25"/>
-            <path d="M5 14Q25 18 45 14"/>
-            <path d="M5 36Q25 32 45 36"/>
+          {/* ── SAILBOAT ── */}
+          <symbol id="ic-boat" viewBox="0 0 72 66" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Mast */}
+            <line x1="36" y1="5" x2="36" y2="46"/>
+            {/* Main sail */}
+            <path d="M36 8 L14 44 L56 44 Z"/>
+            {/* Jib foresail */}
+            <path d="M36 12 L58 38 L36 44"/>
+            {/* Hull */}
+            <path d="M10 46 Q36 55 62 46 L58 50 Q36 62 14 50 Z"/>
+            {/* Water line */}
+            <path d="M5 54 Q36 60 67 54"/>
+            {/* Wake ripples */}
+            <path d="M2 58 Q12 54 22 58 Q32 62 42 58 Q52 54 62 58 Q68 60 70 58" strokeWidth="0.7"/>
           </symbol>
 
-          {/* Anchor */}
-          <symbol id="tb-anchor" viewBox="0 0 40 55" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="20" cy="8" r="6"/>
-            <line x1="20" y1="14" x2="20" y2="50"/>
-            <line x1="8" y1="22" x2="32" y2="22"/>
-            <path d="M20 50C10 50 6 44 6 38"/>
-            <path d="M20 50C30 50 34 44 34 38"/>
+          {/* ── TAJ MAHAL ── */}
+          <symbol id="ic-taj" viewBox="0 0 96 72" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* — Central dome — */}
+            {/* Finial */}
+            <line x1="48" y1="2" x2="48" y2="8"/>
+            <circle cx="48" cy="5" r="2" fill="currentColor" opacity="0.4"/>
+            {/* Onion dome */}
+            <path d="M48 8 C42 8 36 13 34 19 C32 25 34 31 38 35 C40 37 42 39 48 41 C54 39 56 37 58 35 C62 31 64 25 62 19 C60 13 54 8 48 8 Z"/>
+            {/* Drum base of dome */}
+            <line x1="32" y1="41" x2="64" y2="41"/>
+            {/* Iwan (central arch) */}
+            <path d="M40 66 V56 Q40 46 48 46 Q56 46 56 56 V66"/>
+            {/* Main body */}
+            <rect x="32" y="41" width="32" height="26"/>
+            {/* — Left corner minaret — */}
+            <line x1="14" y1="4" x2="14" y2="66"/>
+            <path d="M14 4 C11 4 9 7 9 10 C9 13 11 16 14 17 C17 16 19 13 19 10 C19 7 17 4 14 4 Z"/>
+            <line x1="9" y1="22" x2="19" y2="22"/>
+            <line x1="9" y1="36" x2="19" y2="36"/>
+            <line x1="9" y1="50" x2="19" y2="50"/>
+            {/* — Right corner minaret — */}
+            <line x1="82" y1="4" x2="82" y2="66"/>
+            <path d="M82 4 C79 4 77 7 77 10 C77 13 79 16 82 17 C85 16 87 13 87 10 C87 7 85 4 82 4 Z"/>
+            <line x1="77" y1="22" x2="87" y2="22"/>
+            <line x1="77" y1="36" x2="87" y2="36"/>
+            <line x1="77" y1="50" x2="87" y2="50"/>
+            {/* Side wings */}
+            <rect x="19" y="46" width="13" height="20"/>
+            <rect x="64" y="46" width="13" height="20"/>
+            {/* Base terrace */}
+            <line x1="4" y1="66" x2="92" y2="66"/>
+            <rect x="4" y="66" width="88" height="4"/>
           </symbol>
 
-          {/* Passport */}
-          <symbol id="tb-passport" viewBox="0 0 36 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="2" width="30" height="44" rx="4"/>
-            <line x1="8" y1="8" x2="28" y2="8"/>
-            <circle cx="18" cy="24" r="8"/>
-            <ellipse cx="18" cy="24" rx="4" ry="8"/>
-            <line x1="10" y1="24" x2="26" y2="24"/>
-            <line x1="8" y1="38" x2="28" y2="38"/>
+          {/* ── CAMERA ── */}
+          <symbol id="ic-camera" viewBox="0 0 62 46" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Body */}
+            <rect x="4" y="12" width="54" height="30" rx="5"/>
+            {/* Pentagon viewfinder top */}
+            <path d="M21 12 L18 4 L44 4 L41 12"/>
+            {/* Lens outer ring */}
+            <circle cx="31" cy="27" r="12"/>
+            {/* Lens mid ring */}
+            <circle cx="31" cy="27" r="7.5"/>
+            {/* Lens inner */}
+            <circle cx="31" cy="27" r="3.5"/>
+            {/* Flash unit */}
+            <rect x="7" y="16" width="9" height="6" rx="1.5"/>
+            {/* Shutter button */}
+            <circle cx="49" cy="14" r="3.5"/>
+            {/* Strap lug left */}
+            <line x1="4" y1="18" x2="4" y2="24"/>
+            {/* Strap lug right */}
+            <line x1="58" y1="18" x2="58" y2="24"/>
           </symbol>
 
-          {/* Wave */}
-          <symbol id="tb-wave" viewBox="0 0 60 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            <path d="M0 10C8 2 16 18 24 10C32 2 40 18 48 10C52 6 56 8 60 10"/>
+          {/* ── TRAVEL MAP (folded) ── */}
+          <symbol id="ic-map" viewBox="0 0 62 52" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            {/* Map fold shape */}
+            <path d="M4 8 L21 4 L38 8 L55 4 V48 L38 52 L21 48 L4 52 Z"/>
+            {/* Fold seams */}
+            <line x1="21" y1="4" x2="21" y2="48"/>
+            <line x1="38" y1="8" x2="38" y2="52"/>
+            {/* Dotted route */}
+            <path d="M10 40 Q17 26 29 22 Q40 18 47 26" strokeDasharray="2.5 2" strokeWidth="0.9"/>
+            {/* Start point */}
+            <circle cx="10" cy="40" r="2.5" fill="currentColor" opacity="0.5"/>
+            {/* Destination pin */}
+            <path d="M47 26 C45 26 43 24 43 22 C43 18 47 12 47 12 C47 12 51 18 51 22 C51 24 49 26 47 26 Z" strokeWidth="0.9"/>
           </symbol>
 
-          {/* Sparkle */}
-          <symbol id="tb-spark" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
-            <line x1="10" y1="1" x2="10" y2="19"/>
-            <line x1="1" y1="10" x2="19" y2="10"/>
-            <line x1="3" y1="3" x2="17" y2="17"/>
-            <line x1="17" y1="3" x2="3" y2="17"/>
+          {/* ── 4-POINTED STAR SPARKLE ── */}
+          <symbol id="ic-spark" viewBox="0 0 22 22" fill="currentColor">
+            <path d="M11 1 L12.6 9.4 L21 11 L12.6 12.6 L11 21 L9.4 12.6 L1 11 L9.4 9.4 Z" opacity="0.7"/>
           </symbol>
 
-          {/* Lighthouse */}
-          <symbol id="tb-lighthouse" viewBox="0 0 36 70" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 0H24V10H12Z"/>
-            <path d="M10 10H26L28 60H8Z"/>
-            <line x1="8" y1="28" x2="28" y2="28"/>
-            <line x1="8" y1="44" x2="28" y2="44"/>
-            <path d="M6 60H30V70H6Z"/>
-            <path d="M4 8L8 6M32 8L28 6"/>
+          {/* ── SMALL DOT ── */}
+          <symbol id="ic-dot" viewBox="0 0 8 8">
+            <circle cx="4" cy="4" r="2.5" fill="currentColor" opacity="0.55"/>
           </symbol>
 
-          {/* Sailboat */}
-          <symbol id="tb-boat" viewBox="0 0 60 55" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M30 5L30 40"/>
-            <path d="M30 8L10 38L50 38Z"/>
-            <path d="M8 40Q30 48 52 40"/>
-            <path d="M4 48Q30 56 56 48"/>
-          </symbol>
-
-          {/* Binoculars */}
-          <symbol id="tb-binoculars" viewBox="0 0 50 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="14" cy="25" r="12"/>
-            <circle cx="36" cy="25" r="12"/>
-            <circle cx="14" cy="25" r="6"/>
-            <circle cx="36" cy="25" r="6"/>
-            <path d="M14 13L14 8Q14 5 20 5H30Q36 5 36 8L36 13"/>
-            <line x1="22" y1="25" x2="28" y2="25"/>
-          </symbol>
         </defs>
 
-        {/* ─── CLUSTER 1 — Top left: Eiffel Tower + airplane ─── */}
-        <use href="#tb-eiffel" x="62" y="32" width="48" height="77"/>
-        <use href="#tb-plane" x="126" y="48" width="46" height="30" transform="rotate(-18 149 63)"/>
-        <use href="#tb-pin" x="52" y="118" width="24" height="37"/>
-        <use href="#tb-spark" x="120" y="22" width="16" height="16"/>
-        <use href="#tb-spark" x="172" y="80" width="11" height="11"/>
+        {/* ════════════════════════════════════════════
+            PRIMARY CLUSTERS
+            ════════════════════════════════════════════ */}
 
-        {/* ─── CLUSTER 2 — Top right: Big Ben + balloon ─── */}
-        <use href="#tb-bigben" x="1092" y="18" width="36" height="74"/>
-        <use href="#tb-balloon" x="1030" y="22" width="44" height="62"/>
-        <use href="#tb-wave" x="1025" y="96" width="58" height="19"/>
-        <use href="#tb-spark" x="1082" y="10" width="15" height="15"/>
-        <use href="#tb-spark" x="1145" y="86" width="10" height="10"/>
+        {/* ── C1: Top-left — Eiffel + plane ── */}
+        <use href="#ic-eiffel"  x="52"   y="24"  width="56"  height="90"/>
+        <use href="#ic-plane"   x="130"  y="42"  width="56"  height="34" transform="rotate(-18 158 59)"/>
+        <use href="#ic-spark"   x="132"  y="14"  width="20"  height="20"/>
+        <use href="#ic-dot"     x="178"  y="76"  width="8"   height="8"/>
+        <use href="#ic-dot"     x="108"  y="118" width="7"   height="7"/>
 
-        {/* ─── CLUSTER 3 — Upper center: Globe + compass + pin ─── */}
-        <use href="#tb-globe" x="572" y="22" width="54" height="54"/>
-        <use href="#tb-compass" x="644" y="30" width="50" height="50"/>
-        <use href="#tb-pin" x="542" y="32" width="26" height="40"/>
-        <use href="#tb-spark" x="620" y="12" width="13" height="13"/>
-        <use href="#tb-spark" x="532" y="84" width="10" height="10"/>
+        {/* ── C2: Top-right — Big Ben + balloon ── */}
+        <use href="#ic-bigben"  x="1088" y="10"  width="44"  height="86"/>
+        <use href="#ic-balloon" x="1018" y="14"  width="56"  height="78"/>
+        <use href="#ic-spark"   x="1080" y="4"   width="18"  height="18"/>
+        <use href="#ic-dot"     x="1148" y="90"  width="8"   height="8"/>
+        <use href="#ic-dot"     x="1022" y="96"  width="7"   height="7"/>
 
-        {/* ─── CLUSTER 4 — Left middle: Mountain + palm + wave ─── */}
-        <use href="#tb-mountain" x="38" y="258" width="78" height="54"/>
-        <use href="#tb-palm" x="132" y="250" width="46" height="64"/>
-        <use href="#tb-wave" x="42" y="328" width="62" height="19"/>
-        <use href="#tb-spark" x="30" y="248" width="14" height="14"/>
-        <use href="#tb-spark" x="178" y="322" width="10" height="10"/>
+        {/* ── C3: Upper-center — Globe + compass ── */}
+        <use href="#ic-globe"   x="566"  y="14"  width="62"  height="66"/>
+        <use href="#ic-compass" x="648"  y="22"  width="58"  height="58"/>
+        <use href="#ic-pin"     x="534"  y="24"  width="30"  height="44"/>
+        <use href="#ic-spark"   x="616"  y="6"   width="16"  height="16"/>
+        <use href="#ic-dot"     x="526"  y="78"  width="7"   height="7"/>
 
-        {/* ─── CLUSTER 5 — Right middle: Lighthouse + palm ─── */}
-        <use href="#tb-lighthouse" x="1162" y="255" width="38" height="74"/>
-        <use href="#tb-palm" x="1218" y="268" width="44" height="62"/>
-        <use href="#tb-wave" x="1155" y="340" width="56" height="18"/>
-        <use href="#tb-spark" x="1150" y="248" width="13" height="13"/>
-        <use href="#tb-spark" x="1258" y="338" width="10" height="10"/>
+        {/* ── C4: Left-middle — Mountain + map + palm ── */}
+        <use href="#ic-mountain" x="30"  y="250" width="88"  height="60"/>
+        <use href="#ic-map"      x="136" y="256" width="62"  height="52"/>
+        <use href="#ic-palm"     x="214" y="242" width="52"  height="86"/>
+        <use href="#ic-spark"    x="22"  y="240" width="16"  height="16"/>
+        <use href="#ic-dot"      x="186" y="318" width="7"   height="7"/>
 
-        {/* ─── CLUSTER 6 — Center: Airplane + compass + pin ─── */}
-        <use href="#tb-plane" x="548" y="368" width="60" height="40" transform="rotate(20 578 388)"/>
-        <use href="#tb-compass" x="638" y="352" width="54" height="54"/>
-        <use href="#tb-pin" x="510" y="360" width="24" height="37"/>
-        <use href="#tb-spark" x="598" y="348" width="12" height="12"/>
-        <use href="#tb-spark" x="692" y="408" width="10" height="10"/>
+        {/* ── C5: Right-middle — Taj Mahal + palm ── */}
+        <use href="#ic-taj"  x="1128" y="238" width="100" height="76"/>
+        <use href="#ic-palm" x="1248" y="252" width="48"  height="64"/>
+        <use href="#ic-spark" x="1122" y="230" width="16" height="16"/>
+        <use href="#ic-dot"  x="1304" y="322" width="7"   height="7"/>
 
-        {/* ─── CLUSTER 7 — Bottom left: Suitcase + camera + passport ─── */}
-        <use href="#tb-suitcase" x="72" y="568" width="54" height="52"/>
-        <use href="#tb-camera" x="152" y="558" width="54" height="42"/>
-        <use href="#tb-passport" x="66" y="632" width="36" height="48"/>
-        <use href="#tb-wave" x="66" y="692" width="50" height="16"/>
-        <use href="#tb-spark" x="52" y="560" width="13" height="13"/>
-        <use href="#tb-spark" x="205" y="614" width="10" height="10"/>
+        {/* ── C6: Center — plane + compass + pin ── */}
+        <use href="#ic-plane"   x="534"  y="354" width="68"  height="42" transform="rotate(22 568 375)"/>
+        <use href="#ic-compass" x="636"  y="340" width="60"  height="60"/>
+        <use href="#ic-pin"     x="498"  y="348" width="30"  height="44"/>
+        <use href="#ic-spark"   x="592"  y="336" width="14"  height="14"/>
+        <use href="#ic-dot"     x="502"  y="400" width="8"   height="8"/>
 
-        {/* ─── CLUSTER 8 — Bottom center: Anchor + sailboat + waves ─── */}
-        <use href="#tb-anchor" x="578" y="658" width="44" height="60"/>
-        <use href="#tb-boat" x="638" y="650" width="56" height="52"/>
-        <use href="#tb-wave" x="528" y="728" width="65" height="20"/>
-        <use href="#tb-wave" x="602" y="748" width="52" height="16"/>
-        <use href="#tb-spark" x="570" y="652" width="12" height="12"/>
-        <use href="#tb-spark" x="698" y="706" width="10" height="10"/>
+        {/* ── C7: Bottom-left — Suitcase + camera + map ── */}
+        <use href="#ic-suitcase" x="56"  y="554" width="62"  height="58"/>
+        <use href="#ic-camera"   x="140" y="544" width="62"  height="46"/>
+        <use href="#ic-map"      x="62"  y="624" width="58"  height="48"/>
+        <use href="#ic-spark"    x="42"  y="546" width="16"  height="16"/>
+        <use href="#ic-dot"      x="204" y="598" width="7"   height="7"/>
 
-        {/* ─── CLUSTER 9 — Bottom right: Balloon + binoculars + pin ─── */}
-        <use href="#tb-balloon" x="1092" y="585" width="50" height="70"/>
-        <use href="#tb-binoculars" x="1162" y="618" width="52" height="42"/>
-        <use href="#tb-pin" x="1172" y="672" width="26" height="40"/>
-        <use href="#tb-wave" x="1082" y="688" width="60" height="18"/>
-        <use href="#tb-spark" x="1152" y="580" width="13" height="13"/>
-        <use href="#tb-spark" x="1225" y="670" width="10" height="10"/>
+        {/* ── C8: Bottom-center — Sailboat + globe ── */}
+        <use href="#ic-boat"   x="560"  y="638" width="76"  height="68"/>
+        <use href="#ic-globe"  x="654"  y="634" width="60"  height="64"/>
+        <use href="#ic-pin"    x="528"  y="645" width="26"  height="38"/>
+        <use href="#ic-spark"  x="552"  y="630" width="14"  height="14"/>
+        <use href="#ic-dot"    x="720"  y="700" width="7"   height="7"/>
 
-        {/* ─── CLUSTER 10 — Center-left fill ─── */}
-        <use href="#tb-passport" x="340" y="340" width="34" height="46"/>
-        <use href="#tb-plane" x="400" y="308" width="44" height="29" transform="rotate(-12 422 322)"/>
-        <use href="#tb-spark" x="388" y="298" width="13" height="13"/>
+        {/* ── C9: Bottom-right — Balloon + Taj ── */}
+        <use href="#ic-balloon" x="1074" y="570" width="58"  height="80"/>
+        <use href="#ic-taj"     x="1152" y="604" width="80"  height="60"/>
+        <use href="#ic-spark"   x="1142" y="562" width="16"  height="16"/>
+        <use href="#ic-dot"     x="1244" y="668" width="7"   height="7"/>
 
-        {/* ─── CLUSTER 11 — Center-right fill ─── */}
-        <use href="#tb-eiffel" x="940" y="320" width="44" height="70"/>
-        <use href="#tb-balloon" x="1002" y="310" width="38" height="54"/>
-        <use href="#tb-spark" x="934" y="314" width="12" height="12"/>
 
-        {/* ─── CLUSTER 12 — Mid-center: boat + wave ─── */}
-        <use href="#tb-boat" x="320" y="480" width="56" height="52"/>
-        <use href="#tb-wave" x="312" y="542" width="62" height="18"/>
-        <use href="#tb-anchor" x="390" y="478" width="38" height="52"/>
-        <use href="#tb-spark" x="306" y="472" width="12" height="12"/>
+        {/* ════════════════════════════════════════════
+            SECONDARY / SCATTERED ELEMENTS  (slightly reduced opacity)
+            ════════════════════════════════════════════ */}
 
-        {/* ─── CLUSTER 13 — Upper-mid-right fill ─── */}
-        <use href="#tb-binoculars" x="840" y="160" width="52" height="42"/>
-        <use href="#tb-mountain" x="910" y="148" width="66" height="46"/>
-        <use href="#tb-spark" x="836" y="152" width="11" height="11"/>
+        {/* Upper-mid-left: small Eiffel + plane */}
+        <use href="#ic-eiffel"  x="310"  y="60"  width="42"  height="68"  opacity="0.72"/>
+        <use href="#ic-plane"   x="374"  y="38"  width="46"  height="28"  transform="rotate(10 397 52)"  opacity="0.68"/>
 
-        {/* ─── CLUSTER 14 — Lower-mid-left fill ─── */}
-        <use href="#tb-globe" x="232" y="570" width="46" height="46"/>
-        <use href="#tb-compass" x="290" y="565" width="48" height="48"/>
-        <use href="#tb-spark" x="226" y="562" width="12" height="12"/>
+        {/* Upper-mid-right: Big Ben + compass */}
+        <use href="#ic-bigben"  x="846"  y="30"  width="36"  height="72"  opacity="0.7"/>
+        <use href="#ic-compass" x="800"  y="46"  width="44"  height="44"  opacity="0.65"/>
 
-        {/* ─── SCATTERED secondary elements ─── */}
+        {/* Mid-left: pin + map */}
+        <use href="#ic-pin"     x="276"  y="390" width="28"  height="42"  opacity="0.68"/>
+        <use href="#ic-map"     x="236"  y="444" width="54"  height="44"  opacity="0.62"/>
 
-        {/* Small Eiffel top-center-left */}
-        <use href="#tb-eiffel" x="322" y="70" width="32" height="52" opacity="0.7"/>
-        <use href="#tb-plane" x="384" y="46" width="38" height="25" transform="rotate(10 403 58)" opacity="0.65"/>
-        <use href="#tb-spark" x="362" y="126" width="10" height="10" opacity="0.5"/>
+        {/* Mid-right: mountain + boat */}
+        <use href="#ic-mountain" x="990" y="352" width="76"  height="52"  opacity="0.68"/>
+        <use href="#ic-boat"    x="1080" y="344" width="66"  height="60"  opacity="0.62"/>
 
-        {/* Small Big Ben top-right area */}
-        <use href="#tb-bigben" x="862" y="38" width="30" height="62" opacity="0.65"/>
-        <use href="#tb-compass" x="818" y="58" width="40" height="40" opacity="0.6"/>
-        <use href="#tb-spark" x="915" y="34" width="11" height="11" opacity="0.45"/>
+        {/* Center-left: balloon */}
+        <use href="#ic-balloon" x="428"  y="448" width="44"  height="62"  opacity="0.65"/>
 
-        {/* Mid-left: passport + suitcase cluster */}
-        <use href="#tb-passport" x="285" y="410" width="32" height="44" opacity="0.65"/>
-        <use href="#tb-suitcase" x="246" y="462" width="44" height="40" opacity="0.6"/>
-        <use href="#tb-spark" x="300" y="406" width="10" height="10" opacity="0.45"/>
+        {/* Center-right: Eiffel */}
+        <use href="#ic-eiffel"  x="806"  y="422" width="46"  height="74"  opacity="0.65"/>
 
-        {/* Mid-right: Mountain + palm small */}
-        <use href="#tb-mountain" x="1010" y="365" width="66" height="46" opacity="0.65"/>
-        <use href="#tb-palm" x="1090" y="355" width="38" height="54" opacity="0.6"/>
-        <use href="#tb-spark" x="1004" y="360" width="12" height="12" opacity="0.45"/>
+        {/* More planes */}
+        <use href="#ic-plane"   x="202"  y="158" width="42"  height="26"  transform="rotate(-28 223 171)" opacity="0.6"/>
+        <use href="#ic-plane"   x="930"  y="228" width="46"  height="28"  transform="rotate(16 953 242)" opacity="0.6"/>
 
-        {/* Scattered pins */}
-        <use href="#tb-pin" x="420" y="226" width="22" height="34" opacity="0.55"/>
-        <use href="#tb-pin" x="778" y="300" width="20" height="31" opacity="0.5"/>
+        {/* Globe scattered */}
+        <use href="#ic-globe"   x="172"  y="618" width="48"  height="52"  opacity="0.62"/>
 
-        {/* Scattered planes */}
-        <use href="#tb-plane" x="216" y="170" width="36" height="24" transform="rotate(-25 234 182)" opacity="0.55"/>
-        <use href="#tb-plane" x="948" y="242" width="40" height="26" transform="rotate(15 968 255)" opacity="0.55"/>
+        {/* Mountain top-center */}
+        <use href="#ic-mountain" x="684" y="110" width="66"  height="44"  opacity="0.62"/>
 
-        {/* Scattered balloons */}
-        <use href="#tb-balloon" x="442" y="465" width="36" height="50" opacity="0.55"/>
-        <use href="#tb-balloon" x="1260" y="440" width="34" height="48" opacity="0.55"/>
+        {/* Camera bottom-center-left */}
+        <use href="#ic-camera"  x="348"  y="698" width="56"  height="44"  opacity="0.65"/>
 
-        {/* Scattered globes */}
-        <use href="#tb-globe" x="184" y="635" width="42" height="42" opacity="0.55"/>
-        <use href="#tb-globe" x="980" y="488" width="44" height="44" opacity="0.55"/>
+        {/* Suitcase right */}
+        <use href="#ic-suitcase" x="1262" y="596" width="56" height="50"  opacity="0.65"/>
 
-        {/* Scattered mountains */}
-        <use href="#tb-mountain" x="700" y="120" width="58" height="40" opacity="0.55"/>
+        {/* Additional pins */}
+        <use href="#ic-pin"     x="404"  y="212" width="26"  height="38"  opacity="0.6"/>
+        <use href="#ic-pin"     x="762"  y="286" width="24"  height="35"  opacity="0.55"/>
 
-        {/* Scattered Eiffel */}
-        <use href="#tb-eiffel" x="818" y="438" width="38" height="62" opacity="0.55"/>
+        {/* Palm scattered */}
+        <use href="#ic-palm"    x="1318" y="118" width="44"  height="58"  opacity="0.6"/>
 
-        {/* Scattered camera */}
-        <use href="#tb-camera" x="358" y="710" width="48" height="36" opacity="0.6"/>
+        {/* Map scattered */}
+        <use href="#ic-map"     x="878"  y="618" width="54"  height="44"  opacity="0.62"/>
 
-        {/* Scattered anchor */}
-        <use href="#tb-anchor" x="900" y="665" width="36" height="50" opacity="0.6"/>
+        {/* ── SPARKLES scattered ── */}
+        <use href="#ic-spark"   x="436"  y="142" width="18"  height="18"  opacity="0.48"/>
+        <use href="#ic-spark"   x="736"  y="180" width="16"  height="16"  opacity="0.44"/>
+        <use href="#ic-spark"   x="930"  y="126" width="14"  height="14"  opacity="0.40"/>
+        <use href="#ic-spark"   x="332"  y="574" width="14"  height="14"  opacity="0.44"/>
+        <use href="#ic-spark"   x="782"  y="522" width="18"  height="18"  opacity="0.48"/>
+        <use href="#ic-spark"   x="434"  y="698" width="14"  height="14"  opacity="0.40"/>
+        <use href="#ic-spark"   x="684"  y="452" width="14"  height="14"  opacity="0.44"/>
+        <use href="#ic-spark"   x="1272" y="430" width="16"  height="16"  opacity="0.44"/>
+        <use href="#ic-spark"   x="116"  y="444" width="13"  height="13"  opacity="0.38"/>
+        <use href="#ic-spark"   x="484"  y="524" width="13"  height="13"  opacity="0.38"/>
+        <use href="#ic-spark"   x="854"  y="304" width="14"  height="14"  opacity="0.42"/>
+        <use href="#ic-spark"   x="1166" y="460" width="14"  height="14"  opacity="0.40"/>
 
-        {/* Scattered binoculars */}
-        <use href="#tb-binoculars" x="458" y="282" width="48" height="38" opacity="0.55"/>
+        {/* ── DOTS scattered ── */}
+        <use href="#ic-dot"     x="492"  y="144" width="8"   height="8"   opacity="0.5"/>
+        <use href="#ic-dot"     x="748"  y="122" width="7"   height="7"   opacity="0.45"/>
+        <use href="#ic-dot"     x="952"  y="280" width="8"   height="8"   opacity="0.48"/>
+        <use href="#ic-dot"     x="362"  y="324" width="7"   height="7"   opacity="0.44"/>
+        <use href="#ic-dot"     x="640"  y="560" width="8"   height="8"   opacity="0.50"/>
+        <use href="#ic-dot"     x="912"  y="604" width="7"   height="7"   opacity="0.44"/>
+        <use href="#ic-dot"     x="266"  y="704" width="7"   height="7"   opacity="0.40"/>
+        <use href="#ic-dot"     x="824"  y="748" width="8"   height="8"   opacity="0.42"/>
+        <use href="#ic-dot"     x="456"  y="356" width="7"   height="7"   opacity="0.42"/>
+        <use href="#ic-dot"     x="1056" y="208" width="7"   height="7"   opacity="0.40"/>
 
-        {/* Scattered lighthouse */}
-        <use href="#tb-lighthouse" x="1258" y="148" width="34" height="66" opacity="0.6"/>
-
-        {/* Scattered sailboat */}
-        <use href="#tb-boat" x="198" y="808" width="54" height="50" opacity="0.5"/>
-        <use href="#tb-boat" x="748" y="780" width="50" height="46" opacity="0.5"/>
-
-        {/* Scattered waves */}
-        <use href="#tb-wave" x="348" y="820" width="50" height="16" opacity="0.45"/>
-        <use href="#tb-wave" x="800" y="800" width="58" height="17" opacity="0.45"/>
-        <use href="#tb-wave" x="1300" y="740" width="55" height="16" opacity="0.45"/>
-
-        {/* Sparkles scattered across canvas */}
-        <use href="#tb-spark" x="450" y="152" width="14" height="14" opacity="0.45"/>
-        <use href="#tb-spark" x="750" y="192" width="12" height="12" opacity="0.4"/>
-        <use href="#tb-spark" x="950" y="140" width="11" height="11" opacity="0.38"/>
-        <use href="#tb-spark" x="348" y="590" width="12" height="12" opacity="0.42"/>
-        <use href="#tb-spark" x="800" y="540" width="14" height="14" opacity="0.45"/>
-        <use href="#tb-spark" x="450" y="715" width="11" height="11" opacity="0.38"/>
-        <use href="#tb-spark" x="700" y="470" width="11" height="11" opacity="0.4"/>
-        <use href="#tb-spark" x="1295" y="448" width="13" height="13" opacity="0.42"/>
-        <use href="#tb-spark" x="132" y="462" width="10" height="10" opacity="0.38"/>
-        <use href="#tb-spark" x="500" y="542" width="10" height="10" opacity="0.35"/>
-        <use href="#tb-spark" x="870" y="320" width="12" height="12" opacity="0.38"/>
-        <use href="#tb-spark" x="1180" y="480" width="11" height="11" opacity="0.38"/>
       </svg>
     </div>
   )
