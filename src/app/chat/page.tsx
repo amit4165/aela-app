@@ -13,7 +13,6 @@ import SuggestionTabs from '@/components/SuggestionTabs'
 import FlightSearchForm from '@/components/FlightSearchForm'
 import HotelSearchForm from '@/components/HotelSearchForm'
 import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
-import TravelBackground from '@/components/TravelBackground'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
 import type { ChatResponse, Deal } from '@/types/api'
@@ -285,7 +284,6 @@ function ChatPageInner() {
                 )}
 
                 <div className="chat-messages">
-                    <TravelBackground />
                     {messages.map(msg => (
                         <div key={msg.id}>
                             {msg.role === 'ai' && msg.response?.ui_hints?.show_warning && (
