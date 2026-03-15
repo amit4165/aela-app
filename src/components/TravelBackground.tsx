@@ -16,7 +16,7 @@ export default function TravelBackground() {
         viewBox="0 0 1400 900"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ color: '#00C896', opacity: 0.09 }}
+        style={{ color: '#00C896', opacity: 0.18 }}
       >
         <defs>
           {/* Eiffel Tower */}
@@ -251,6 +251,32 @@ export default function TravelBackground() {
         <use href="#tb-wave" x="1082" y="688" width="60" height="18"/>
         <use href="#tb-spark" x="1152" y="580" width="13" height="13"/>
         <use href="#tb-spark" x="1225" y="670" width="10" height="10"/>
+
+        {/* ─── CLUSTER 10 — Center-left fill ─── */}
+        <use href="#tb-passport" x="340" y="340" width="34" height="46"/>
+        <use href="#tb-plane" x="400" y="308" width="44" height="29" transform="rotate(-12 422 322)"/>
+        <use href="#tb-spark" x="388" y="298" width="13" height="13"/>
+
+        {/* ─── CLUSTER 11 — Center-right fill ─── */}
+        <use href="#tb-eiffel" x="940" y="320" width="44" height="70"/>
+        <use href="#tb-balloon" x="1002" y="310" width="38" height="54"/>
+        <use href="#tb-spark" x="934" y="314" width="12" height="12"/>
+
+        {/* ─── CLUSTER 12 — Mid-center: boat + wave ─── */}
+        <use href="#tb-boat" x="320" y="480" width="56" height="52"/>
+        <use href="#tb-wave" x="312" y="542" width="62" height="18"/>
+        <use href="#tb-anchor" x="390" y="478" width="38" height="52"/>
+        <use href="#tb-spark" x="306" y="472" width="12" height="12"/>
+
+        {/* ─── CLUSTER 13 — Upper-mid-right fill ─── */}
+        <use href="#tb-binoculars" x="840" y="160" width="52" height="42"/>
+        <use href="#tb-mountain" x="910" y="148" width="66" height="46"/>
+        <use href="#tb-spark" x="836" y="152" width="11" height="11"/>
+
+        {/* ─── CLUSTER 14 — Lower-mid-left fill ─── */}
+        <use href="#tb-globe" x="232" y="570" width="46" height="46"/>
+        <use href="#tb-compass" x="290" y="565" width="48" height="48"/>
+        <use href="#tb-spark" x="226" y="562" width="12" height="12"/>
 
         {/* ─── SCATTERED secondary elements ─── */}
 
