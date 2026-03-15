@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown'
+
 interface MessageBubbleProps {
     role: 'user' | 'ai'
     content: string
@@ -11,12 +13,7 @@ export default function MessageBubble({ role, content, userInitial = 'U' }: Mess
                 {role === 'ai' ? '✦' : userInitial}
             </div>
             <div className="message-bubble">
-                {content.split('\n').map((line, i) => (
-                    <span key={i}>
-                        {line}
-                        {i < content.split('\n').length - 1 && <br />}
-                    </span>
-                ))}
+                <ReactMarkdown>{content}</ReactMarkdown>
             </div>
         </div>
     )
