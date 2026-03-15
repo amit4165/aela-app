@@ -31,17 +31,18 @@ const F_NH   = [12,12,14,11,12,14,14,14,12, 6,12,12]
 
 type Item   = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number; opacity:number; anim:string; dur:number; delay:number }
 type Circle = { cx:number; cy:number; r:number }
+type Tier   = { scMin:number; scMax:number; opMin:number; opMax:number; rotSpread:number; anim:string; durMin:number; durMax:number; gap:number }
 
-// Three depth tiers: [scaleMin, scaleMax, opMin, opMax, rotSpread, animName, durMin, durMax, collisionGap]
-const TIERS = [
-  [0.60, 0.95,  0.04, 0.07,  55, 'none',     0,  0,  6],  // background — small, very faint, static
-  [1.05, 1.60,  0.09, 0.14,  75, 'tbFloat',  5,  9,  8],  // midground  — medium, gentle float
-  [1.70, 2.50,  0.15, 0.22,  90, 'tbDrift',  7, 13, 10],  // foreground — large, bold, drifting
-] as const
+// Three depth tiers — object notation avoids tuple/as-const runtime issues
+const TIERS: Tier[] = [
+  { scMin:0.60, scMax:0.95, opMin:0.04, opMax:0.07, rotSpread:55,  anim:'none',    durMin:0, durMax:0,  gap:6  }, // background
+  { scMin:1.05, scMax:1.60, opMin:0.09, opMax:0.14, rotSpread:75,  anim:'tbFloat', durMin:5, durMax:9,  gap:8  }, // midground
+  { scMin:1.70, scMax:2.50, opMin:0.15, opMax:0.22, rotSpread:90,  anim:'tbDrift', durMin:7, durMax:13, gap:10 }, // foreground
+]
 
 function scatterIcons(): Item[] {
   const rand   = seededRand(0xA3F7)
-  const items: Item[]   = []
+  const items: Item[]    = []
   const placed: Circle[] = []
 
   function overlaps(cx: number, cy: number, r: number) {
@@ -52,8 +53,8 @@ function scatterIcons(): Item[] {
     return false
   }
 
-  function place(icon: string, nw: number, nh: number, tier: typeof TIERS[number]) {
-    const [scMin, scMax, opMin, opMax, rotSpread, anim, durMin, durMax, gap] = tier
+  function place(icon: string, nw: number, nh: number, tier: Tier) {
+    const { scMin, scMax, opMin, opMax, rotSpread, anim, durMin, durMax, gap } = tier
     const sc  = scMin + rand() * (scMax - scMin)
     const w   = nw * sc, h = nh * sc
     const r   = Math.max(w, h) / 2 + gap
@@ -64,7 +65,7 @@ function scatterIcons(): Item[] {
         const rot   = -rotSpread / 2 + rand() * rotSpread
         const op    = opMin + rand() * (opMax - opMin)
         const dur   = durMin + rand() * (durMax - durMin)
-        const delay = -(rand() * dur)          // negative delay → random phase offset
+        const delay = -(rand() * (dur || 1))   // negative delay → random phase offset
         placed.push({ cx, cy, r })
         items.push({ icon, x, y, w, h, cx, cy, rot, opacity: op, anim, dur, delay })
         return
@@ -99,7 +100,7 @@ function scatterIcons(): Item[] {
   return items
 }
 
-const allItems = scatterIcons()
+const allItems: Item[] = scatterIcons()
 
 export default function TravelBackground() {
   return (
