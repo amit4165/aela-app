@@ -244,7 +244,6 @@ function ChatPageInner() {
 
     return (
         <div className="chat-page">
-            <TravelBackground />
 
             {/* Onboarding passport modal — shown until needs_onboarding is resolved */}
             {showOnboarding && (
@@ -286,6 +285,7 @@ function ChatPageInner() {
                 )}
 
                 <div className="chat-messages">
+                    <TravelBackground />
                     {messages.map(msg => (
                         <div key={msg.id}>
                             {msg.role === 'ai' && msg.response?.ui_hints?.show_warning && (
