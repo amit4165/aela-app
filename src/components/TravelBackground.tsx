@@ -6,105 +6,65 @@ import { useMemo } from 'react'
 //  Seeded random scatter — no overlaps, collision-checked
 // ═══════════════════════════════════════════════════════════════
 
-// xorshift32 seeded PRNG — deterministic across renders
-function seededRand(seed: number) {
-  let s = (seed >>> 0) || 1
-  return () => {
-    s ^= s << 13; s ^= s >>> 17; s ^= s << 5
-    return (s >>> 0) / 4294967296
-  }
-}
+type Item = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number; opacity:number; anim:string; dur:number; delay:number }
 
-const M_ICONS = [
-  's-eiffel','s-bigben','s-taj','s-colosseum','s-sydney',
-  's-pisa','s-burj','s-arc','s-pagoda','s-lighthouse',
-  's-moai','s-windmill','s-bridge','s-ferris',
-  's-plane','s-train','s-ship','s-boat','s-balloon',
-  's-helicopter','s-cable','s-scooter','s-anchor','s-bike',
-  's-mountain','s-palm','s-cactus','s-wave','s-volcano','s-lantern',
-  's-compass','s-globe','s-camera','s-pin','s-suitcase','s-passport',
-  's-binoculars','s-tent','s-snowflake','s-spark',
-]
-const M_NW = [30,22,56,52,50,20,12,44,34,18,22,32,50,36,42,44,54,38,28,40,28,34,22,36,48,22,22,38,38,18,30,30,38,18,28,24,30,36,24,14]
-const M_NH = [50,52,42,30,28,44,56,36,52,44,40,40,24,40,22,26,28,36,44,22,26,22,34,26,28,42,40,18,34,32,30,34,24,26,28,30,20,28,24,14]
+// Completely self-contained — no external state, Math.imul PRNG
+function buildItems(): Item[] {
+  // LCG PRNG seeded inline — Math.imul is safe in all modern JS engines
+  let s = 42975
+  const r = () => { s = (Math.imul(1664525, s) + 1013904223) | 0; return (s >>> 0) / 4294967296 }
 
-const F_ICONS = ['s-star5','s-ring','s-diamond','s-heart','s-moon','s-sun','s-leaf','s-drop','s-tri','s-dot3','s-cross2','s-petal']
-const F_NW   = [12,12,10,12,12,14,10,10,10,14,12,12]
-const F_NH   = [12,12,14,11,12,14,14,14,12, 6,12,12]
+  const MI = ['s-eiffel','s-bigben','s-taj','s-colosseum','s-sydney','s-pisa','s-burj','s-arc','s-pagoda','s-lighthouse','s-moai','s-windmill','s-bridge','s-ferris','s-plane','s-train','s-ship','s-boat','s-balloon','s-helicopter','s-cable','s-scooter','s-anchor','s-bike','s-mountain','s-palm','s-cactus','s-wave','s-volcano','s-lantern','s-compass','s-globe','s-camera','s-pin','s-suitcase','s-passport','s-binoculars','s-tent','s-snowflake','s-spark','s-windsurfer','s-flipflops','s-sunglasses','s-snorkel','s-pyramids','s-dolphin','s-lifering','s-beachball','s-beachumbrella','s-cocktail','s-sunhat','s-flippers']
+  const MW = [30,22,56,52,50,20,12,44,34,18,22,32,50,36,42,44,54,38,28,40,28,34,22,36,48,22,22,38,38,18,30,30,38,18,28,24,30,36,24,14, 40,36,38,28,48,44,32,28,40,24,40,34]
+  const MH = [50,52,42,30,28,44,56,36,52,44,40,40,24,40,22,26,28,36,44,22,26,22,34,26,28,42,40,18,34,32,30,34,24,26,28,30,20,28,24,14, 36,22,16,36,28,24,32,28,32,34,22,20]
+  const FI = ['s-star5','s-ring','s-diamond','s-heart','s-moon','s-sun','s-leaf','s-drop','s-tri','s-dot3','s-cross2','s-petal']
+  const FW = [12,12,10,12,12,14,10,10,10,14,12,12]
+  const FH = [12,12,14,11,12,14,14,14,12, 6,12,12]
 
-type Item   = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number; opacity:number; anim:string; dur:number; delay:number }
-type Circle = { cx:number; cy:number; r:number }
-type Tier   = { scMin:number; scMax:number; opMin:number; opMax:number; rotSpread:number; anim:string; durMin:number; durMax:number; gap:number }
+  const items: Item[] = []
+  // collision data stored as flat parallel arrays — no object allocation
+  const pcx: number[] = [], pcy: number[] = [], pr: number[] = []
 
-// Three depth tiers — object notation avoids tuple/as-const runtime issues
-const TIERS: Tier[] = [
-  { scMin:0.60, scMax:0.95, opMin:0.04, opMax:0.07, rotSpread:55,  anim:'none',    durMin:0, durMax:0,  gap:6  }, // background
-  { scMin:1.05, scMax:1.60, opMin:0.09, opMax:0.14, rotSpread:75,  anim:'tbFloat', durMin:5, durMax:9,  gap:8  }, // midground
-  { scMin:1.70, scMax:2.50, opMin:0.15, opMax:0.22, rotSpread:90,  anim:'tbDrift', durMin:7, durMax:13, gap:10 }, // foreground
-]
-
-function scatterIcons(): Item[] {
-  const rand   = seededRand(0xA3F7)
-  const items: Item[]    = []
-  const placed: Circle[] = []
-
-  function overlaps(cx: number, cy: number, r: number) {
-    for (const p of placed) {
-      const dx = cx - p.cx, dy = cy - p.cy
-      if (dx * dx + dy * dy < (r + p.r) * (r + p.r)) return true
+  const fits = (cx: number, cy: number, rad: number) => {
+    for (let i = 0; i < pcx.length; i++) {
+      const dx = cx - pcx[i], dy = cy - pcy[i], rr = rad + pr[i]
+      if (dx * dx + dy * dy < rr * rr) return false
     }
-    return false
+    return true
   }
 
-  function place(icon: string, nw: number, nh: number, tier: Tier) {
-    const { scMin, scMax, opMin, opMax, rotSpread, anim, durMin, durMax, gap } = tier
-    const sc  = scMin + rand() * (scMax - scMin)
-    const w   = nw * sc, h = nh * sc
-    const r   = Math.max(w, h) / 2 + gap
+  const place = (
+    icon: string, nw: number, nh: number,
+    sc: number, gap: number,
+    opMin: number, opMax: number, rotSpread: number,
+    anim: string, durMin: number, durMax: number
+  ) => {
+    const w = nw * sc, h = nh * sc, rad = Math.max(w, h) / 2 + gap
     for (let t = 0; t < 300; t++) {
-      const x = rand() * 1200, y = rand() * 900
-      const cx = x + w / 2,   cy = y + h / 2
-      if (!overlaps(cx, cy, r)) {
-        const rot   = -rotSpread / 2 + rand() * rotSpread
-        const op    = opMin + rand() * (opMax - opMin)
-        const dur   = durMin + rand() * (durMax - durMin)
-        const delay = -(rand() * (dur || 1))   // negative delay → random phase offset
-        placed.push({ cx, cy, r })
-        items.push({ icon, x, y, w, h, cx, cy, rot, opacity: op, anim, dur, delay })
+      const x = r() * 1200, y = r() * 900, cx = x + w / 2, cy = y + h / 2
+      if (fits(cx, cy, rad)) {
+        const dur = durMin + r() * (durMax - durMin)
+        pcx.push(cx); pcy.push(cy); pr.push(rad)
+        items.push({ icon, x, y, w, h, cx, cy, rot: -rotSpread / 2 + r() * rotSpread, opacity: opMin + r() * (opMax - opMin), anim, dur, delay: -(r() * (dur || 1)) })
         return
       }
     }
   }
 
-  // 40 background + 50 midground + 25 foreground main icons
-  for (let i = 0; i < 40; i++) { const ii = i % M_ICONS.length; place(M_ICONS[ii], M_NW[ii], M_NH[ii], TIERS[0]) }
-  for (let i = 0; i < 50; i++) { const ii = i % M_ICONS.length; place(M_ICONS[ii], M_NW[ii], M_NH[ii], TIERS[1]) }
-  for (let i = 0; i < 25; i++) { const ii = i % M_ICONS.length; place(M_ICONS[ii], M_NW[ii], M_NH[ii], TIERS[2]) }
-
-  // 80 filler icons — small, faint, slow pulse
-  for (let i = 0; i < 80; i++) {
-    const ii  = i % F_ICONS.length
-    const sc  = 1.3 + rand() * 2.2
-    const w   = F_NW[ii] * sc, h = F_NH[ii] * sc
-    const r   = Math.max(w, h) / 2 + 5
-    for (let t = 0; t < 200; t++) {
-      const x = rand() * 1200, y = rand() * 900
-      const cx = x + w / 2,   cy = y + h / 2
-      if (!overlaps(cx, cy, r)) {
-        const dur   = 6 + rand() * 9
-        const delay = -(rand() * dur)
-        placed.push({ cx, cy, r })
-        items.push({ icon: F_ICONS[ii], x, y, w, h, cx, cy, rot: rand() * 360, opacity: 0.04 + rand() * 0.07, anim: 'tbPulse', dur, delay })
-        return
-      }
-    }
-  }
+  // background (40) — small, faint, static
+  for (let i = 0; i < 40; i++) { const ii = i % MI.length; place(MI[ii], MW[ii], MH[ii], 0.60 + r() * 0.35, 6,  0.04, 0.07, 55, 'none',    0,  0) }
+  // midground (50) — medium, gentle float
+  for (let i = 0; i < 50; i++) { const ii = i % MI.length; place(MI[ii], MW[ii], MH[ii], 1.05 + r() * 0.55, 8,  0.09, 0.14, 75, 'tbFloat', 5,  9) }
+  // foreground (25) — large, bold drift
+  for (let i = 0; i < 25; i++) { const ii = i % MI.length; place(MI[ii], MW[ii], MH[ii], 1.70 + r() * 0.80, 10, 0.15, 0.22, 90, 'tbDrift', 7, 13) }
+  // fillers (80) — tiny, slow pulse
+  for (let i = 0; i < 80; i++) { const ii = i % FI.length; place(FI[ii], FW[ii], FH[ii], 1.30 + r() * 2.20, 5,  0.04, 0.11, 360,'tbPulse', 6, 15) }
 
   return items
 }
 
 export default function TravelBackground() {
-  const allItems = useMemo(() => scatterIcons(), [])
+  const allItems = useMemo(() => { try { return buildItems() } catch { return [] } }, [])
   return (
     <div style={{position:'absolute',inset:0,zIndex:0,pointerEvents:'none',overflow:'hidden'}} aria-hidden="true">
       <svg width="100%" height="100%" viewBox="0 0 1200 900"
@@ -641,9 +601,127 @@ export default function TravelBackground() {
             <circle cx="6" cy="6" r="1.5"/>
           </symbol>
 
+          {/* ── Windsurfer 40×36 ── */}
+          <symbol id="s-windsurfer" viewBox="0 0 40 36" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 30Q20 34 36 30L34 33Q20 37 8 33Z"/>
+            <line x1="20" y1="4" x2="20" y2="30"/>
+            <path d="M20 6Q8 12 8 24Q10 28 20 28Z"/>
+            <path d="M20 10Q30 14 32 22Q28 26 20 28"/>
+            <line x1="20" y1="18" x2="10" y2="23"/>
+            <circle cx="22" cy="28" r="1.5" fill="currentColor" opacity="0.6"/>
+          </symbol>
+
+          {/* ── Flip Flops 36×22 ── */}
+          <symbol id="s-flipflops" viewBox="0 0 36 22" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <ellipse cx="9" cy="16" rx="8" ry="5"/>
+            <path d="M9 11Q7 7 9 5Q11 3 12 6"/>
+            <path d="M9 11Q11 8 12 6"/>
+            <ellipse cx="27" cy="16" rx="8" ry="5"/>
+            <path d="M27 11Q25 7 27 5Q29 3 30 6"/>
+            <path d="M27 11Q29 8 30 6"/>
+          </symbol>
+
+          {/* ── Sunglasses 38×16 ── */}
+          <symbol id="s-sunglasses" viewBox="0 0 38 16" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="4" width="14" height="10" rx="5"/>
+            <rect x="23" y="4" width="14" height="10" rx="5"/>
+            <path d="M15 8Q19 6 23 8"/>
+            <line x1="1" y1="7" x2="0" y2="2"/>
+            <line x1="37" y1="7" x2="38" y2="2"/>
+          </symbol>
+
+          {/* ── Diving Mask + Snorkel 28×36 ── */}
+          <symbol id="s-snorkel" viewBox="0 0 28 36" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="8" width="20" height="14" rx="4"/>
+            <rect x="9" y="12" width="8" height="6" rx="2"/>
+            <path d="M3 13Q1 13 1 15Q1 18 3 18"/>
+            <path d="M23 13Q25 13 25 15Q25 18 23 18"/>
+            <path d="M22 8Q22 3 26 2"/>
+            <path d="M24 2Q27 2 27 5L27 22"/>
+            <path d="M25 22Q24 26 22 26"/>
+          </symbol>
+
+          {/* ── Egyptian Pyramids 48×28 ── */}
+          <symbol id="s-pyramids" viewBox="0 0 48 28" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 26L20 3L38 26Z"/>
+            <path d="M30 26L38 14L46 26"/>
+            <line x1="0" y1="26" x2="48" y2="26"/>
+            <line x1="10" y1="16" x2="30" y2="16" strokeWidth="0.5"/>
+            <line x1="34" y1="20" x2="44" y2="20" strokeWidth="0.5"/>
+          </symbol>
+
+          {/* ── Dolphin 44×24 ── */}
+          <symbol id="s-dolphin" viewBox="0 0 44 24" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 14C4 8 12 4 22 5C32 6 40 10 42 12"/>
+            <path d="M42 12C44 9 44 15 42 15C40 13 42 12Z"/>
+            <path d="M2 14C2 17 4 20 6 20C5 17 3 15 2 14Z"/>
+            <path d="M20 5C21 2 25 3 24 6"/>
+            <path d="M12 8C11 12 10 15 12 16"/>
+            <circle cx="8" cy="11" r="1" fill="currentColor" opacity="0.7"/>
+          </symbol>
+
+          {/* ── Life Ring 32×32 ── */}
+          <symbol id="s-lifering" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="16" cy="16" r="14"/>
+            <circle cx="16" cy="16" r="8"/>
+            <line x1="16" y1="2" x2="16" y2="8"/>
+            <line x1="16" y1="24" x2="16" y2="30"/>
+            <line x1="2" y1="16" x2="8" y2="16"/>
+            <line x1="24" y1="16" x2="30" y2="16"/>
+          </symbol>
+
+          {/* ── Beach Ball 28×28 ── */}
+          <symbol id="s-beachball" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="14" cy="14" r="12"/>
+            <path d="M2 14Q8 6 14 14Q20 22 26 14"/>
+            <path d="M8 3Q10 10 8 24"/>
+            <path d="M20 3Q18 10 20 24"/>
+          </symbol>
+
+          {/* ── Beach Umbrella + Chair 40×32 ── */}
+          <symbol id="s-beachumbrella" viewBox="0 0 40 32" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 18Q12 2 28 18Z"/>
+            <line x1="15" y1="18" x2="12" y2="32"/>
+            <line x1="12" y1="28" x2="8" y2="32"/>
+            <path d="M22 22L38 18"/>
+            <path d="M22 22L20 28"/>
+            <path d="M38 18L36 28"/>
+            <line x1="20" y1="28" x2="36" y2="28"/>
+            <circle cx="30" cy="17" r="1.8" fill="currentColor" opacity="0.5"/>
+            <path d="M30 19Q32 21 34 21"/>
+          </symbol>
+
+          {/* ── Martini / Cocktail 24×34 ── */}
+          <symbol id="s-cocktail" viewBox="0 0 24 34" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 3L12 17L22 3Z"/>
+            <line x1="2" y1="3" x2="22" y2="3"/>
+            <line x1="12" y1="17" x2="12" y2="27"/>
+            <line x1="5" y1="27" x2="19" y2="27"/>
+            <line x1="16" y1="3" x2="22" y2="11"/>
+            <circle cx="22" cy="11" r="2.5"/>
+          </symbol>
+
+          {/* ── Sun Hat 40×22 ── */}
+          <symbol id="s-sunhat" viewBox="0 0 40 22" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <ellipse cx="20" cy="19" rx="18" ry="4"/>
+            <path d="M7 19Q7 9 20 9Q33 9 33 19"/>
+            <ellipse cx="20" cy="9" rx="11" ry="3.5"/>
+            <path d="M10 14Q20 12 30 14"/>
+          </symbol>
+
+          {/* ── Swim Flippers 34×20 ── */}
+          <symbol id="s-flippers" viewBox="0 0 34 20" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 18Q2 10 5 8Q8 6 10 9L11 18Z"/>
+            <path d="M5 8Q6 4 8 2Q10 0 12 3L12 9"/>
+            <path d="M20 18Q20 10 23 8Q26 6 28 9L29 18Z"/>
+            <path d="M23 8Q24 4 26 2Q28 0 30 3L30 9"/>
+            <line x1="2" y1="18" x2="11" y2="18"/>
+            <line x1="20" y1="18" x2="29" y2="18"/>
+          </symbol>
+
         </defs>
 
-        {allItems.map(({ icon, x, y, w, h, cx, cy, rot, opacity, anim, dur, delay }, i) => (
+        {(allItems || []).map(({ icon, x, y, w, h, cx, cy, rot, opacity, anim, dur, delay }, i) => (
           <g key={i} transform={`rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})`}>
             <g style={{
               opacity,
