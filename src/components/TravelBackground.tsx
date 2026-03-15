@@ -29,15 +29,22 @@ const F_ICONS = ['s-star5','s-ring','s-diamond','s-heart','s-moon','s-sun','s-le
 const F_NW   = [12,12,10,12,12,14,10,10,10,14,12,12]
 const F_NH   = [12,12,14,11,12,14,14,14,12, 6,12,12]
 
-type Item  = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number }
+type Item   = { icon:string; x:number; y:number; w:number; h:number; cx:number; cy:number; rot:number; opacity:number; anim:string; dur:number; delay:number }
 type Circle = { cx:number; cy:number; r:number }
 
-function scatterIcons(): Item[] {
-  const rand    = seededRand(0xA3F7)
-  const items:   Item[]   = []
-  const placed:  Circle[] = []   // collision registry
+// Three depth tiers: [scaleMin, scaleMax, opMin, opMax, rotSpread, animName, durMin, durMax, collisionGap]
+const TIERS = [
+  [0.60, 0.95,  0.04, 0.07,  55, 'none',     0,  0,  6],  // background — small, very faint, static
+  [1.05, 1.60,  0.09, 0.14,  75, 'tbFloat',  5,  9,  8],  // midground  — medium, gentle float
+  [1.70, 2.50,  0.15, 0.22,  90, 'tbDrift',  7, 13, 10],  // foreground — large, bold, drifting
+] as const
 
-  function overlaps(cx: number, cy: number, r: number): boolean {
+function scatterIcons(): Item[] {
+  const rand   = seededRand(0xA3F7)
+  const items: Item[]   = []
+  const placed: Circle[] = []
+
+  function overlaps(cx: number, cy: number, r: number) {
     for (const p of placed) {
       const dx = cx - p.cx, dy = cy - p.cy
       if (dx * dx + dy * dy < (r + p.r) * (r + p.r)) return true
@@ -45,40 +52,48 @@ function scatterIcons(): Item[] {
     return false
   }
 
-  // Place one icon; try up to `maxTries` random positions before giving up
-  function place(
-    icon: string, nw: number, nh: number,
-    scMin: number, scMax: number,
-    rotMin: number, rotMax: number,
-    gap: number, maxTries: number
-  ) {
-    const sc = scMin + rand() * (scMax - scMin)
-    const w  = nw * sc, h = nh * sc
-    const r  = Math.max(w, h) / 2 + gap
-    for (let t = 0; t < maxTries; t++) {
-      const x  = rand() * 1200
-      const y  = rand() * 900
-      const cx = x + w / 2, cy = y + h / 2
+  function place(icon: string, nw: number, nh: number, tier: typeof TIERS[number]) {
+    const [scMin, scMax, opMin, opMax, rotSpread, anim, durMin, durMax, gap] = tier
+    const sc  = scMin + rand() * (scMax - scMin)
+    const w   = nw * sc, h = nh * sc
+    const r   = Math.max(w, h) / 2 + gap
+    for (let t = 0; t < 300; t++) {
+      const x = rand() * 1200, y = rand() * 900
+      const cx = x + w / 2,   cy = y + h / 2
       if (!overlaps(cx, cy, r)) {
-        const rot = rotMin + rand() * (rotMax - rotMin)
+        const rot   = -rotSpread / 2 + rand() * rotSpread
+        const op    = opMin + rand() * (opMax - opMin)
+        const dur   = durMin + rand() * (durMax - durMin)
+        const delay = -(rand() * dur)          // negative delay → random phase offset
         placed.push({ cx, cy, r })
-        items.push({ icon, x, y, w, h, cx, cy, rot })
+        items.push({ icon, x, y, w, h, cx, cy, rot, opacity: op, anim, dur, delay })
         return
       }
     }
-    // icon skipped — canvas too full to fit it without overlap
   }
 
-  // Main travel icons — cycle through all 40 icons × 3 passes
-  for (let i = 0; i < 120; i++) {
-    const ii = i % M_ICONS.length
-    place(M_ICONS[ii], M_NW[ii], M_NH[ii], 0.9, 1.8, -50, 100, 6, 200)
-  }
+  // 40 background + 50 midground + 25 foreground main icons
+  for (let i = 0; i < 40; i++) { const ii = i % M_ICONS.length; place(M_ICONS[ii], M_NW[ii], M_NH[ii], TIERS[0]) }
+  for (let i = 0; i < 50; i++) { const ii = i % M_ICONS.length; place(M_ICONS[ii], M_NW[ii], M_NH[ii], TIERS[1]) }
+  for (let i = 0; i < 25; i++) { const ii = i % M_ICONS.length; place(M_ICONS[ii], M_NW[ii], M_NH[ii], TIERS[2]) }
 
-  // Filler icons — placed after main icons, fill remaining gaps
-  for (let i = 0; i < 90; i++) {
-    const ii = i % F_ICONS.length
-    place(F_ICONS[ii], F_NW[ii], F_NH[ii], 1.5, 3.2, 0, 360, 4, 200)
+  // 80 filler icons — small, faint, slow pulse
+  for (let i = 0; i < 80; i++) {
+    const ii  = i % F_ICONS.length
+    const sc  = 1.3 + rand() * 2.2
+    const w   = F_NW[ii] * sc, h = F_NH[ii] * sc
+    const r   = Math.max(w, h) / 2 + 5
+    for (let t = 0; t < 200; t++) {
+      const x = rand() * 1200, y = rand() * 900
+      const cx = x + w / 2,   cy = y + h / 2
+      if (!overlaps(cx, cy, r)) {
+        const dur   = 6 + rand() * 9
+        const delay = -(rand() * dur)
+        placed.push({ cx, cy, r })
+        items.push({ icon: F_ICONS[ii], x, y, w, h, cx, cy, rot: rand() * 360, opacity: 0.04 + rand() * 0.07, anim: 'tbPulse', dur, delay })
+        return
+      }
+    }
   }
 
   return items
@@ -92,8 +107,23 @@ export default function TravelBackground() {
       <svg width="100%" height="100%" viewBox="0 0 1200 900"
            preserveAspectRatio="xMidYMin slice"
            xmlns="http://www.w3.org/2000/svg"
-           style={{color:'#00C896', opacity:0.13}}>
+           style={{color:'#00C896'}}>
         <defs>
+          <style>{`
+            @keyframes tbFloat {
+              0%,100% { transform: translateY(0px);  }
+              50%     { transform: translateY(-7px);  }
+            }
+            @keyframes tbDrift {
+              0%,100% { transform: translate(0px,   0px);  }
+              35%     { transform: translate(5px,  -4px);  }
+              70%     { transform: translate(-4px,  3px);  }
+            }
+            @keyframes tbPulse {
+              0%,100% { transform: scale(1);    }
+              50%     { transform: scale(1.12); }
+            }
+          `}</style>
 
           {/* ── Eiffel Tower 30×50 ── */}
           <symbol id="s-eiffel" viewBox="0 0 30 50" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" strokeLinejoin="round">
@@ -610,9 +640,18 @@ export default function TravelBackground() {
 
         </defs>
 
-        {allItems.map(({ icon, x, y, w, h, cx, cy, rot }, i) => (
+        {allItems.map(({ icon, x, y, w, h, cx, cy, rot, opacity, anim, dur, delay }, i) => (
           <g key={i} transform={`rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})`}>
-            <use href={`#${icon}`} x={x.toFixed(1)} y={y.toFixed(1)} width={w.toFixed(1)} height={h.toFixed(1)} />
+            <g style={{
+              opacity,
+              ...(anim !== 'none' ? {
+                animation: `${anim} ${dur.toFixed(1)}s ease-in-out ${delay.toFixed(2)}s infinite`,
+                transformBox: 'fill-box' as const,
+                transformOrigin: 'center' as const,
+              } : {}),
+            }}>
+              <use href={`#${icon}`} x={x.toFixed(1)} y={y.toFixed(1)} width={w.toFixed(1)} height={h.toFixed(1)} />
+            </g>
           </g>
         ))}
 
