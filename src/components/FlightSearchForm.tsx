@@ -1,15 +1,109 @@
 'use client'
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { searchAirports } from '@/lib/api'
+import type { AirportSuggestion } from '@/types/api'
 
 interface FlightSearchFormProps {
     onSearch: (query: string) => void
     onClose: () => void
 }
 
+function AirportField({
+    label,
+    placeholder,
+    value,
+    onChange,
+}: {
+    label: string
+    placeholder: string
+    value: string
+    onChange: (iata: string, display: string) => void
+}) {
+    const [display, setDisplay] = useState(value)
+    const [suggestions, setSuggestions] = useState<AirportSuggestion[]>([])
+    const [isOpen, setIsOpen] = useState(false)
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const wrapperRef = useRef<HTMLDivElement>(null)
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    function handleInputChange(val: string) {
+        setDisplay(val)
+        onChange('', val) // clear IATA until a suggestion is selected
+
+        if (debounceRef.current) clearTimeout(debounceRef.current)
+
+        if (val.trim().length < 2) {
+            setSuggestions([])
+            setIsOpen(false)
+            return
+        }
+
+        debounceRef.current = setTimeout(async () => {
+            try {
+                const results = await searchAirports(val.trim())
+                setSuggestions(results)
+                setIsOpen(results.length > 0)
+            } catch {
+                setSuggestions([])
+                setIsOpen(false)
+            }
+        }, 300)
+    }
+
+    function handleSelect(airport: AirportSuggestion) {
+        const displayText = `${airport.name} (${airport.iata})`
+        setDisplay(displayText)
+        setSuggestions([])
+        setIsOpen(false)
+        onChange(airport.iata, displayText)
+    }
+
+    return (
+        <div className="flight-field" ref={wrapperRef} style={{ position: 'relative' }}>
+            <label className="flight-label">{label}</label>
+            <input
+                className="flight-input"
+                type="text"
+                placeholder={placeholder}
+                value={display}
+                onChange={e => handleInputChange(e.target.value)}
+                autoComplete="off"
+                required
+            />
+            {isOpen && suggestions.length > 0 && (
+                <div className="airport-dropdown">
+                    {suggestions.map(airport => (
+                        <button
+                            key={airport.iata}
+                            type="button"
+                            className="airport-dropdown-item"
+                            onClick={() => handleSelect(airport)}
+                        >
+                            {airport.type === 'city' ? '🏙️' : '✈️'} {airport.name} ({airport.iata})
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
 export default function FlightSearchForm({ onSearch, onClose }: FlightSearchFormProps) {
     const [animating, setAnimating] = useState(false)
-    const [origin, setOrigin] = useState('')
-    const [destination, setDestination] = useState('')
+    const [originIata, setOriginIata] = useState('')
+    const [originDisplay, setOriginDisplay] = useState('')
+    const [destIata, setDestIata] = useState('')
+    const [destDisplay, setDestDisplay] = useState('')
     const [departDate, setDepartDate] = useState('')
     const [returnDate, setReturnDate] = useState('')
     const [passengers, setPassengers] = useState(1)
@@ -28,18 +122,20 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        if (!origin || !destination || !departDate) return
+        const origin = originIata || originDisplay
+        const dest = destIata || destDisplay
+        if (!origin || !dest || !departDate) return
         const pax = `${passengers} passenger${passengers !== 1 ? 's' : ''}`
         const dates = tripType === 'roundtrip' && returnDate
             ? `departing ${departDate} returning ${returnDate}`
             : `on ${departDate}`
-        const query = `Search ${cabinClass} class flights from ${origin} to ${destination} ${dates} for ${pax}`
+        const query = `Search ${cabinClass} class flights from ${origin} to ${dest} ${dates} for ${pax}`
         onSearch(query)
         handleClose()
     }
 
-    // Min date = today
     const today = new Date().toISOString().split('T')[0]
+    const canSubmit = (originIata || originDisplay) && (destIata || destDisplay) && departDate
 
     return (
         <div className="flight-overlay" onClick={handleClose}>
@@ -75,28 +171,18 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
                 </div>
 
                 <form className="flight-form-grid" onSubmit={handleSubmit}>
-                    <div className="flight-field">
-                        <label className="flight-label">From</label>
-                        <input
-                            className="flight-input"
-                            type="text"
-                            placeholder="City or airport (e.g. London)"
-                            value={origin}
-                            onChange={e => setOrigin(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="flight-field">
-                        <label className="flight-label">To</label>
-                        <input
-                            className="flight-input"
-                            type="text"
-                            placeholder="City or airport (e.g. Tokyo)"
-                            value={destination}
-                            onChange={e => setDestination(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <AirportField
+                        label="From"
+                        placeholder="City or airport (e.g. London)"
+                        value={originDisplay}
+                        onChange={(iata, display) => { setOriginIata(iata); setOriginDisplay(display) }}
+                    />
+                    <AirportField
+                        label="To"
+                        placeholder="City or airport (e.g. Tokyo)"
+                        value={destDisplay}
+                        onChange={(iata, display) => { setDestIata(iata); setDestDisplay(display) }}
+                    />
                     <div className="flight-field">
                         <label className="flight-label">Depart</label>
                         <input
@@ -141,7 +227,7 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
                         <button
                             type="submit"
                             className="btn btn-primary flight-search-btn"
-                            disabled={!origin || !destination || !departDate}
+                            disabled={!canSubmit}
                         >
                             Search Flights
                         </button>

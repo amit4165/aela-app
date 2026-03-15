@@ -3848,3 +3848,41 @@ a {
 .trip-room-consensus strong {
   color: var(--turquoise);
 }
+
+/* ── Airport autocomplete dropdown ─────────────────────────── */
+.airport-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.airport-dropdown-item {
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.airport-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.airport-dropdown-item:hover {
+  background: var(--glass-hover);
+}

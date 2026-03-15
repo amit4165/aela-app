@@ -14,7 +14,7 @@ import FlightSearchForm from '@/components/FlightSearchForm'
 import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
-import type { ChatResponse } from '@/types/api'
+import type { ChatResponse, SuggestedAction } from '@/types/api'
 
 const QUERY_LIMIT = 12
 
@@ -50,6 +50,7 @@ function ChatPageInner() {
     const [error, setError] = useState<string | null>(null)
     const [queryCount, setQueryCount] = useState(0)
     const [showFlightForm, setShowFlightForm] = useState(false)
+    const [currentSuggestions, setCurrentSuggestions] = useState<SuggestedAction[]>([])
     const [showOnboarding, setShowOnboarding] = useState(false)
     const [profileLoading, setProfileLoading] = useState(true)
 
@@ -115,6 +116,7 @@ function ChatPageInner() {
 
         setInput('')
         setError(null)
+        setCurrentSuggestions([])
 
         const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: messageText }
         setMessages(prev => [...prev, userMsg])
@@ -145,6 +147,7 @@ function ChatPageInner() {
                             renderedRates: rates,
                         }
                         setMessages(prev => [...prev, aiMsg])
+                        setCurrentSuggestions(response.suggested_actions ?? [])
                         setLoading(false)
                         setProgressText('')
                         setTimeout(() => inputRef.current?.focus(), 100)
@@ -169,16 +172,6 @@ function ChatPageInner() {
     const userInitial = user?.firstName?.[0]
         ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase()
         ?? 'U'
-
-    // Determine suggestion tab mode from latest AI message
-    const lastAiMsg = [...messages].reverse().find(m => m.role === 'ai')
-    const isOffTopic = lastAiMsg?.response?.ui_hints?.off_topic === true
-    const dynamicActions = lastAiMsg?.response?.suggested_actions ?? []
-    const suggestionMode = isOffTopic
-        ? 'redirect'
-        : dynamicActions.length > 0
-            ? 'custom'
-            : messages.length === 0 ? 'default' : undefined
 
     const queriesLeft = QUERY_LIMIT - queryCount
     const nearLimit = queriesLeft <= 3
@@ -288,11 +281,10 @@ function ChatPageInner() {
             )}
 
             <div className="chat-input-bar">
-                {/* Suggestion tabs */}
-                {suggestionMode && (
+                {/* Suggestion tabs — only shown when backend provides them */}
+                {currentSuggestions.length > 0 && (
                     <SuggestionTabs
-                        actions={dynamicActions}
-                        mode={suggestionMode}
+                        actions={currentSuggestions}
                         onSelect={(text) => handleSendMessage(text)}
                     />
                 )}
