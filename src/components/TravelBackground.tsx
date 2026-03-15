@@ -1,4 +1,56 @@
+// Pre-baked placement tables — deterministic, no runtime randomness
+const ICONS = [
+  's-eiffel','s-bigben','s-balloon','s-compass',
+  's-plane','s-mountain','s-camera','s-pin',
+  's-globe','s-taj','s-colosseum','s-sydney',
+  's-pisa','s-boat','s-palm','s-spark',
+]
+// Native viewBox width / height for each symbol (same order as ICONS)
+const NW = [30,22,28,30,42,48,38,18,30,56,52,50,20,38,22,14]
+const NH = [50,52,44,30,22,28,24,26,34,42,30,28,44,36,42,14]
+
+// Jitter applied to each column (17 values)
+const JX = [-10,8,-14,5,-7,12,-18,3,-6,15,-11,4,-16,9,-3,-13,6]
+// Jitter applied to each row (11 values)
+const JY = [8,-10,5,-14,12,-6,-15,7,-9,14,-4]
+// Scale multiplier cycling over 6 options  → 0.9 … 1.4 × native size
+const SC = [1.1,1.4,0.9,1.25,1.0,1.35]
+// Base rotation per icon type (16 values, degrees)
+const RO = [-22,14,-38,6,-16,30,-8,20,-42,12,-35,18,-10,28,-24,8]
+// Extra column-level rotation tweak (17 values)
+const RCOL = [0,5,-8,3,-5,8,0,-3,6,-6,4,-10,2,-4,9,-2,5]
+// Extra row-level rotation tweak (11 values)
+const RROW = [5,-8,3,5,-8,3,5,-8,3,5,-8]
+
+// Grid: 17 cols × 11 rows = 187 icons
+// Odd rows are offset by half a cell (hex-packing) so no icons align vertically
+const COLS = 17
+const ROWS = 11
+const CW = 68   // column width
+const RH = 85   // row height
+
 export default function TravelBackground() {
+  const items: Array<{
+    icon: string; x: number; y: number
+    w: number; h: number; cx: number; cy: number; rot: number
+  }> = []
+
+  for (let r = 0; r < ROWS; r++) {
+    const hexShift = r % 2 === 1 ? 34 : 0
+    for (let c = 0; c < COLS; c++) {
+      const i    = r * COLS + c
+      const ii   = i % 16
+      const icon = ICONS[ii]
+      const bx   = 8 + c * CW + hexShift + JX[c]
+      const by   = 12 + r * RH + JY[r]
+      const s    = SC[i % 6]
+      const w    = NW[ii] * s
+      const h    = NH[ii] * s
+      const rot  = RO[ii] + RCOL[c] + RROW[r]
+      items.push({ icon, x: bx, y: by, w, h, cx: bx + w / 2, cy: by + h / 2, rot })
+    }
+  }
+
   return (
     <div
       style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}
@@ -204,216 +256,11 @@ export default function TravelBackground() {
 
         </defs>
 
-        {/* ── Sketchy flight-route arcs ── */}
-        <g fill="none" stroke="currentColor" strokeWidth="0.55" strokeDasharray="4 9" opacity="0.4">
-          <path d="M 55 95 Q 310 -30 610 115"/>
-          <path d="M 190 310 Q 520 160 870 290"/>
-          <path d="M 40 530 Q 390 390 760 545"/>
-          <path d="M 480 720 Q 780 600 1150 690"/>
-          <path d="M 130 840 Q 560 740 1020 860"/>
-          <path d="M 720 80 Q 960 200 1180 140"/>
-          <path d="M 300 460 Q 560 380 820 470"/>
-        </g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER A — top-left  (Paris doodle corner)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-20, 62, 62)"><use href="#s-eiffel"  x="47"  y="37"  width="30" height="50"/></g>
-        <g transform="rotate(13,  104, 55)"><use href="#s-balloon" x="90"  y="37"  width="28" height="36"/></g>
-        <text transform="rotate(-7, 76, 100)" x="60" y="104" fontFamily="Georgia,serif" fontSize="9" letterSpacing="2.5" fill="currentColor">PARIS</text>
-        <g transform="rotate(28,  136, 28)"><use href="#s-spark"   x="130" y="22"  width="12" height="12"/></g>
-        <g transform="rotate(-35, 32,  130)"><use href="#s-pin"    x="23"  y="117" width="18" height="26"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER B — top band, scattered eastward
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(26,  235, 50)"><use href="#s-plane"   x="214" y="39"  width="42" height="22"/></g>
-        <g transform="rotate(-32, 320, 74)"><use href="#s-compass" x="305" y="59"  width="30" height="30"/></g>
-        <g transform="rotate(19,  378, 36)"><use href="#s-pin"     x="369" y="23"  width="18" height="26"/></g>
-        <g transform="rotate(-14, 366, 80)"><use href="#s-spark"   x="360" y="74"  width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER C — top center  (London cluster)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(9,   464, 40)"><use href="#s-bigben"  x="453" y="14"  width="22" height="52"/></g>
-        <g transform="rotate(-24, 518, 62)"><use href="#s-camera"  x="499" y="50"  width="38" height="24"/></g>
-        <text transform="rotate(5, 488, 97)" x="458" y="101" fontFamily="Georgia,serif" fontSize="8.5" letterSpacing="2" fill="currentColor">LONDON</text>
-        <g transform="rotate(16,  445, 78)"><use href="#s-spark"   x="439" y="72"  width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER D — top right  (mountain + Tokyo)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-13, 660, 44)"><use href="#s-mountain" x="636" y="30" width="48" height="28"/></g>
-        <g transform="rotate(22,  728, 36)"><use href="#s-sydney"   x="703" y="23" width="50" height="26"/></g>
-        <text transform="rotate(-9, 764, 72)" x="750" y="76" fontFamily="Georgia,serif" fontSize="8" letterSpacing="2" fill="currentColor">TOKYO</text>
-        <g transform="rotate(-6,  822, 32)"><use href="#s-spark"    x="816" y="26" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER E — far top-right
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(30,  898, 47)"><use href="#s-taj"     x="870" y="26"  width="56" height="42"/></g>
-        <g transform="rotate(-19, 976, 40)"><use href="#s-pisa"    x="966" y="18"  width="20" height="44"/></g>
-        <g transform="rotate(14, 1030, 52)"><use href="#s-boat"    x="1011" y="34" width="38" height="36"/></g>
-        <g transform="rotate(-9, 1088, 26)"><use href="#s-spark"   x="1082" y="20" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER F — upper-right edge
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-17, 1162, 46)"><use href="#s-bigben"  x="1151" y="20" width="22" height="52"/></g>
-        <g transform="rotate(21,  1212, 48)"><use href="#s-balloon" x="1198" y="30" width="28" height="36"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER G — left side, mid-upper  (Istanbul)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-11, 55, 220)"><use href="#s-colosseum" x="29"  y="205" width="52" height="30"/></g>
-        <g transform="rotate(21,  106, 196)"><use href="#s-palm"     x="95"  y="175" width="22" height="42"/></g>
-        <text transform="rotate(-5, 46, 255)" x="26" y="259" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">ISTANBUL</text>
-        <g transform="rotate(-26, 64, 294)"><use href="#s-globe"     x="49"  y="277" width="30" height="34"/></g>
-        <g transform="rotate(18,  130, 244)"><use href="#s-spark"    x="124" y="238" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER H — centre-left mid
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(33,  252, 207)"><use href="#s-eiffel"  x="237" y="182"  width="30" height="50"/></g>
-        <g transform="rotate(-20, 318, 224)"><use href="#s-camera"  x="299" y="212"  width="38" height="24"/></g>
-        <g transform="rotate(14,  374, 202)"><use href="#s-spark"   x="368" y="196"  width="12" height="12"/></g>
-        <g transform="rotate(-30, 404, 238)"><use href="#s-pin"     x="395" y="225"  width="18" height="26"/></g>
-        <text transform="rotate(16, 362, 272)" x="340" y="276" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">BALI</text>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER I — centre mid  (Venice)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-7,  504, 210)"><use href="#s-taj"      x="476" y="189" width="56" height="42"/></g>
-        <g transform="rotate(24,  570, 220)"><use href="#s-mountain" x="546" y="206" width="48" height="28"/></g>
-        <g transform="rotate(-18, 638, 206)"><use href="#s-boat"     x="619" y="188" width="38" height="36"/></g>
-        <text transform="rotate(9, 622, 244)" x="604" y="248" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">VENICE</text>
-        <g transform="rotate(-10, 664, 188)"><use href="#s-spark"    x="658" y="182" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER J — centre-right mid
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-15, 744, 198)"><use href="#s-sydney"  x="719" y="184" width="50" height="28"/></g>
-        <g transform="rotate(20,  824, 188)"><use href="#s-plane"   x="803" y="177" width="42" height="22"/></g>
-        <g transform="rotate(-22, 884, 202)"><use href="#s-palm"    x="873" y="181" width="22" height="42"/></g>
-        <g transform="rotate(14,  934, 186)"><use href="#s-spark"   x="928" y="180" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER K — right mid  (NYC)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-19, 1022, 192)"><use href="#s-globe"     x="1007" y="175" width="30" height="34"/></g>
-        <g transform="rotate(26,  1102, 200)"><use href="#s-colosseum" x="1076" y="185" width="52" height="30"/></g>
-        <text transform="rotate(-11, 1094, 234)" x="1084" y="238" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">NYC</text>
-        <g transform="rotate(-9,  1190, 184)"><use href="#s-pisa"      x="1180" y="162" width="20" height="44"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER L — left lower band
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(17,  60, 374)"><use href="#s-bigben"  x="49"  y="348" width="22" height="52"/></g>
-        <g transform="rotate(-24, 112, 386)"><use href="#s-taj"    x="84"  y="365" width="56" height="42"/></g>
-        <g transform="rotate(30,  158, 378)"><use href="#s-spark"  x="152" y="372" width="12" height="12"/></g>
-        <text transform="rotate(22, 56, 418)" x="42" y="422" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">DUBAI</text>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER M — centre-left lower
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-11, 248, 376)"><use href="#s-boat"    x="229" y="358" width="38" height="36"/></g>
-        <g transform="rotate(-7,  302, 370)"><use href="#s-pisa"    x="292" y="348" width="20" height="44"/></g>
-        <g transform="rotate(30,  342, 385)"><use href="#s-camera"  x="323" y="373" width="38" height="24"/></g>
-        <g transform="rotate(-34, 390, 372)"><use href="#s-compass" x="375" y="357" width="30" height="30"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER N — centre lower  (Nepal)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(21,  482, 368)"><use href="#s-mountain" x="458" y="354" width="48" height="28"/></g>
-        <g transform="rotate(-17, 552, 362)"><use href="#s-eiffel"   x="537" y="337" width="30" height="50"/></g>
-        <g transform="rotate(15,  590, 380)"><use href="#s-pin"      x="581" y="367" width="18" height="26"/></g>
-        <g transform="rotate(-26, 626, 357)"><use href="#s-balloon"  x="612" y="339" width="28" height="36"/></g>
-        <text transform="rotate(-9, 572, 406)" x="552" y="410" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">NEPAL</text>
-        <g transform="rotate(0,   660, 360)"><use href="#s-spark"    x="654" y="354" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER O — centre-right lower  (Maldives)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-24, 720, 372)"><use href="#s-globe"  x="705" y="355" width="30" height="34"/></g>
-        <g transform="rotate(11,  778, 364)"><use href="#s-palm"   x="767" y="343" width="22" height="42"/></g>
-        <g transform="rotate(-26, 836, 376)"><use href="#s-camera" x="817" y="364" width="38" height="24"/></g>
-        <g transform="rotate(0,   870, 360)"><use href="#s-spark"  x="864" y="354" width="12" height="12"/></g>
-        <text transform="rotate(-14, 880, 398)" x="856" y="402" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">MALDIVES</text>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER P — right lower
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(15,  980, 368)"><use href="#s-taj"     x="952" y="347" width="56" height="42"/></g>
-        <g transform="rotate(-21, 1048, 375)"><use href="#s-bigben" x="1037" y="349" width="22" height="52"/></g>
-        <g transform="rotate(26, 1116, 362)"><use href="#s-sydney"  x="1091" y="348" width="50" height="28"/></g>
-        <g transform="rotate(-11, 1180, 356)"><use href="#s-pisa"   x="1170" y="334" width="20" height="44"/></g>
-        <g transform="rotate(0,  1196, 370)"><use href="#s-spark"   x="1190" y="364" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER Q — bottom-left
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-16, 72, 496)"><use href="#s-colosseum" x="46"  y="481" width="52" height="30"/></g>
-        <g transform="rotate(24,  142, 478)"><use href="#s-balloon"  x="128" y="460" width="28" height="36"/></g>
-        <text transform="rotate(-11, 192, 510)" x="172" y="514" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">ROME</text>
-        <g transform="rotate(18,  44,  548)"><use href="#s-spark"    x="38"  y="542" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER R — bottom centre-left
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-9,  304, 492)"><use href="#s-plane"    x="283" y="481" width="42" height="22"/></g>
-        <g transform="rotate(28,  358, 480)"><use href="#s-pin"      x="349" y="467" width="18" height="26"/></g>
-        <g transform="rotate(17,  414, 486)"><use href="#s-mountain" x="390" y="472" width="48" height="28"/></g>
-        <g transform="rotate(-30, 468, 488)"><use href="#s-camera"   x="449" y="476" width="38" height="24"/></g>
-        <g transform="rotate(0,   504, 476)"><use href="#s-spark"    x="498" y="470" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER S — bottom centre  (Santorini)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(34,  576, 490)"><use href="#s-eiffel"  x="561" y="465" width="30" height="50"/></g>
-        <g transform="rotate(-15, 628, 483)"><use href="#s-globe"   x="613" y="466" width="30" height="34"/></g>
-        <g transform="rotate(22,  686, 489)"><use href="#s-compass" x="671" y="474" width="30" height="30"/></g>
-        <text transform="rotate(-18, 726, 506)" x="702" y="510" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">SANTORINI</text>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER T — bottom right
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-9,  880, 486)"><use href="#s-palm"    x="869" y="465" width="22" height="42"/></g>
-        <g transform="rotate(17,  944, 492)"><use href="#s-boat"    x="925" y="474" width="38" height="36"/></g>
-        <g transform="rotate(-26, 1014, 485)"><use href="#s-taj"    x="986" y="464" width="56" height="42"/></g>
-        <g transform="rotate(9,   1094, 484)"><use href="#s-pisa"   x="1084" y="462" width="20" height="44"/></g>
-        <g transform="rotate(-17, 1154, 492)"><use href="#s-bigben" x="1143" y="466" width="22" height="52"/></g>
-        <g transform="rotate(0,   1188, 478)"><use href="#s-spark"  x="1182" y="472" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER U — very bottom strip
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(20,  122, 614)"><use href="#s-mountain" x="98"  y="600" width="48" height="28"/></g>
-        <g transform="rotate(-22, 262, 622)"><use href="#s-plane"    x="241" y="611" width="42" height="22"/></g>
-        <text transform="rotate(11, 340, 644)" x="318" y="648" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">SYDNEY</text>
-        <g transform="rotate(-13, 434, 612)"><use href="#s-compass"  x="419" y="597" width="30" height="30"/></g>
-        <g transform="rotate(30,  554, 622)"><use href="#s-palm"     x="543" y="601" width="22" height="42"/></g>
-        <g transform="rotate(-19, 684, 616)"><use href="#s-camera"   x="665" y="604" width="38" height="24"/></g>
-        <g transform="rotate(15,  794, 622)"><use href="#s-globe"    x="779" y="605" width="30" height="34"/></g>
-        <g transform="rotate(-27, 904, 612)"><use href="#s-balloon"  x="890" y="594" width="28" height="36"/></g>
-        <text transform="rotate(-7, 978, 636)" x="958" y="640" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">NEPAL</text>
-        <g transform="rotate(22, 1074, 622)"><use href="#s-colosseum" x="1048" y="607" width="52" height="30"/></g>
-        <g transform="rotate(-16, 1198, 614)"><use href="#s-spark"    x="1192" y="608" width="12" height="12"/></g>
-
-        {/* ════════════════════════════════════════════
-            CLUSTER V — deep bottom  (extra density)
-            ════════════════════════════════════════════ */}
-        <g transform="rotate(-14, 76,  760)"><use href="#s-taj"     x="48"  y="739" width="56" height="42"/></g>
-        <g transform="rotate(25,  188, 772)"><use href="#s-boat"    x="169" y="754" width="38" height="36"/></g>
-        <g transform="rotate(-8,  310, 758)"><use href="#s-sydney"  x="285" y="744" width="50" height="28"/></g>
-        <g transform="rotate(18,  430, 768)"><use href="#s-balloon" x="416" y="750" width="28" height="36"/></g>
-        <text transform="rotate(-12, 510, 790)" x="490" y="794" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">BALI</text>
-        <g transform="rotate(30,  610, 762)"><use href="#s-eiffel"  x="595" y="737" width="30" height="50"/></g>
-        <g transform="rotate(-20, 706, 774)"><use href="#s-compass" x="691" y="759" width="30" height="30"/></g>
-        <g transform="rotate(12,  820, 760)"><use href="#s-pisa"    x="810" y="738" width="20" height="44"/></g>
-        <g transform="rotate(-18, 940, 768)"><use href="#s-mountain" x="916" y="754" width="48" height="28"/></g>
-        <text transform="rotate(10, 1020, 788)" x="1002" y="792" fontFamily="Georgia,serif" fontSize="7.5" letterSpacing="2" fill="currentColor">VENICE</text>
-        <g transform="rotate(-26, 1120, 762)"><use href="#s-globe"  x="1105" y="745" width="30" height="34"/></g>
-        <g transform="rotate(14,  1200, 770)"><use href="#s-spark"  x="1194" y="764" width="12" height="12"/></g>
+        {items.map(({ icon, x, y, w, h, cx, cy, rot }, i) => (
+          <g key={i} transform={`rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})`}>
+            <use href={`#${icon}`} x={x.toFixed(1)} y={y.toFixed(1)} width={w.toFixed(1)} height={h.toFixed(1)} />
+          </g>
+        ))}
 
       </svg>
     </div>
