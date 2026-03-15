@@ -1,12 +1,13 @@
 'use client'
 import { useState, useEffect, type FormEvent } from 'react'
+import type { Deal } from '@/types/api'
 
 interface FlightSearchFormProps {
-    onSearch: (query: string) => void
+    onResults: (deals: Deal[], query: string) => void
     onClose: () => void
 }
 
-export default function FlightSearchForm({ onSearch, onClose }: FlightSearchFormProps) {
+export default function FlightSearchForm({ onResults, onClose }: FlightSearchFormProps) {
     const [animating, setAnimating] = useState(false)
     const [origin, setOrigin] = useState('')
     const [destination, setDestination] = useState('')
@@ -15,6 +16,8 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
     const [passengers, setPassengers] = useState(1)
     const [cabinClass, setCabinClass] = useState('economy')
     const [tripType, setTripType] = useState<'roundtrip' | 'oneway'>('roundtrip')
+    const [searching, setSearching] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const t = setTimeout(() => setAnimating(true), 10)
@@ -26,19 +29,50 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
         setTimeout(onClose, 300)
     }
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         if (!origin || !destination || !departDate) return
-        const pax = `${passengers} passenger${passengers !== 1 ? 's' : ''}`
-        const dates = tripType === 'roundtrip' && returnDate
-            ? `departing ${departDate} returning ${returnDate}`
-            : `on ${departDate}`
-        const query = `Search ${cabinClass} class flights from ${origin} to ${destination} ${dates} for ${pax}`
-        onSearch(query)
-        handleClose()
+
+        setSearching(true)
+        setError(null)
+
+        try {
+            const params = new URLSearchParams({
+                fly_from: origin,
+                fly_to: destination,
+                date_from: departDate,
+                adults: String(passengers),
+                cabin: cabinClass,
+                currency: 'USD',
+            })
+            if (tripType === 'roundtrip' && returnDate) {
+                params.set('return_from', returnDate)
+            }
+
+            const res = await fetch(`/api/flights?${params}`)
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}))
+                throw new Error(err.error || `Search failed (${res.status})`)
+            }
+
+            const { deals } = await res.json()
+
+            const pax = `${passengers} passenger${passengers !== 1 ? 's' : ''}`
+            const dates =
+                tripType === 'roundtrip' && returnDate
+                    ? `departing ${departDate} returning ${returnDate}`
+                    : `on ${departDate}`
+            const query = `${cabinClass} flights from ${origin} to ${destination} ${dates} for ${pax}`
+
+            onResults(deals ?? [], query)
+            handleClose()
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Could not find flights. Please try again.')
+        } finally {
+            setSearching(false)
+        }
     }
 
-    // Min date = today
     const today = new Date().toISOString().split('T')[0]
 
     return (
@@ -137,13 +171,20 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
                             <option value="first">First Class</option>
                         </select>
                     </div>
+
+                    {error && (
+                        <p style={{ color: 'var(--coral, #e55)', fontSize: '13px', margin: '4px 0' }}>
+                            {error}
+                        </p>
+                    )}
+
                     <div className="flight-form-footer">
                         <button
                             type="submit"
                             className="btn btn-primary flight-search-btn"
-                            disabled={!origin || !destination || !departDate}
+                            disabled={!origin || !destination || !departDate || searching}
                         >
-                            Search Flights
+                            {searching ? 'Searching…' : 'Search Flights'}
                         </button>
                     </div>
                 </form>

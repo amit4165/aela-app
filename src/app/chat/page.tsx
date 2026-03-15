@@ -14,7 +14,7 @@ import FlightSearchForm from '@/components/FlightSearchForm'
 import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
-import type { ChatResponse } from '@/types/api'
+import type { ChatResponse, Deal } from '@/types/api'
 
 const QUERY_LIMIT = 12
 
@@ -108,6 +108,33 @@ function ChatPageInner() {
         setShowOnboarding(false)
     }
 
+    function handleFlightResults(deals: Deal[], query: string) {
+        const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: `Search flights: ${query}` }
+        const aiMsg: Message = {
+            id: crypto.randomUUID(),
+            role: 'ai',
+            content: deals.length > 0
+                ? `Found ${deals.length} flight option${deals.length !== 1 ? 's' : ''} for your search.`
+                : 'No flights found for those dates. Try different dates or nearby airports.',
+            response: {
+                message: '',
+                sessionId: sessionId ?? '',
+                step: 'completed',
+                deals,
+                ui_hints: {
+                    show_deals: deals.length > 0,
+                    show_map: false,
+                    show_timeline: false,
+                    show_warning: false,
+                },
+            },
+            renderedCurrency: currency,
+            renderedRates: rates,
+        }
+        setMessages(prev => [...prev, userMsg, aiMsg])
+        setShowFlightForm(false)
+    }
+
     const handleSendMessage = async (text?: string) => {
         const messageText = (text ?? input).trim()
         if (!messageText || loading || !user) return
@@ -195,7 +222,7 @@ function ChatPageInner() {
             {/* Flight search slide-up form */}
             {showFlightForm && (
                 <FlightSearchForm
-                    onSearch={(q) => handleSendMessage(q)}
+                    onResults={handleFlightResults}
                     onClose={() => setShowFlightForm(false)}
                 />
             )}
