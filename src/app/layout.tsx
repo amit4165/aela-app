@@ -4,6 +4,7 @@ import NavLogo from '@/components/NavLogo'
 import CurrencySelector from '@/components/CurrencySelector'
 import NavAuth from '@/components/NavAuth'
 import { CurrencyProvider } from '@/context/CurrencyContext'
+import { ThemeProvider } from '@/context/ThemeContext'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
             </head>
             <body suppressHydrationWarning>
+                <ThemeProvider>
                 <CurrencyProvider>
                     <ClerkProvider>
                         {/* ── Global Nav ── */}
@@ -38,6 +40,7 @@ export default function RootLayout({
                         {children}
                     </ClerkProvider>
                 </CurrencyProvider>
+                </ThemeProvider>
             </body>
         </html>
     )

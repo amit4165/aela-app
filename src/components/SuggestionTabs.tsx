@@ -2,30 +2,24 @@
 
 import type { SuggestedAction } from '@/types/api'
 
-const TYPE_EMOJI: Record<string, string> = {
-    flight: '✈️ ',
-    hotel: '🏨 ',
-    itinerary: '🗺️ ',
-    question: '💬 ',
-}
-
 interface SuggestionTabsProps {
-    actions: SuggestedAction[]
+    actions?: SuggestedAction[]
+    mode?: 'default' | 'redirect' | 'custom' | 'followup'
     onSelect: (text: string) => void
 }
 
-export default function SuggestionTabs({ actions, onSelect }: SuggestionTabsProps) {
-    return (
-        <div className="suggestion-tabs">
-            {actions.map((action, i) => (
-                <button
-                    key={i}
-                    className="suggestion-tab"
-                    onClick={() => onSelect(action.message)}
-                >
-                    {TYPE_EMOJI[action.type] ?? ''}{action.label}
-                </button>
-            ))}
-        </div>
-    )
+export default function SuggestionTabs({ actions, mode, onSelect }: SuggestionTabsProps) {
+    if (mode === 'custom' && actions && actions.length > 0) {
+        return (
+            <div className="suggestion-tabs">
+                {actions.map(action => (
+                    <button key={action.message} className="suggestion-tab" onClick={() => onSelect(action.message)}>
+                        {action.label}
+                    </button>
+                ))}
+            </div>
+        )
+    }
+
+    return null
 }

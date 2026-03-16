@@ -33,15 +33,15 @@ export default function FlightSearchForm({ onResults, onClose }: FlightSearchFor
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        if (!origin || !destination || !departDate) return
+        if ((!originIata && !originDisplay) || (!destIata && !destDisplay) || !departDate) return
 
         setSearching(true)
         setError(null)
 
         try {
             const params = new URLSearchParams({
-                fly_from: origin,
-                fly_to: destination,
+                fly_from: originIata || originDisplay,
+                fly_to: destIata || destDisplay,
                 date_from: departDate,
                 adults: String(passengers),
                 cabin: cabinClass,
@@ -64,7 +64,7 @@ export default function FlightSearchForm({ onResults, onClose }: FlightSearchFor
                 tripType === 'roundtrip' && returnDate
                     ? `departing ${departDate} returning ${returnDate}`
                     : `on ${departDate}`
-            const query = `${cabinClass} flights from ${origin} to ${destination} ${dates} for ${pax}`
+            const query = `${cabinClass} flights from ${originDisplay || originIata} to ${destDisplay || destIata} ${dates} for ${pax}`
 
             onResults(deals ?? [], query)
             handleClose()
@@ -175,7 +175,7 @@ export default function FlightSearchForm({ onResults, onClose }: FlightSearchFor
                         <button
                             type="submit"
                             className="btn btn-primary flight-search-btn"
-                            disabled={!origin || !destination || !departDate || searching}
+                            disabled={(!originIata && !originDisplay) || (!destIata && !destDisplay) || !departDate || searching}
                         >
                             {searching ? 'Searching…' : 'Search Flights'}
                         </button>

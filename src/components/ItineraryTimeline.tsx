@@ -1,4 +1,4 @@
-import type { ItineraryDay } from '../api/chat'
+import type { ItineraryDay } from '@/types/api'
 import { CurrencyCode } from '@/context/CurrencyContext'
 
 interface ItineraryTimelineProps {
