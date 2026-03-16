@@ -11,10 +11,11 @@ import LoadingSkeleton from '@/components/LoadingSkeleton'
 import PassportModal from '@/components/PassportModal'
 import SuggestionTabs from '@/components/SuggestionTabs'
 import FlightSearchForm from '@/components/FlightSearchForm'
+import HotelSearchForm from '@/components/HotelSearchForm'
 import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
-import type { ChatResponse, SuggestedAction } from '@/types/api'
+import type { ChatResponse, SuggestedAction, Deal } from '@/types/api'
 
 const QUERY_LIMIT = 12
 
@@ -50,6 +51,7 @@ function ChatPageInner() {
     const [error, setError] = useState<string | null>(null)
     const [queryCount, setQueryCount] = useState(0)
     const [showFlightForm, setShowFlightForm] = useState(false)
+    const [showHotelForm, setShowHotelForm] = useState(false)
     const [currentSuggestions, setCurrentSuggestions] = useState<SuggestedAction[]>([])
     const [showOnboarding, setShowOnboarding] = useState(false)
     const [profileLoading, setProfileLoading] = useState(true)
@@ -107,6 +109,60 @@ function ChatPageInner() {
 
     function handleOnboardingComplete() {
         setShowOnboarding(false)
+    }
+
+    function handleFlightResults(deals: Deal[], query: string) {
+        const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: `Search flights: ${query}` }
+        const aiMsg: Message = {
+            id: crypto.randomUUID(),
+            role: 'ai',
+            content: deals.length > 0
+                ? `Found ${deals.length} flight option${deals.length !== 1 ? 's' : ''} for your search.`
+                : 'No flights found for those dates. Try different dates or nearby airports.',
+            response: {
+                message: '',
+                sessionId: sessionId ?? '',
+                step: 'completed',
+                deals,
+                ui_hints: {
+                    show_deals: deals.length > 0,
+                    show_map: false,
+                    show_timeline: false,
+                    show_warning: false,
+                },
+            },
+            renderedCurrency: currency,
+            renderedRates: rates,
+        }
+        setMessages(prev => [...prev, userMsg, aiMsg])
+        setShowFlightForm(false)
+    }
+
+    function handleHotelResults(deals: Deal[], query: string) {
+        const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: `Search hotels: ${query}` }
+        const aiMsg: Message = {
+            id: crypto.randomUUID(),
+            role: 'ai',
+            content: deals.length > 0
+                ? `Found ${deals.length} hotel${deals.length !== 1 ? 's' : ''} for your stay.`
+                : 'No hotels found for those dates. Try different dates or a nearby city.',
+            response: {
+                message: '',
+                sessionId: sessionId ?? '',
+                step: 'completed',
+                deals,
+                ui_hints: {
+                    show_deals: deals.length > 0,
+                    show_map: false,
+                    show_timeline: false,
+                    show_warning: false,
+                },
+            },
+            renderedCurrency: currency,
+            renderedRates: rates,
+        }
+        setMessages(prev => [...prev, userMsg, aiMsg])
+        setShowHotelForm(false)
     }
 
     const handleSendMessage = async (text?: string) => {
@@ -180,6 +236,7 @@ function ChatPageInner() {
 
     return (
         <div className="chat-page">
+
             {/* Onboarding passport modal — shown until needs_onboarding is resolved */}
             {showOnboarding && (
                 <PassportModal onComplete={handleOnboardingComplete} />
@@ -188,8 +245,16 @@ function ChatPageInner() {
             {/* Flight search slide-up form */}
             {showFlightForm && (
                 <FlightSearchForm
-                    onSearch={(q) => handleSendMessage(q)}
+                    onResults={handleFlightResults}
                     onClose={() => setShowFlightForm(false)}
+                />
+            )}
+
+            {/* Hotel search slide-up form */}
+            {showHotelForm && (
+                <HotelSearchForm
+                    onResults={handleHotelResults}
+                    onClose={() => setShowHotelForm(false)}
                 />
             )}
 
@@ -299,7 +364,7 @@ function ChatPageInner() {
                     </button>
                     <button
                         className="chat-action-btn"
-                        onClick={() => handleSendMessage('Help me find hotels')}
+                        onClick={() => setShowHotelForm(true)}
                         title="Find Hotels"
                     >
                         🏨 Hotels

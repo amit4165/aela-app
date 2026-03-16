@@ -1,104 +1,13 @@
 'use client'
-import { useState, useEffect, useRef, type FormEvent } from 'react'
-import { searchAirports } from '@/lib/api'
-import type { AirportSuggestion } from '@/types/api'
+import { useState, useEffect, type FormEvent } from 'react'
+import type { Deal } from '@/types/api'
 
 interface FlightSearchFormProps {
-    onSearch: (query: string) => void
+    onResults: (deals: Deal[], query: string) => void
     onClose: () => void
 }
 
-function AirportField({
-    label,
-    placeholder,
-    value,
-    onChange,
-}: {
-    label: string
-    placeholder: string
-    value: string
-    onChange: (iata: string, display: string) => void
-}) {
-    const [display, setDisplay] = useState(value)
-    const [suggestions, setSuggestions] = useState<AirportSuggestion[]>([])
-    const [isOpen, setIsOpen] = useState(false)
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-    const wrapperRef = useRef<HTMLDivElement>(null)
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        function handleClickOutside(e: MouseEvent) {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-                setIsOpen(false)
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
-
-    function handleInputChange(val: string) {
-        setDisplay(val)
-        onChange('', val) // clear IATA until a suggestion is selected
-
-        if (debounceRef.current) clearTimeout(debounceRef.current)
-
-        if (val.trim().length < 2) {
-            setSuggestions([])
-            setIsOpen(false)
-            return
-        }
-
-        debounceRef.current = setTimeout(async () => {
-            try {
-                const results = await searchAirports(val.trim())
-                setSuggestions(results)
-                setIsOpen(results.length > 0)
-            } catch {
-                setSuggestions([])
-                setIsOpen(false)
-            }
-        }, 300)
-    }
-
-    function handleSelect(airport: AirportSuggestion) {
-        const displayText = `${airport.name} (${airport.iata})`
-        setDisplay(displayText)
-        setSuggestions([])
-        setIsOpen(false)
-        onChange(airport.iata, displayText)
-    }
-
-    return (
-        <div className="flight-field" ref={wrapperRef} style={{ position: 'relative' }}>
-            <label className="flight-label">{label}</label>
-            <input
-                className="flight-input"
-                type="text"
-                placeholder={placeholder}
-                value={display}
-                onChange={e => handleInputChange(e.target.value)}
-                autoComplete="off"
-                required
-            />
-            {isOpen && suggestions.length > 0 && (
-                <div className="airport-dropdown">
-                    {suggestions.map(airport => (
-                        <button
-                            key={airport.iata}
-                            type="button"
-                            className="airport-dropdown-item"
-                            onClick={() => handleSelect(airport)}
-                        >
-                            {airport.type === 'city' ? '🏙️' : '✈️'} {airport.name} ({airport.iata})
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    )
-}
-
-export default function FlightSearchForm({ onSearch, onClose }: FlightSearchFormProps) {
+export default function FlightSearchForm({ onResults, onClose }: FlightSearchFormProps) {
     const [animating, setAnimating] = useState(false)
     const [originIata, setOriginIata] = useState('')
     const [originDisplay, setOriginDisplay] = useState('')
@@ -109,6 +18,8 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
     const [passengers, setPassengers] = useState(1)
     const [cabinClass, setCabinClass] = useState('economy')
     const [tripType, setTripType] = useState<'roundtrip' | 'oneway'>('roundtrip')
+    const [searching, setSearching] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const t = setTimeout(() => setAnimating(true), 10)
@@ -120,18 +31,48 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
         setTimeout(onClose, 300)
     }
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        const origin = originIata || originDisplay
-        const dest = destIata || destDisplay
-        if (!origin || !dest || !departDate) return
-        const pax = `${passengers} passenger${passengers !== 1 ? 's' : ''}`
-        const dates = tripType === 'roundtrip' && returnDate
-            ? `departing ${departDate} returning ${returnDate}`
-            : `on ${departDate}`
-        const query = `Search ${cabinClass} class flights from ${origin} to ${dest} ${dates} for ${pax}`
-        onSearch(query)
-        handleClose()
+        if (!origin || !destination || !departDate) return
+
+        setSearching(true)
+        setError(null)
+
+        try {
+            const params = new URLSearchParams({
+                fly_from: origin,
+                fly_to: destination,
+                date_from: departDate,
+                adults: String(passengers),
+                cabin: cabinClass,
+                currency: 'USD',
+            })
+            if (tripType === 'roundtrip' && returnDate) {
+                params.set('return_from', returnDate)
+            }
+
+            const res = await fetch(`/api/flights?${params}`)
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}))
+                throw new Error(err.error || `Search failed (${res.status})`)
+            }
+
+            const { deals } = await res.json()
+
+            const pax = `${passengers} passenger${passengers !== 1 ? 's' : ''}`
+            const dates =
+                tripType === 'roundtrip' && returnDate
+                    ? `departing ${departDate} returning ${returnDate}`
+                    : `on ${departDate}`
+            const query = `${cabinClass} flights from ${origin} to ${destination} ${dates} for ${pax}`
+
+            onResults(deals ?? [], query)
+            handleClose()
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Could not find flights. Please try again.')
+        } finally {
+            setSearching(false)
+        }
     }
 
     const today = new Date().toISOString().split('T')[0]
@@ -223,13 +164,20 @@ export default function FlightSearchForm({ onSearch, onClose }: FlightSearchForm
                             <option value="first">First Class</option>
                         </select>
                     </div>
+
+                    {error && (
+                        <p style={{ color: 'var(--coral, #e55)', fontSize: '13px', margin: '4px 0' }}>
+                            {error}
+                        </p>
+                    )}
+
                     <div className="flight-form-footer">
                         <button
                             type="submit"
                             className="btn btn-primary flight-search-btn"
-                            disabled={!canSubmit}
+                            disabled={!origin || !destination || !departDate || searching}
                         >
-                            Search Flights
+                            {searching ? 'Searching…' : 'Search Flights'}
                         </button>
                     </div>
                 </form>
