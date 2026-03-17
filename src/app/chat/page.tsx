@@ -67,6 +67,9 @@ function ChatPageInner() {
     // Sidebar collapse state
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
+    // Mobile sidebar state
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
     // Map panel state
     const [showMap, setShowMap] = useState(false)
     const [mapDestination, setMapDestination] = useState('')
@@ -385,6 +388,40 @@ function ChatPageInner() {
             {showFlightForm && <FlightSearchForm onResults={handleFlightResults} onClose={() => setShowFlightForm(false)} />}
             {showHotelForm && <HotelSearchForm onResults={handleHotelResults} onClose={() => setShowHotelForm(false)} />}
 
+            {/* Mobile header — hamburger + logo + new chat (hidden on desktop) */}
+            <div className="mobile-chat-header">
+                <button
+                    className="mobile-menu-btn"
+                    onClick={() => setMobileMenuOpen(true)}
+                    aria-label="Open menu"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+                <span className="mobile-chat-logo">Aela</span>
+                <button
+                    className="mobile-new-chat-btn"
+                    onClick={handleNewChat}
+                    aria-label="New chat"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                </button>
+            </div>
+
+            {/* Mobile sidebar backdrop */}
+            {mobileMenuOpen && (
+                <div
+                    className="chat-sidebar-backdrop"
+                    onClick={() => setMobileMenuOpen(false)}
+                />
+            )}
+
             {/* Left sidebar */}
             <ChatSidebar
                 onNewChat={handleNewChat}
@@ -393,6 +430,8 @@ function ChatPageInner() {
                 onToggle={handleSidebarToggle}
                 onSelectChat={handleSelectChat}
                 activeSessionId={sessionId}
+                mobileOpen={mobileMenuOpen}
+                onMobileClose={() => setMobileMenuOpen(false)}
             />
 
             {/* Main body */}

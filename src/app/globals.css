@@ -2886,6 +2886,62 @@ a {
   .progress-hint { display: none; }
 }
 
+/* ── Landing page mobile (< 480px) ──────────────────────────── */
+@media (max-width: 480px) {
+  .nav {
+    padding: 12px 16px;
+  }
+
+  .hero {
+    padding: 100px 16px 48px;
+    align-items: flex-start;
+  }
+
+  .hero-title {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .hero-title em {
+    font-size: 20px;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .hero-chatbox {
+    border-radius: 20px;
+  }
+
+  .hero-chatbox-input {
+    font-size: 16px; /* prevents iOS zoom */
+    padding: 14px 12px;
+  }
+
+  .hero-features {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-feature {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .hero-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta-btn {
+    text-align: center;
+    padding: 13px 20px;
+  }
+}
+
 /* ── Clerk Auth Pages — Split Screen ─────────────────────────── */
 .auth-split {
   display: grid;
@@ -5410,19 +5466,197 @@ body.hide-nav .chat-sidebar { top: 0; }
 
 .chat-map-sv-error-btn:hover { background: var(--glass-hover); }
 
-/* ── Responsive ────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .chat-sidebar { display: none; }
-  .chat-body { margin-left: 0 !important; flex-direction: column; }
-  .discovery-panel, .chat-map-panel { display: none; }
-  .chat-page-app .chat-input-bar { left: 0 !important; right: 0 !important; }
-  .chat-page-app { padding-top: 72px; }
-  body.hide-nav .nav { display: flex; }
-  .chat-map-toggle-bar { display: none; }
+/* ── Mobile chat header (hamburger bar) ─────────────────────── */
+.mobile-chat-header {
+  display: none;
 }
 
+/* ── Sidebar backdrop (mobile drawer overlay) ───────────────── */
+.chat-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 199;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ── Responsive — tablet (hide right panel) ─────────────────── */
 @media (min-width: 901px) and (max-width: 1200px) {
   .discovery-panel, .chat-map-panel { display: none; }
   .chat-page-app .chat-input-bar { right: 0 !important; }
+}
+
+/* ── Responsive — mobile (<= 900px) ─────────────────────────── */
+@media (max-width: 900px) {
+  /* Hide global nav on chat page — replaced by mobile-chat-header */
+  body.hide-nav .nav { display: none !important; }
+
+  /* Mobile header bar */
+  .mobile-chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--bg-base);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+  }
+
+  .mobile-menu-btn,
+  .mobile-new-chat-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition), color var(--transition);
+  }
+
+  .mobile-menu-btn:hover,
+  .mobile-new-chat-btn:hover {
+    background: var(--glass-hover);
+    color: var(--text-primary);
+  }
+
+  .mobile-chat-logo {
+    font-family: 'Syne', 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+  }
+
+  /* Sidebar becomes a slide-in overlay drawer */
+  .chat-sidebar {
+    display: flex !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: -300px;
+    width: 280px !important;
+    z-index: 200;
+    transition: left 0.28s var(--ease);
+    box-shadow: none;
+  }
+
+  .chat-sidebar.chat-sidebar-mobile-open {
+    left: 0;
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Body layout */
+  .chat-body { margin-left: 0 !important; flex-direction: column; }
+
+  /* Top padding for mobile header */
+  .chat-page-app { padding-top: 56px; }
+
+  /* Input bar — full width, safe area bottom */
+  .chat-page-app .chat-input-bar {
+    left: 0 !important;
+    right: 0 !important;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  /* Chat layout padding — more bottom room for input bar */
+  .chat-layout {
+    padding: 16px 12px 140px;
+  }
+
+  /* Message bubbles — wider on small screens */
+  .message-bubble { max-width: 92%; }
+
+  /* Input inner — full width, better touch targets */
+  .chat-input-inner {
+    padding: 6px 6px 6px 16px;
+  }
+
+  .chat-input-inner input {
+    font-size: 16px; /* prevents iOS auto-zoom */
+    min-height: 44px;
+  }
+
+  /* Send button — min 44px for touch */
+  .send-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Action buttons — scrollable row */
+  .chat-input-actions {
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    padding: 6px 12px 0;
+  }
+  .chat-input-actions::-webkit-scrollbar { display: none; }
+
+  .chat-action-btn {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    min-height: 36px;
+    font-size: 13px;
+  }
+
+  /* Suggestion tabs — ensure safe padding */
+  .suggestion-tabs { padding: 8px 12px 2px; }
+
+  /* Discovery panel — stacked below empty state on mobile */
+  .discovery-panel {
+    width: 100% !important;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: 360px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .discovery-panel-inner {
+    padding: 14px 12px 16px;
+  }
+
+  /* Chat map panel and toggle hidden on mobile */
+  .chat-map-panel { display: none !important; }
+  .chat-map-toggle-bar { display: none; }
+
+  /* Empty state — tighter spacing on mobile */
+  .chat-empty-state {
+    padding: 24px 16px 16px;
+    justify-content: flex-start;
+  }
+
+  .chat-empty-greeting {
+    font-size: clamp(22px, 6vw, 34px);
+    text-align: center;
+  }
+
+  .chat-empty-subtitle {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* Query limit bar */
+  .query-limit-bar {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}
+
+/* ── Extra small screens (<= 480px) ─────────────────────────── */
+@media (max-width: 480px) {
+  .mobile-chat-header { padding: 0 10px; }
+
+  .chat-input-inner { border-radius: 24px; }
+
+  .message-bubble { max-width: 96%; }
+
+  .deals-grid { grid-template-columns: 1fr; }
 }
 

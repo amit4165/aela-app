@@ -19,6 +19,8 @@ interface Props {
     onToggle: () => void
     onSelectChat?: (id: string) => void
     activeSessionId?: string
+    mobileOpen?: boolean
+    onMobileClose?: () => void
 }
 
 function ChatIcon() {
@@ -137,7 +139,7 @@ function formatTime(ts: number) {
     return `${Math.floor(diff / 86_400_000)}d ago`
 }
 
-export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggle, onSelectChat, activeSessionId }: Props) {
+export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggle, onSelectChat, activeSessionId, mobileOpen, onMobileClose }: Props) {
     const { user } = useUser()
     const { theme, toggleTheme } = useTheme()
     const isLight = theme === 'light'
@@ -152,8 +154,10 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
     const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Traveller'
     const userHandle = user?.username ?? user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] ?? ''
 
+    const closeMobile = () => onMobileClose?.()
+
     return (
-        <aside className={`chat-sidebar${collapsed ? ' chat-sidebar-collapsed' : ''}`}>
+        <aside className={`chat-sidebar${collapsed ? ' chat-sidebar-collapsed' : ''}${mobileOpen ? ' chat-sidebar-mobile-open' : ''}`}>
 
             {/* Header: logo + collapse button */}
             <div className="chat-sidebar-header">
@@ -174,7 +178,7 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
             <div className="chat-sidebar-new-wrap">
                 <button
                     className={`chat-sidebar-new-btn${collapsed ? ' chat-sidebar-new-btn-icon' : ''}`}
-                    onClick={onNewChat}
+                    onClick={() => { onNewChat(); closeMobile() }}
                     title="New chat"
                 >
                     <PlusIcon />
@@ -201,7 +205,7 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
                             <button
                                 key={chat.id}
                                 className={`chat-sidebar-history-item${chat.id === activeSessionId ? ' chat-sidebar-history-item-active' : ''}`}
-                                onClick={() => onSelectChat(chat.id)}
+                                onClick={() => { onSelectChat(chat.id); closeMobile() }}
                                 title={chat.title}
                             >
                                 <span className="chat-sidebar-history-title">{chat.title}</span>
