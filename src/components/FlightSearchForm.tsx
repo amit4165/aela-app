@@ -2,6 +2,29 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import type { Deal } from '@/types/api'
 
+interface AirportFieldProps {
+    label: string
+    placeholder: string
+    value: string
+    onChange: (iata: string, display: string) => void
+}
+
+function AirportField({ label, placeholder, value, onChange }: AirportFieldProps) {
+    return (
+        <div className="flight-field">
+            <label className="flight-label">{label}</label>
+            <input
+                className="flight-input"
+                type="text"
+                placeholder={placeholder}
+                value={value}
+                onChange={e => onChange('', e.target.value)}
+                required
+            />
+        </div>
+    )
+}
+
 interface FlightSearchFormProps {
     onResults: (deals: Deal[], query: string) => void
     onClose: () => void

@@ -349,7 +349,6 @@ function ChatPageInner() {
         ?? 'U'
 
     const lastAiMsg = [...messages].reverse().find(m => m.role === 'ai')
-    const isOffTopic = lastAiMsg?.response?.ui_hints?.off_topic === true
     const dynamicActions = lastAiMsg?.response?.suggested_actions ?? []
     const suggestionMode = dynamicActions.length > 0 ? 'custom' : 'default'
 
