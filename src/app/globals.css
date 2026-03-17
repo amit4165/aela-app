@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* ── Fonts ─────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Syne:wght@400;500;600;700&display=swap');
 
 /* ── Tokens ─────────────────────────────────────────────────── */
 :root {
@@ -204,23 +204,23 @@
 
 /* ── Light mode overrides — nav & landing ───────────────────── */
 [data-theme="light"] .nav {
-  background: rgba(66, 20, 95, 0.96);
-  border-bottom-color: rgba(219, 0, 102, 0.30);
+  background: rgba(245, 238, 250, 0.10);
+  border-bottom-color: rgba(66, 20, 95, 0.12);
 }
 
 [data-theme="light"] .nav-logo {
-  color: #ffffff;
+  color: #42145F;
 }
 
 [data-theme="light"] .nav .btn-ghost {
-  color: rgba(255, 255, 255, 0.85);
-  border-color: rgba(255, 255, 255, 0.25);
+  color: #42145F;
+  border-color: rgba(66, 20, 95, 0.30);
 }
 
 [data-theme="light"] .nav .btn-ghost:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.5);
+  color: #42145F;
+  background: rgba(66, 20, 95, 0.10);
+  border-color: rgba(66, 20, 95, 0.50);
 }
 
 [data-theme="light"] .landing {
@@ -228,6 +228,44 @@
     radial-gradient(ellipse 60% 50% at 0% 0%, rgba(219, 0, 102, 0.06) 0%, transparent 70%),
     radial-gradient(ellipse 50% 50% at 100% 100%, rgba(66, 20, 95, 0.08) 0%, transparent 70%),
     var(--bg-base);
+}
+
+/* ── Light mode — landing page orbs & background ──────────── */
+[data-theme="light"] .orb-1 {
+  background: radial-gradient(circle, #DB0066 0%, transparent 70%);
+}
+
+[data-theme="light"] .orb-2 {
+  background: radial-gradient(circle, #42145F 0%, transparent 70%);
+}
+
+[data-theme="light"] .orb-3 {
+  background: radial-gradient(circle, #c855f7 0%, transparent 70%);
+}
+
+[data-theme="light"] .landing-bg::after {
+  background-image:
+    linear-gradient(rgba(66, 20, 95, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66, 20, 95, 0.04) 1px, transparent 1px);
+}
+
+[data-theme="light"] .hero-photo-overlay {
+  background:
+    linear-gradient(to top, rgba(3, 10, 5, 0.96) 0%, rgba(3, 10, 5, 0.58) 40%, transparent 70%),
+    linear-gradient(to bottom, rgba(3, 10, 5, 0.46) 0%, transparent 30%),
+    radial-gradient(ellipse 80% 70% at 50% 40%, rgba(3, 10, 5, 0.38) 0%, transparent 100%);
+}
+
+/* ── Light mode — hero chatbox ────────────────────────────── */
+[data-theme="light"] .hero-chatbox {
+  background: rgba(245, 238, 250, 0.18);
+  border-color: rgba(219, 0, 102, 0.22);
+  box-shadow: 0 8px 40px rgba(66, 20, 95, 0.22), 0 0 0 1px rgba(219, 0, 102, 0.10);
+}
+
+[data-theme="light"] .hero-chatbox:focus-within {
+  border-color: rgba(219, 0, 102, 0.45);
+  box-shadow: 0 8px 40px rgba(66, 20, 95, 0.28), 0 0 0 1px rgba(219, 0, 102, 0.22), 0 0 24px rgba(219, 0, 102, 0.14);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -407,13 +445,7 @@ a {
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-family: 'Inter', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  color: var(--text-primary);
-  text-transform: uppercase;
+  color: #e8e0f0;
   text-decoration: none;
   transition: opacity var(--transition);
 }
@@ -984,6 +1016,18 @@ a {
   border: 1px solid rgba(0, 106, 77, 0.35);
   color: var(--text-primary);
   border-bottom-right-radius: 4px;
+}
+
+[data-theme="light"] .message-user .message-bubble {
+  background: rgba(66, 20, 95, 0.18);
+  border: 1px solid rgba(66, 20, 95, 0.12);
+  color: #1a0a2e;
+}
+
+[data-theme="light"] .message-ai .message-bubble {
+  background: #ffffff;
+  border: 1px solid rgba(66, 20, 95, 0.15);
+  color: #1a0a2e;
 }
 
 /* ── Flight Deals ─────────────────────────────────────────────── */
@@ -4126,28 +4170,13 @@ body.hide-nav .chat-sidebar { top: 0; }
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.chat-sidebar-logo-full {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.chat-sidebar-spark {
-  font-size: 22px;
-  color: var(--teal);
-  line-height: 1;
-}
-
-.chat-sidebar-wordmark {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
   color: var(--text-primary);
-  text-transform: uppercase;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.chat-sidebar-logo-link:hover {
+  opacity: 1;
 }
 
 /* Collapse toggle button */
@@ -4164,10 +4193,6 @@ body.hide-nav .chat-sidebar { top: 0; }
   justify-content: center;
   flex-shrink: 0;
   transition: background var(--transition), color var(--transition), opacity var(--transition);
-  opacity: 0;
-}
-
-.chat-sidebar:hover .chat-sidebar-collapse-btn {
   opacity: 1;
 }
 
@@ -4897,27 +4922,36 @@ body.hide-nav .chat-sidebar { top: 0; }
 }
 
 .chat-empty-icon {
-  font-size: 34px;
+  display: flex;
+  justify-content: center;
   color: var(--teal);
   margin-bottom: 18px;
-  opacity: 0.7;
+  opacity: 0.85;
+}
+
+.chat-empty-icon svg {
+  width: 64px;
+  height: 64px;
   animation: fadeInUp 0.6s var(--ease) both;
 }
 
 .chat-empty-greeting {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(26px, 4vw, 40px);
-  font-weight: 400;
+  font-family: 'Syne', 'Inter', sans-serif;
+  font-size: clamp(28px, 4.5vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
   color: var(--text-primary);
   margin-bottom: 14px;
   animation: fadeInUp 0.7s var(--ease) 0.05s both;
 }
 
 .chat-empty-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-family: 'Syne', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
   color: var(--text-secondary);
-  line-height: 1.65;
+  line-height: 1.75;
+  letter-spacing: 0.3px;
   animation: fadeInUp 0.7s var(--ease) 0.1s both;
 }
 

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import { useTheme } from '@/context/ThemeContext'
+import AelaLogo from '@/components/AelaLogo'
 
 export interface ChatSession {
     id: string
@@ -142,6 +143,8 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
     const isLight = theme === 'light'
     const [chatsOpen, setChatsOpen] = useState(true)
 
+    const expandIfCollapsed = () => { if (collapsed) onToggle() }
+
     const userInitial = user?.firstName?.[0]
         ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase()
         ?? 'U'
@@ -154,16 +157,8 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
 
             {/* Header: logo + collapse button */}
             <div className="chat-sidebar-header">
-                <Link href="/" className="chat-sidebar-logo-link" aria-label="Aela home">
-                    {collapsed
-                        ? <span className="chat-sidebar-spark">✦</span>
-                        : (
-                            <div className="chat-sidebar-logo-full">
-                                <span className="chat-sidebar-spark">✦</span>
-                                <span className="chat-sidebar-wordmark">AELA</span>
-                            </div>
-                        )
-                    }
+                <Link href="/?home=1" className="chat-sidebar-logo-link" aria-label="Aela home">
+                    <AelaLogo collapsed={collapsed} />
                 </Link>
                 <button
                     className="chat-sidebar-collapse-btn"
@@ -191,7 +186,7 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
             <nav className="chat-sidebar-nav">
                 <button
                     className="chat-sidebar-item chat-sidebar-item-active"
-                    onClick={() => !collapsed && setChatsOpen(o => !o)}
+                    onClick={() => { expandIfCollapsed(); if (!collapsed) setChatsOpen(o => !o) }}
                     title="Chats"
                     style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                 >
@@ -215,17 +210,17 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
                         ))}
                     </div>
                 )}
-                <Link href="/chat" className="chat-sidebar-item" title="Trips">
+                <Link href="/chat" className="chat-sidebar-item" title="Trips" onClick={expandIfCollapsed}>
                     <TripsIcon />
                     {!collapsed && <span>Trips</span>}
                 </Link>
-                <Link href="/chat" className="chat-sidebar-item" title="Explore">
+                <Link href="/chat" className="chat-sidebar-item" title="Explore" onClick={expandIfCollapsed}>
                     <ExploreIcon />
                     {!collapsed && <span>Explore</span>}
                 </Link>
                 <button
                     className="chat-sidebar-theme-btn"
-                    onClick={toggleTheme}
+                    onClick={() => { expandIfCollapsed(); toggleTheme() }}
                     title={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
                 >
                     {isLight ? <SunIcon /> : <MoonIcon />}
@@ -236,11 +231,11 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
                         </span>
                     )}
                 </button>
-                <Link href="/chat" className="chat-sidebar-item" title="Saved">
+                <Link href="/chat" className="chat-sidebar-item" title="Saved" onClick={expandIfCollapsed}>
                     <SavedIcon />
                     {!collapsed && <span>Saved</span>}
                 </Link>
-                <Link href="/passports" className="chat-sidebar-item" title="Passports">
+                <Link href="/passports" className="chat-sidebar-item" title="Passports" onClick={expandIfCollapsed}>
                     <PassportIcon />
                     {!collapsed && <span>Passports</span>}
                 </Link>

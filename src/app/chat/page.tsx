@@ -413,13 +413,12 @@ function ChatPageInner() {
                         {/* Empty state */}
                         {!hasMessages && !loading && (
                             <div className="chat-empty-state">
-                                <div className="chat-empty-icon">✦</div>
                                 <h2 className="chat-empty-greeting">
                                     Where to today{user?.firstName ? `, ${user.firstName}` : ''}?
                                 </h2>
                                 <p className="chat-empty-subtitle">
-                                    I&apos;m here to help you plan your perfect trip.
-                                    <br />Ask me anything travel related.
+                                    Passport ready. Bags packed. Zero plans.
+                                    <br />That&apos;s where I come in. Drop a vibe, I&apos;ll drop an itinerary.
                                 </p>
                             </div>
                         )}
