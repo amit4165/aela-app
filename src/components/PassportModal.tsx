@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { useAuth } from '@clerk/nextjs'
-import { completeOnboarding } from '@/lib/api'
+import { useUser } from '@clerk/nextjs'
+import { supabase } from '@/lib/supabase'
 import { detectLocale } from '@/lib/locale'
 import { COUNTRIES } from '@/lib/countries'
 
@@ -10,23 +10,31 @@ interface PassportModalProps {
 }
 
 export default function PassportModal({ onComplete }: PassportModalProps) {
-    const { getToken } = useAuth()
+    const { user } = useUser()
     const [country, setCountry] = useState('')
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
     const handleSave = async () => {
-        if (!country) return
+        if (!country || !user) return
         setSaving(true)
         setError(null)
         try {
-            const token = await getToken()
             const { timezone, currency } = detectLocale()
-            await completeOnboarding(token, {
-                passport_country: country,
-                detected_timezone: timezone,
-                detected_currency: currency,
-            })
+            const { error: dbError } = await supabase
+                .from('user_profiles')
+                .upsert({
+                    clerk_user_id: user.id,
+                    email: user.emailAddresses?.[0]?.emailAddress ?? null,
+                    first_name: user.firstName ?? null,
+                    last_name: user.lastName ?? null,
+                    passport_country: country,
+                    detected_timezone: timezone,
+                    detected_currency: currency,
+                    onboarding_completed: true,
+                }, { onConflict: 'clerk_user_id' })
+
+            if (dbError) throw new Error(dbError.message)
             onComplete()
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')

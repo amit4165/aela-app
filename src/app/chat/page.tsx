@@ -15,7 +15,8 @@ import HotelSearchForm from '@/components/HotelSearchForm'
 import ChatSidebar, { type ChatSession } from '@/components/ChatSidebar'
 import DiscoveryPanel from '@/components/DiscoveryPanel'
 import ChatMapPanel from '@/components/ChatMapPanel'
-import { chatStream, getUserProfile, type SSEEvent } from '@/lib/api'
+import { chatStream, type SSEEvent } from '@/lib/api'
+import { supabase } from '@/lib/supabase'
 import { useCurrency, CurrencyCode } from '@/context/CurrencyContext'
 import VisaRequirementsCard from '@/components/VisaRequirementsCard'
 import type { ChatResponse, SuggestedAction, Deal } from '@/types/api'
@@ -168,14 +169,19 @@ function ChatPageInner() {
         if (isLoaded && !user) router.push('/sign-in')
     }, [isLoaded, user, router])
 
-    // Fetch user profile
+    // Fetch user profile from Supabase
     useEffect(() => {
         if (!user || !isLoaded) return
         async function loadProfile() {
             try {
-                const token = await getToken()
-                const data = await getUserProfile(token)
-                if (data.needs_onboarding) setShowOnboarding(true)
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('onboarding_completed')
+                    .eq('clerk_user_id', user!.id)
+                    .maybeSingle()
+
+                if (error) throw error
+                if (!data || !data.onboarding_completed) setShowOnboarding(true)
             } catch {
                 setShowOnboarding(true)
             } finally {
@@ -183,7 +189,7 @@ function ChatPageInner() {
             }
         }
         loadProfile()
-    }, [user, isLoaded, getToken])
+    }, [user, isLoaded])
 
     // Handle pending message from landing page
     useEffect(() => {
