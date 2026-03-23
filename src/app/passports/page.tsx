@@ -42,6 +42,11 @@ export default function PassportsPage() {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
     useEffect(() => {
+        document.body.classList.add('hide-nav')
+        return () => document.body.classList.remove('hide-nav')
+    }, [])
+
+    useEffect(() => {
         const saved = localStorage.getItem(PROFILES_KEY)
         if (saved) setProfiles(JSON.parse(saved))
         const chats = localStorage.getItem(RECENT_CHATS_KEY)
@@ -87,16 +92,25 @@ export default function PassportsPage() {
         localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(next))
     }
 
+    const pinSidebar = () => {
+        setSidebarCollapsed(false)
+        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, 'false')
+    }
+
+    const sidebarW = sidebarCollapsed ? '52px' : '240px'
+
     const countryName = (code: string) => COUNTRIES.find(c => c.code === code)?.name ?? code
     const countryFlag = (code: string) => COUNTRIES.find(c => c.code === code)?.flag ?? ''
 
     return (
-        <div className="chat-layout">
+        <div className="chat-layout" style={{ '--sidebar-w': sidebarW } as React.CSSProperties}>
             <ChatSidebar
                 onNewChat={() => {}}
                 recentChats={recentChats}
                 collapsed={sidebarCollapsed}
                 onToggle={toggleSidebar}
+                pinned={!sidebarCollapsed}
+                onPin={pinSidebar}
             />
 
             <main className={`passports-main${sidebarCollapsed ? ' passports-main-collapsed' : ''}`}>

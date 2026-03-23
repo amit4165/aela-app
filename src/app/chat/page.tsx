@@ -220,6 +220,11 @@ function ChatPageInner() {
         })
     }
 
+    function handleSidebarPin() {
+        setSidebarCollapsed(false)
+        try { localStorage.setItem(SIDEBAR_COLLAPSED_KEY, 'false') } catch { /* ignore */ }
+    }
+
     function handleMapOpen(destination: string) {
         setMapDestination(destination)
         setShowMap(true)
@@ -432,6 +437,8 @@ function ChatPageInner() {
                 activeSessionId={sessionId}
                 mobileOpen={mobileMenuOpen}
                 onMobileClose={() => setMobileMenuOpen(false)}
+                pinned={!sidebarCollapsed}
+                onPin={handleSidebarPin}
             />
 
             {/* Main body */}

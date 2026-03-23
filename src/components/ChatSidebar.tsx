@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import { useTheme } from '@/context/ThemeContext'
@@ -21,6 +21,8 @@ interface Props {
     activeSessionId?: string
     mobileOpen?: boolean
     onMobileClose?: () => void
+    pinned?: boolean
+    onPin?: () => void
 }
 
 function ChatIcon() {
@@ -120,6 +122,14 @@ function MoonIcon() {
     )
 }
 
+function PinIcon() {
+    return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2l2.5 8.5L22 12l-7.5 1.5L12 22l-2.5-8.5L2 12l7.5-1.5L12 2z" />
+        </svg>
+    )
+}
+
 function CollapseIcon({ collapsed }: { collapsed: boolean }) {
     return (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -139,13 +149,40 @@ function formatTime(ts: number) {
     return `${Math.floor(diff / 86_400_000)}d ago`
 }
 
-export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggle, onSelectChat, activeSessionId, mobileOpen, onMobileClose }: Props) {
+export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggle, onSelectChat, activeSessionId, mobileOpen, onMobileClose, pinned, onPin }: Props) {
     const { user } = useUser()
     const { theme, toggleTheme } = useTheme()
     const isLight = theme === 'light'
     const [chatsOpen, setChatsOpen] = useState(true)
+    const [hoverExpanded, setHoverExpanded] = useState(false)
+    const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    const isPinned = pinned ?? !collapsed
+
+    // Hover to expand when collapsed and not pinned
+    const handleMouseEnter = useCallback(() => {
+        if (!collapsed) return
+        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+        hoverTimeoutRef.current = setTimeout(() => setHoverExpanded(true), 150)
+    }, [collapsed])
+
+    const handleMouseLeave = useCallback(() => {
+        if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current)
+        hoverTimeoutRef.current = setTimeout(() => setHoverExpanded(false), 300)
+    }, [])
+
+    // When a nav item is clicked, pin the sidebar open
+    const handleNavClick = () => {
+        if (collapsed && onPin) {
+            setHoverExpanded(false)
+            onPin()
+        }
+    }
 
     const expandIfCollapsed = () => { if (collapsed) onToggle() }
+
+    // Show expanded content if actually expanded OR hover-expanded
+    const showExpanded = !collapsed || hoverExpanded
 
     const userInitial = user?.firstName?.[0]
         ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase()
@@ -157,32 +194,39 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
     const closeMobile = () => onMobileClose?.()
 
     return (
-        <aside className={`chat-sidebar${collapsed ? ' chat-sidebar-collapsed' : ''}${mobileOpen ? ' chat-sidebar-mobile-open' : ''}`}>
+        <aside
+            className={`chat-sidebar${collapsed && !hoverExpanded ? ' chat-sidebar-collapsed' : ''}${hoverExpanded ? ' chat-sidebar-hover-expanded' : ''}${mobileOpen ? ' chat-sidebar-mobile-open' : ''}${isPinned ? ' chat-sidebar-pinned' : ''}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
 
             {/* Header: logo + collapse button */}
             <div className="chat-sidebar-header">
                 <Link href="/?home=1" className="chat-sidebar-logo-link" aria-label="Aela home">
-                    <AelaLogo collapsed={collapsed} />
+                    <AelaLogo collapsed={collapsed && !hoverExpanded} />
                 </Link>
                 <button
-                    className="chat-sidebar-collapse-btn"
-                    onClick={onToggle}
-                    aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                    title={collapsed ? 'Expand' : 'Collapse'}
+                    className={`chat-sidebar-collapse-btn${isPinned ? ' chat-sidebar-collapse-btn-pinned' : ''}`}
+                    onClick={() => {
+                        setHoverExpanded(false)
+                        onToggle()
+                    }}
+                    aria-label={collapsed ? 'Pin sidebar open' : 'Unpin and collapse sidebar'}
+                    title={collapsed ? 'Pin open' : 'Collapse'}
                 >
-                    <CollapseIcon collapsed={collapsed} />
+                    {isPinned ? <PinIcon /> : <CollapseIcon collapsed={collapsed && !hoverExpanded} />}
                 </button>
             </div>
 
             {/* New chat button */}
             <div className="chat-sidebar-new-wrap">
                 <button
-                    className={`chat-sidebar-new-btn${collapsed ? ' chat-sidebar-new-btn-icon' : ''}`}
-                    onClick={() => { onNewChat(); closeMobile() }}
+                    className={`chat-sidebar-new-btn${!showExpanded ? ' chat-sidebar-new-btn-icon' : ''}`}
+                    onClick={() => { handleNavClick(); onNewChat(); closeMobile() }}
                     title="New chat"
                 >
                     <PlusIcon />
-                    {!collapsed && <span>New chat</span>}
+                    {showExpanded && <span>New chat</span>}
                 </button>
             </div>
 
@@ -190,22 +234,22 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
             <nav className="chat-sidebar-nav">
                 <button
                     className="chat-sidebar-item chat-sidebar-item-active"
-                    onClick={() => { expandIfCollapsed(); if (!collapsed) setChatsOpen(o => !o) }}
+                    onClick={() => { handleNavClick(); setChatsOpen(o => !o) }}
                     title="Chats"
                     style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                 >
                     <ChatIcon />
-                    {!collapsed && <span>Chats</span>}
+                    {showExpanded && <span>Chats</span>}
                 </button>
 
                 {/* Recent chat history — collapsible */}
-                {!collapsed && chatsOpen && recentChats.length > 0 && onSelectChat && (
+                {showExpanded && chatsOpen && recentChats.length > 0 && onSelectChat && (
                     <div className="chat-sidebar-history">
                         {recentChats.slice(0, 5).map(chat => (
                             <button
                                 key={chat.id}
                                 className={`chat-sidebar-history-item${chat.id === activeSessionId ? ' chat-sidebar-history-item-active' : ''}`}
-                                onClick={() => { onSelectChat(chat.id); closeMobile() }}
+                                onClick={() => { handleNavClick(); onSelectChat(chat.id); closeMobile() }}
                                 title={chat.title}
                             >
                                 <span className="chat-sidebar-history-title">{chat.title}</span>
@@ -214,34 +258,34 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
                         ))}
                     </div>
                 )}
-                <Link href="/chat" className="chat-sidebar-item" title="Trips" onClick={expandIfCollapsed}>
+                <Link href="/chat" className="chat-sidebar-item" title="Trips" onClick={handleNavClick}>
                     <TripsIcon />
-                    {!collapsed && <span>Trips</span>}
+                    {showExpanded && <span>Trips</span>}
                 </Link>
-                <Link href="/chat" className="chat-sidebar-item" title="Explore" onClick={expandIfCollapsed}>
+                <Link href="/chat" className="chat-sidebar-item" title="Explore" onClick={handleNavClick}>
                     <ExploreIcon />
-                    {!collapsed && <span>Explore</span>}
+                    {showExpanded && <span>Explore</span>}
                 </Link>
                 <button
                     className="chat-sidebar-theme-btn"
-                    onClick={() => { expandIfCollapsed(); toggleTheme() }}
+                    onClick={() => { handleNavClick(); toggleTheme() }}
                     title={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
                 >
                     {isLight ? <SunIcon /> : <MoonIcon />}
-                    {!collapsed && <span>Theme</span>}
-                    {!collapsed && (
+                    {showExpanded && <span>Theme</span>}
+                    {showExpanded && (
                         <span className={`chat-sidebar-theme-track${isLight ? ' chat-sidebar-theme-track-on' : ''}`}>
                             <span className={`chat-sidebar-theme-thumb${isLight ? ' chat-sidebar-theme-thumb-on' : ''}`} />
                         </span>
                     )}
                 </button>
-                <Link href="/chat" className="chat-sidebar-item" title="Saved" onClick={expandIfCollapsed}>
+                <Link href="/chat" className="chat-sidebar-item" title="Saved" onClick={handleNavClick}>
                     <SavedIcon />
-                    {!collapsed && <span>Saved</span>}
+                    {showExpanded && <span>Saved</span>}
                 </Link>
-                <Link href="/passports" className="chat-sidebar-item" title="Passports" onClick={expandIfCollapsed}>
+                <Link href="/passports" className="chat-sidebar-item" title="Passports" onClick={handleNavClick}>
                     <PassportIcon />
-                    {!collapsed && <span>Passports</span>}
+                    {showExpanded && <span>Passports</span>}
                 </Link>
             </nav>
 
@@ -249,7 +293,7 @@ export default function ChatSidebar({ onNewChat, recentChats, collapsed, onToggl
             <div className="chat-sidebar-footer">
                 <div className="chat-sidebar-user" title={userName}>
                     <div className="chat-sidebar-avatar">{userInitial}</div>
-                    {!collapsed && (
+                    {showExpanded && (
                         <>
                             <div className="chat-sidebar-user-info">
                                 <div className="chat-sidebar-user-name">{userName}</div>

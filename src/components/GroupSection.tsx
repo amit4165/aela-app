@@ -27,9 +27,9 @@ const pillars = [
 ]
 
 const FLIGHTS = [
-    { label: 'Air India', code: 'AI·102', route: 'DEL → LHR', price: '₹48,200' },
-    { label: 'Emirates',  code: 'EK·501', route: 'DEL → LHR', price: '₹44,500' },
-    { label: 'British Airways', code: 'BA·256', route: 'DEL → LHR', price: '₹52,800' },
+    { label: 'Air India', code: 'AI·102', route: 'DEL → LHR', basePriceUsd: 580 },
+    { label: 'Emirates',  code: 'EK·501', route: 'DEL → LHR', basePriceUsd: 530 },
+    { label: 'British Airways', code: 'BA·256', route: 'DEL → LHR', basePriceUsd: 630 },
 ]
 
 const MEMBERS = [
@@ -44,8 +44,11 @@ function generateRoomId() {
     return Math.random().toString(36).substring(2, 10).toUpperCase()
 }
 
+import { useCurrency } from '@/context/CurrencyContext'
+
 export default function GroupSection() {
     const router = useRouter()
+    const { format, convert } = useCurrency()
     const [votes, setVotes] = useState([2, 3, 1])
     const [activeVote, setActiveVote] = useState<number | null>(null)
     const tickRef = useRef(0)
@@ -191,7 +194,7 @@ export default function GroupSection() {
                                             </div>
                                             <div className="group-demo-flight-right">
                                                 {isTop && <span className="group-demo-top-badge">Top pick</span>}
-                                                <span className="group-demo-price">{f.price}</span>
+                                                <span className="group-demo-price">{format(convert(f.basePriceUsd))}</span>
                                             </div>
                                         </div>
 

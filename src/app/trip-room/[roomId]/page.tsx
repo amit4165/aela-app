@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { useCurrency } from '@/context/CurrencyContext'
 
 interface FlightOption {
     id: string
@@ -12,7 +13,7 @@ interface FlightOption {
     airline: string
     time: string
     duration: string
-    price: string
+    basePriceUsd: number
 }
 
 interface VoteMap {
@@ -20,15 +21,16 @@ interface VoteMap {
 }
 
 const DEMO_FLIGHTS: FlightOption[] = [
-    { id: 'f1', route: 'DEL → LHR', airline: 'Air India',       time: '02:15 — 08:30',    duration: '9h 15m',  price: '₹48,200' },
-    { id: 'f2', route: 'DEL → LHR', airline: 'British Airways', time: '06:00 — 12:10',    duration: '9h 10m',  price: '₹52,800' },
-    { id: 'f3', route: 'DEL → LHR', airline: 'Emirates',        time: '22:00 — 07:30+1',  duration: '10h 30m', price: '₹44,500' },
+    { id: 'f1', route: 'DEL → LHR', airline: 'Air India',       time: '02:15 — 08:30',    duration: '9h 15m',  basePriceUsd: 580 },
+    { id: 'f2', route: 'DEL → LHR', airline: 'British Airways', time: '06:00 — 12:10',    duration: '9h 10m',  basePriceUsd: 630 },
+    { id: 'f3', route: 'DEL → LHR', airline: 'Emirates',        time: '22:00 — 07:30+1',  duration: '10h 30m', basePriceUsd: 530 },
 ]
 
 export default function TripRoomPage() {
     const params   = useParams()
     const router   = useRouter()
     const { user, isLoaded } = useUser()
+    const { format, convert } = useCurrency()
     const roomId   = params?.roomId as string
 
     const [roomExists,   setRoomExists]   = useState<boolean | null>(null) // null = loading
@@ -268,7 +270,7 @@ export default function TripRoomPage() {
                                             <span>{flight.duration}</span>
                                         </div>
                                         <div className="trip-room-flight-bottom">
-                                            <div className="trip-room-flight-price">{flight.price}</div>
+                                            <div className="trip-room-flight-price">{format(convert(flight.basePriceUsd))}</div>
                                             <div className="trip-room-vote-row">
                                                 <div className="trip-room-vote-pips">
                                                     {flightVotes.map((v, i) => (
